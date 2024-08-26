@@ -1,16 +1,25 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
+@Entity({ name: 'computers' })
+export class Computer {
+  @PrimaryGeneratedColumn()
+  EquipmentUniqueCode: number;
 
-@Entity('Computer')
-export class Computer{
-    @PrimaryGeneratedColumn()
-    ComputerId: number;
-    @Column()
-    EquipmentCode: string;
-    @Column()
-    ComputerTyoe: string;
-    @Column()
-    ComputerConditionRating: number;
-    @Column()
-    ComputerStatus: string;
+  @Column()
+  MachineNumber: number;
+
+  @Column()
+  EquipmentSerial: string;
+
+  @Column()
+  EquipmentBrand: string;
+
+  @Column()
+  ConditionRating: number;
+
+  @Column()
+  Observation: string;
+
+  @Column()
+  EquipmentCategory: string;
 }
