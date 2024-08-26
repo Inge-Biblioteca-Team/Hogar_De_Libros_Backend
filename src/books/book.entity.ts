@@ -5,8 +5,8 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 export class Book {
 
     @PrimaryGeneratedColumn()
-    @ApiProperty({ description: 'Código único del libro' })
-    BookCode: string;
+    @ApiProperty({ description: 'Código  del libro' })
+    BookCode: number;
     
     @Column()
     @ApiProperty({ description: 'Título del libro' })
@@ -28,11 +28,11 @@ export class Book {
 
     @Column()
     @ApiProperty({ description: 'ISBN del libro' })
-    ISBN: number;
+    ISBN: string;
 
     @Column()
     @ApiProperty({ description: 'Categoría del libro' })
-    BookCategory: string;
+    ShelfCategory: string;
 
     @Column()
     @ApiProperty({ description: 'URL de la portada del libro' })
@@ -48,7 +48,7 @@ export class Book {
 
     @Column()
     @ApiProperty({ description: 'Código de firma' })
-    SignatureCode:number;
+    SignatureCode:string;
 
     @Column()
     @ApiProperty({ description: 'Código de inscripción' })
@@ -57,5 +57,7 @@ export class Book {
     @Column()
     @ApiProperty({ description: 'Indica si el libro está reservado' })
     Reserva :boolean;
-
+    @Column()
+    @ApiProperty({ description: 'Indica si esta deshabilitado' })
+    Status :boolean;
   }
