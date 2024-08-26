@@ -3,13 +3,6 @@ import { IsBoolean, IsInt, IsNotEmpty, IsNumber, IsString } from 'class-validato
 
 export class CreateBookDto {
 
- @ApiProperty({ example: '863.6L431L2' })
- @IsString()
- @IsNotEmpty()
- BookCode: string;
-
- 
-
   @ApiProperty({ example: 'Lazarillo de Tormes' })
   @IsString()
   @IsNotEmpty()
@@ -33,11 +26,11 @@ export class CreateBookDto {
   
   @ApiProperty({ example: '9977-30-347-9' })
   @IsNumber()
-  ISBN: number;
+  ISBN: string;
    
   @ApiProperty({ example: 'Obras Literarias' })
   @IsString()
-  BookCategory: string;
+  ShelfCategory: string;
 
   @ApiProperty({ example: 'c:\Users\Maria Paula\Documents\Lazarillo.jpg' })
   @IsString()
@@ -53,17 +46,19 @@ export class CreateBookDto {
 
   @ApiProperty({ example: '4' })
   @IsNumber()
-  SignatureCode:number;
+  SignatureCode:string;
 
   
   @ApiProperty({ example: '683251' })
   @IsNumber()
   InscriptionCode:number;
 
-  @ApiProperty({ example: '4' })
+  @ApiProperty({ example: 'no ' })
   @IsBoolean()
   Reserva :boolean;
 
-
+  @ApiProperty({ example: 'si ' })
+  @IsBoolean()
+  Status :boolean;
 
 }
