@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BooksModule } from './books/books.module';
-import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Book } from './books/book.entity';
+import { Computer } from './computers/computer.entity';
+import { ComputersModule } from './computers/computers.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -14,11 +15,11 @@ import { Book } from './books/book.entity';
     username: 'root',
     password: 'root',
     database: 'hogar_de_libros',
-    entities: [Book],
+    entities: [Book, Computer],
     synchronize: true
     
 
-   }), BooksModule],
+   }), BooksModule, ComputersModule],
   controllers: [AppController],
   providers: [AppService],
 })
