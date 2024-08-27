@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class ComputerDTO {
+export class ComputerModifyDTO {
   @ApiProperty({ example: 7 })
   @IsNumber()
   @IsNotEmpty()
@@ -32,13 +32,14 @@ export class ComputerDTO {
   @IsNotEmpty()
   EquipmentCategory: string;
 
-  
+  @ApiProperty({ example: 'Activo' })
   @IsString()
   @IsOptional()
   EquipmentStatus: string;
 
-  
+
+  @ApiProperty({ example: 'Disponible' })
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   LoanStatus: string;
 }
