@@ -1,0 +1,8 @@
+import { ApiProperty } from "@nestjs/swagger";
+import { IsBoolean } from "class-validator";
+
+export class EnableBookDto {
+    @ApiProperty({ description: 'Estado del libro, true para habilitar' })
+    @IsBoolean({ message: 'Status must be a boolean value' })
+    Status: boolean = true; 
+  }

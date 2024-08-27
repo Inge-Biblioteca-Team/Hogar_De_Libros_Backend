@@ -58,8 +58,8 @@ export class CreateBookDto {
   @IsString()
   Observations :string;
 
-  @ApiProperty({ example: 'si ' })
+  @ApiProperty({ example: 'si ', default:true })
   @IsBoolean()
-  Status :boolean;
+  Status :boolean =true;
 
 }

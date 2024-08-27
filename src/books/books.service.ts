@@ -6,6 +6,8 @@ import { Repository } from 'typeorm';
 import { UpdateBookDto } from './DTO/update-book.dto';
 import { PaginationFilterDto } from './DTO/pagination-filter.dto';
 import { CreateBookDto } from './DTO/create-book.dto';
+import { EnableBookDto } from './DTO/enable-book.dto';
+
 
 @Injectable()
 export class BooksService {
@@ -34,7 +36,22 @@ export class BooksService {
 
     return this.bookRepository.save(book);
   }
+  async enableBook(bookCode: number, enableBookDto: EnableBookDto): Promise<Book> {
+    const book = await this.bookRepository.findOne({
+      where: { BookCode: bookCode },
+    });
 
+    if (!book) {
+      throw new NotFoundException(
+        `El libro con código ${bookCode} no fue encontrado`,
+      );
+    }
+
+    
+    book.Status = enableBookDto.Status;
+
+    return await this.bookRepository.save(book);
+  }
   async disableBook(bookCode: number): Promise<Book> {
     const book = await this.bookRepository.findOne({
       where: { BookCode: bookCode },
@@ -46,26 +63,42 @@ export class BooksService {
       );
     }
 
+    
     book.Status = false;
     return this.bookRepository.save(book);
   }
 
+  
+  async findById(BookCode: number): Promise<Book> {
+    const book = await this.bookRepository.findOne({ where: { BookCode } });
+
+    if (!book) {
+      throw new NotFoundException(`El libro con código ${BookCode} no fue encontrado`);
+    }
+
+    return book;
+  }
   async findAll(
     PaginationFilterDto: PaginationFilterDto,
   ): Promise<{ data: Book[]; count: number }> {
     const {
       page = 1,
       limit = 10,
+      Title,
       ISBN,
       Author,
       SignatureCode,
-      Status,
+      Status,ShelfCategory
     } = PaginationFilterDto;
 
     const query = this.bookRepository.createQueryBuilder('book');
 
+    if (Title) {
+      query.andWhere('book.Title Like :Title', { Title:`%${Title}%`});
+      }
+
     if (ISBN) {
-      query.andWhere('book.ISBN = :ISBN', { ISBN });
+    query.andWhere('book.ISBN Like :ISBN', { ISBN:`%${ISBN}%`});
     }
 
     if (Author) {
@@ -73,12 +106,18 @@ export class BooksService {
     }
 
     if (SignatureCode) {
-      query.andWhere('book.SignatureCode = :SignatureCode', { SignatureCode });
+      query.andWhere('book.SignatureCode LIKE :SignatureCode', {
+        SignatureCode: `%${SignatureCode }%` });
     }
 
     if (Status !== undefined) {
-      const statusValue = Status ;
+      const statusValue = Status;
       query.andWhere('book.Status = :Status', { Status: statusValue });
+    }
+    if (ShelfCategory) {
+      query.andWhere('book.ShelfCategory LIKE :ShelfCategory', {
+        ShelfCategory: `%${ShelfCategory}%`,
+      });
     }
 
     query.skip((page - 1) * limit).take(limit);
