@@ -1,11 +1,12 @@
 
-import { Body, Controller, Get, HttpStatus, Param, Patch, Post, Put, Query, Res } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './DTO/create-book.dto';
-import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UpdateBookDto } from './DTO/update-book.dto';
-import { PaginationDto } from './DTO/Pagination.dto';
 import { Book } from './book.entity';
+import { PaginationFilterDto } from './DTO/pagination-filter.dto';
+
 
 @ApiTags('books')
 @Controller('books')
@@ -35,14 +36,14 @@ export class BooksController {
   async disableBook(@Param('bookCode') bookCode: number) {
     return await this.booksService.disableBook(bookCode);
   }
-
+ 
   @Get()
-  @ApiOperation({ })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Número de página' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Cantidad de libros por página' })
-  @ApiResponse({ status: 200, description: 'Lista de libros paginada', type: [Book] })
-  async findAll(@Query() paginationDto: PaginationDto) {
-    return await this.booksService.findAll(paginationDto);
+  @ApiOperation({ summary: 'Obtener libros con paginación y filtros' })
+  @ApiResponse({ status: 200, description: 'Lista de libros paginada y filtrada', type: [Book] })
+  @ApiResponse({ status: 400, description: 'Parámetros inválidos' })
+  async findAll(@Query() paginationFilterDto: PaginationFilterDto) {
+    return await this.booksService.findAll(paginationFilterDto);
   }
 }
+
 

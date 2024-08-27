@@ -43,20 +43,21 @@ export class Book {
     BookConditionRating:number;
 
     @Column()
-    @ApiProperty({ description: 'Número de estante donde se encuentra el libro' })
-    ShelfNumber:number;
-
-    @Column()
     @ApiProperty({ description: 'Código de firma' })
     SignatureCode:string;
 
     @Column()
     @ApiProperty({ description: 'Código de inscripción' })
-    InscriptionCode:number;
+    InscriptionCode:string;
 
     @Column()
-    @ApiProperty({ description: 'Indica si el libro está reservado' })
-    Reserva :boolean;
+    @ApiProperty({ description: 'Indica si el libro se puede está reservar' })
+    ReserveBook:boolean;
+
+    @Column()
+    @ApiProperty({ description: 'Observaciones' })
+    Observations :string;
+
     @Column()
     @ApiProperty({ description: 'Indica si esta deshabilitado' })
     Status :boolean;
