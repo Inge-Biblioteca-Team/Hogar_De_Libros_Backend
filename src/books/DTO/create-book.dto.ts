@@ -24,7 +24,7 @@ export class CreateBookDto {
   PublishedYear: number;
   
   @ApiProperty({ example: '9977-30-347-9' })
-  @IsNumber()
+  @IsString()
   ISBN: string;
    
   @ApiProperty({ example: 'Obras Literarias' })
@@ -42,7 +42,7 @@ export class CreateBookDto {
 
 
   @ApiProperty({ example: '4' })
-  @IsNumber()
+  @IsString()
   SignatureCode:string;
 
   
@@ -55,7 +55,7 @@ export class CreateBookDto {
   ReserveBook :boolean;
   
   @ApiProperty({ example: 'no ' })
-  @IsBoolean()
+  @IsString()
   Observations :string;
 
   @ApiProperty({ example: 'si ' })
