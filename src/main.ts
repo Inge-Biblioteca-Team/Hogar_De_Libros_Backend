@@ -5,6 +5,11 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: false });
+
+  app.enableCors({
+    origin: '*',
+  });
+  
   const config = new DocumentBuilder()
     .setTitle('Books API')
     .setDescription('API for managing books')
@@ -12,14 +17,16 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-  
+
   //console.log(`Swagger está disponible en http://localhost:3000`);
-  app.useGlobalPipes(new ValidationPipe({
-    transformOptions: {
-      enableImplicitConversion: true
-    }
-  }));
-  
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
+
   await app.listen(3000);
 }
 bootstrap();

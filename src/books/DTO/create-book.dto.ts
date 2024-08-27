@@ -47,19 +47,19 @@ export class CreateBookDto {
 
   
   @ApiProperty({ example: '683251' })
-  @IsNumber()
+  @IsString()
   InscriptionCode:string;
 
   @ApiProperty({ example: 'no ' })
   @IsBoolean()
   ReserveBook :boolean;
   
-  @ApiProperty({ example: 'no ' })
+  @ApiProperty({ example: 'N/A ' })
   @IsString()
   Observations :string;
 
-  @ApiProperty({ example: 'si ' })
+  @ApiProperty({ example: 'si ', default:true })
   @IsBoolean()
-  Status :boolean;
+  Status :boolean =true;
 
 }
