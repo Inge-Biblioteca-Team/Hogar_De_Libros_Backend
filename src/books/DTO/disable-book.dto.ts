@@ -4,5 +4,5 @@ import { IsBoolean } from "class-validator";
 export class DisableBookDto {
     @ApiProperty()
     @IsBoolean()
-   Status: boolean;
+    Status: boolean;
   }

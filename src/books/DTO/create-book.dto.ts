@@ -8,7 +8,6 @@ export class CreateBookDto {
   @IsNotEmpty()
   Title: string;
 
-  
 
   @ApiProperty({ example: 'Anonimo' })
   @IsString()
@@ -40,9 +39,7 @@ export class CreateBookDto {
   @IsNumber()
   BookConditionRating: number;
 
-  @ApiProperty({ example: '4' })
-  @IsNumber()
-  ShelfNumber: number;
+
 
   @ApiProperty({ example: '4' })
   @IsNumber()
@@ -51,11 +48,15 @@ export class CreateBookDto {
   
   @ApiProperty({ example: '683251' })
   @IsNumber()
-  InscriptionCode:number;
+  InscriptionCode:string;
 
   @ApiProperty({ example: 'no ' })
   @IsBoolean()
-  Reserva :boolean;
+  ReserveBook :boolean;
+  
+  @ApiProperty({ example: 'no ' })
+  @IsBoolean()
+  Observations :string;
 
   @ApiProperty({ example: 'si ' })
   @IsBoolean()
