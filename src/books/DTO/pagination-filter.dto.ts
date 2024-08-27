@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsBoolean, IsInt, IsOptional, IsString, Min } from "class-validator";
+import { IsBoolean, IsInt, IsNumber, IsOptional, IsString, Min } from "class-validator";
 
 export class PaginationFilterDto {
     @ApiPropertyOptional({ description: 'Número de página', default: 1 })
@@ -34,7 +34,7 @@ export class PaginationFilterDto {
   
     @ApiPropertyOptional({ description: 'Filtrar por Estado (habilitado o deshabilitado)', default: true })
     @IsOptional()
-    @IsString()
+    @IsNumber()
     @Type(() => Boolean)
-    Status?: string;
+    Status: number;
   }

@@ -77,7 +77,7 @@ export class BooksService {
     }
 
     if (Status !== undefined) {
-      const statusValue = Status === 'true' ? 1 : 0;
+      const statusValue = Status ;
       query.andWhere('book.Status = :Status', { Status: statusValue });
     }
 
