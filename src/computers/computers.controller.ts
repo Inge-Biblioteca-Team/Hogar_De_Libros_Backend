@@ -7,130 +7,68 @@ import {
   Post,
   Put,
   Query,
+
 } from '@nestjs/common';
 import { ComputersService } from './computers.service';
 import { ComputerDTO } from './DTO/create-computer.dto';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ModifyComputerDTO } from './DTO/modify-computer.dto';
+import { Computer } from './computer.entity';
 import { PaginationQueryDTO } from './DTO/pagination-querry.dto';
-import { ComputerModifyDTO } from './DTO/modify-computer.dto';
+
+
+
 
 @ApiTags('computers')
 @Controller('computers')
 export class ComputersController {
   constructor(private computerService: ComputersService) {}
-  // controlador para crear un equipo de cómputo
-  @Post()
-  @ApiOperation({ summary: 'Create a new Computer equipment' })
-  @ApiResponse({
-    status: 201,
-    description: 'The Computer equipment has been successfully created.',
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  addComputer(@Body() computerDTO: ComputerDTO) {
-    return this.computerService.addComputer(computerDTO);
-  }
 
-  // controlador para ver todos los equipos de cómputo activos
-  @Get('active')
-  @ApiOperation({ summary: 'Find all activated Computer equipment' })
-  @ApiResponse({
-    status: 201,
-    description: 'The Computer equipments has been successfully found.',
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiQuery({ name: 'Limit', required: false, type: Number })
-  @ApiQuery({ name: 'Offset', required: false, type: Number })
-  getComputersActive(@Query() pagination: PaginationQueryDTO) {
-    return this.computerService.getActiveComputers(pagination);
-  }
-
-  // controlador para ver todos los equipos de cómputo.
-  @Get()
-  @ApiOperation({ summary: 'Find all Computer equipment' })
-  @ApiResponse({
-    status: 201,
-    description: 'The Computer equipments has been successfully finded.',
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiQuery({ name: 'Limit', required: false, type: Number })
-  @ApiQuery({ name: 'Offset', required: false, type: Number })
-  getComputers(@Query() pagination: PaginationQueryDTO) {
-    return this.computerService.getComputers(pagination);
-  }
-
-  // controlador para modificar un equipo de cómputo
-  @Put(':EquipmentUniqueCode')
-  @ApiOperation({ summary: 'Modify a Computer equipment' })
-  @ApiResponse({
-    status: 201,
-    description: 'The Computer equipment has been successfully Modifyed.',
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  modifyComputer(
-    @Param('EquipmentUniqueCode') EquipmentUniqueCode: number,
-    @Body() computerModifyDTO: ComputerModifyDTO,
-  ) {
-    return this.computerService.modifyComputer(
-      EquipmentUniqueCode,
-      computerModifyDTO,
-    );
-  }
-
-  // controlador para deshabilitar un equipo de cómputo
-  @Patch(':EquipmentUniqueCode')
-  @ApiOperation({ summary: 'Inactivates a computer equipment ' })
-  @ApiResponse({
-    status: 201,
-    description: 'The Computer equipment has been successfully inactivated.',
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  DisableEquipment(@Param('EquipmentUniqueCode') EquipmentUniqueCode: number) {
-    return this.computerService.DisableEquipment(EquipmentUniqueCode);
-  }
-
-  // controlador para buscar un equipo de cómputo por su código único
-  @Get(':EquipmentUniqueCode')
-  @ApiOperation({ summary: 'Find a Computer equipment by his unique code' })
-  @ApiResponse({
-    status: 201,
-    description: 'The Computer equipment has been successfully Finded.',
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  FindById(@Param('EquipmentUniqueCode') EquipmentUniqueCode: number) {
-    return this.computerService.FindById(EquipmentUniqueCode);
-  }
-
-  // controlador para buscar un equipo de cómputo por su número de máquina
-  @Get('machine/:MachineNumber')
-  @ApiOperation({ summary: 'Find a Computer equipment by machine number' })
-  @ApiResponse({
-    status: 201,
-    description: 'The Computer equipments has been successfully Finded.',
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiQuery({ name: 'Limit', required: false, type: Number })
-  @ApiQuery({ name: 'Offset', required: false, type: Number })
-  async FindByMachineNumber(
-    @Param('MachineNumber') MachineNumber: number,
-    @Query() pagination: PaginationQueryDTO,
-  ) {
-    return this.computerService.FindByMachineNumber(MachineNumber, pagination);
-  }
-
-  // controlador para buscar un equipo de cómputo por su marca
-  @Get('brand/:EquipmentBrand')
-  @ApiOperation({ summary: 'Find a Computer equipment by brand' })
-  @ApiResponse({
-    status: 201,
-    description: 'The Computer equipments has been successfully Finded.',
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiQuery({ name: 'Limit', required: false, type: Number })
-  @ApiQuery({ name: 'Offset', required: false, type: Number })
-  async FindByBrand(
-    @Param('EquipmentBrand') EquipmentBrand: string,
-    @Query() pagination: PaginationQueryDTO,
-  ) {
-    return this.computerService.FindByBrand(EquipmentBrand, pagination);
-  }
+@Post()
+@ApiBody({type: ComputerDTO})
+@ApiOperation({ summary: 'Create a new Computer equipment' })
+@ApiResponse({
+  status: 201, description: 'The Computer equipment has been successfully created.',
+type : ComputerDTO})
+addComputer(@Body() computerDTO: ComputerDTO) : Promise<ComputerDTO> {
+  return  this.computerService.addComputer(computerDTO);
 }
+
+//controlador de modificación de un equipo de cómputo
+@Put(':EquipmentUniqueCode')
+@ApiOperation({ summary: 'Modify a Computer equipment' })
+@ApiResponse({status: 201,description: 'The Computer equipment has been successfully Modifyed.'})
+ async modifyComputer(
+  @Param('EquipmentUniqueCode') EquipmentUniqueCode: number,
+  @Body() modifyComputerDTO : ModifyComputerDTO
+) {
+  return await this.computerService.modifyComputer(
+    EquipmentUniqueCode,
+    modifyComputerDTO,
+  );
+}
+
+//metodo desabilitar un equipo de cómputo
+@Patch(':EquipmentUniqueCode')
+  @ApiOperation({ summary: 'Inactivates a computer equipment ' })
+  @ApiResponse({status: 201,description: 'The Computer equipment has been successfully inactivated.'})
+ async DisableEquipment(@Param('EquipmentUniqueCode') EquipmentUniqueCode: number) {
+    return await this.computerService.DisableEquipment(EquipmentUniqueCode);
+    
+  }
+
+
+  //método para ver todo con filtro y paginado
+
+@Get()
+@ApiOperation({ summary: 'get all equipments and filters' })
+@ApiResponse({ status: 200, description: 'List of equipments computer, filters and pager',
+   type: [Computer] })
+async getAllComputers(@Query() paginationDTO: PaginationQueryDTO ) {
+  return await this.computerService.getAllComputers(paginationDTO)
+}
+
+}
+
+
+

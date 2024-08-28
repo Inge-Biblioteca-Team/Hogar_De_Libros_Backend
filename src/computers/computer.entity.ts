@@ -35,16 +35,16 @@ export class Computer {
   @ApiProperty({ description: 'Categoría del equipo de cómputo' })
   EquipmentCategory: string;
 
-  @Column({ default: 'Activo' })
+  @Column()
   @ApiProperty({
     description: 'Estado del equipo de codigos (si esta de baja o no)',
   })
-  EquipmentStatus: string;
+  Status: boolean;
 
-  @Column({ default: 'Disponible' })
+  @Column()
   @ApiProperty({
     description:
       'disponibilidad de préstamo del equipo de codigos (si se puede o no prestar)',
   })
-  LoanStatus: string;
+  LoanStatus: boolean;
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class ComputerDTO {
   @ApiProperty({ example: 7 })
@@ -32,13 +32,11 @@ export class ComputerDTO {
   @IsNotEmpty()
   EquipmentCategory: string;
 
-  
-  @IsString()
-  @IsOptional()
-  EquipmentStatus: string;
+  @ApiProperty({example: true})
+  @IsBoolean()
+  Status: boolean;
 
-  
-  @IsString()
-  @IsOptional()
-  LoanStatus: string;
+  @ApiProperty({ example: true })
+  @IsBoolean()
+  LoanStatus: boolean;
 }
