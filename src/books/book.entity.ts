@@ -60,5 +60,5 @@ export class Book {
 
     @Column()
     @ApiProperty({ description: 'Indica si esta deshabilitado' })
-    Status :boolean;
+    Status :boolean=true;
   }
