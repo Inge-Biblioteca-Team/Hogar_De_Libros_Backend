@@ -36,7 +36,7 @@ export class ComputerDTO {
   @IsBoolean()
   Status: boolean;
 
-  @ApiProperty({ example: false })
+  @ApiProperty({ example: true })
   @IsBoolean()
   LoanStatus: boolean;
 }

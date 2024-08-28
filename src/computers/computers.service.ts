@@ -75,7 +75,7 @@ export class ComputersService {
         EquipmentCategory,
       });
     }
-    if (Status) {
+    if (Status !== undefined) {
       query.andWhere('computer.Status = :Status', {
         Status,
       });
