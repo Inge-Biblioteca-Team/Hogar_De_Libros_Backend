@@ -37,14 +37,13 @@ export class Computer {
 
   @Column()
   @ApiProperty({
-    description: 'Estado del equipo de codigos (si esta de baja o no)',
-  })
-  Status: boolean;
+    description: 'Estado del equipo de codigos (si esta de baja o no)',default:true})
+  Status: boolean =true;
 
   @Column()
   @ApiProperty({
     description:
-      'disponibilidad de préstamo del equipo de codigos (si se puede o no prestar)',
+      'disponibilidad de préstamo del equipo de codigos (si se puede o no prestar)',default:true
   })
-  LoanStatus: boolean;
+  LoanStatus: boolean =true;
 }

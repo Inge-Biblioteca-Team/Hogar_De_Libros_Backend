@@ -18,6 +18,18 @@ export class ComputersService {
     return this.computerRepository.save(newComputer);
   }
 
+  async findByEquipmentUniqueCode(EquipmentUniqueCode: number): Promise<Computer> {
+
+    const computer = await this.computerRepository.findOne({ where: { EquipmentUniqueCode } });
+
+    
+    if (!computer) {
+        throw new NotFoundException(`El equipo de cómputo con código ${EquipmentUniqueCode} no fue encontrado`);
+    }
+
+    // Devuelve el equipo encontrado
+    return computer;
+}
   // método para modificar un equipo de cómputo
   async modifyComputer(
     EquipmentUniqueCode: number,
@@ -28,6 +40,7 @@ export class ComputersService {
       modifyComputerDTO,
     );
   }
+
 
   // método para inactivar un equipo de cómputo
   async DisableEquipment(EquipmentUniqueCode: number): Promise<Computer> {
@@ -66,9 +79,7 @@ export class ComputersService {
       });
     }
     if (EquipmentBrand) {
-      query.andWhere('computer.EquipmentBrand = :EquipmentBrand', {
-        EquipmentBrand,
-      });
+      query.andWhere('computer.EquipmentBrand  LIKE :EquimentBrand', { EquipmentBrand: `%${EquipmentBrand}%` });
     }
     if (EquipmentCategory) {
       query.andWhere('computer.EquipmentCategory = :EquipmentCategory', {
