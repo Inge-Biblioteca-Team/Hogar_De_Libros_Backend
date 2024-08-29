@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -11,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ComputersService } from './computers.service';
 import { ComputerDTO } from './DTO/create-computer.dto';
-import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiProperty, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ModifyComputerDTO } from './DTO/modify-computer.dto';
 import { Computer } from './computer.entity';
 import { PaginationQueryDTO } from './DTO/pagination-querry.dto';
@@ -33,6 +34,16 @@ type : ComputerDTO})
 addComputer(@Body() computerDTO: ComputerDTO) : Promise<ComputerDTO> {
   return  this.computerService.addComputer(computerDTO);
 }
+@Get(': EquipmentUniqueCode')
+@ApiProperty({ description: 'Obtiene un equipo de cómputo  por su código' })
+async findById(@Param(' EquipmentUniqueCode') EquipmentUniqueCode: number): Promise<Computer> {
+  try {
+    return await this.computerService.findByEquipmentUniqueCode(EquipmentUniqueCode);
+  } catch (error) {
+    throw new NotFoundException(error.message);
+  }
+}
+
 
 //controlador de modificación de un equipo de cómputo
 @Put(':EquipmentUniqueCode')
