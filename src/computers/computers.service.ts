@@ -19,10 +19,7 @@ export class ComputersService {
   }
 
   async findByEquipmentUniqueCode(EquipmentUniqueCode: number): Promise<Computer> {
-
     const computer = await this.computerRepository.findOne({ where: { EquipmentUniqueCode } });
-
-    
     if (!computer) {
         throw new NotFoundException(`El equipo de cómputo con código ${EquipmentUniqueCode} no fue encontrado`);
     }
@@ -40,8 +37,6 @@ export class ComputersService {
       modifyComputerDTO,
     );
   }
-
-
   // método para inactivar un equipo de cómputo
   async DisableEquipment(EquipmentUniqueCode: number): Promise<Computer> {
     const Equipment = await this.computerRepository.findOne({
