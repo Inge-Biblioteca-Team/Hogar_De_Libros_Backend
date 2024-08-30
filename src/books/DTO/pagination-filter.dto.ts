@@ -9,10 +9,7 @@ import {
   Min,
 } from 'class-validator';
 
-export enum BookStatus {
-  Enabled = 'enabled',
-  Disabled = 'disabled',
-}
+
 
 export class PaginationFilterDto {
   @ApiPropertyOptional({ description: 'Número de página', default: 1 })
@@ -63,5 +60,18 @@ export class PaginationFilterDto {
   @ApiPropertyOptional({ description: 'Filtrar por Categoría del Estante' })
   @IsOptional()
   @IsString()
-  ShelfCategory?: string; 
+  ShelfCategory?: string;
+
+  @ApiPropertyOptional({ description: 'Filtrar por Año de publicación' })
+  @IsOptional()
+  @IsNumber()
+  PublishedYear?: number;
+  
+
+    @ApiPropertyOptional({ description: 'Filtrar por Editorial del libro' })
+    @IsOptional()
+    @IsString()
+    Editorial: string;
+
+
 }

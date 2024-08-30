@@ -34,16 +34,15 @@ type : ComputerDTO})
 addComputer(@Body() computerDTO: ComputerDTO) : Promise<ComputerDTO> {
   return  this.computerService.addComputer(computerDTO);
 }
-@Get(': EquipmentUniqueCode')
+@Get(':EquipmentUniqueCode')
 @ApiProperty({ description: 'Obtiene un equipo de cómputo  por su código' })
-async findById(@Param(' EquipmentUniqueCode') EquipmentUniqueCode: number): Promise<Computer> {
+async findById(@Param('EquipmentUniqueCode') EquipmentUniqueCode: number): Promise<Computer> {
   try {
     return await this.computerService.findByEquipmentUniqueCode(EquipmentUniqueCode);
   } catch (error) {
     throw new NotFoundException(error.message);
   }
 }
-
 
 //controlador de modificación de un equipo de cómputo
 @Put(':EquipmentUniqueCode')
@@ -67,10 +66,7 @@ async findById(@Param(' EquipmentUniqueCode') EquipmentUniqueCode: number): Prom
     return await this.computerService.DisableEquipment(EquipmentUniqueCode);
     
   }
-
-
   //método para ver todo con filtro y paginado
-
 @Get()
 @ApiOperation({ summary: 'get all equipments and filters' })
 @ApiResponse({ status: 200, description: 'List of equipments computer, filters and pager',

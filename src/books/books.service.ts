@@ -88,7 +88,10 @@ export class BooksService {
       ISBN,
       Author,
       SignatureCode,
-      Status,ShelfCategory
+      Status,
+      ShelfCategory,
+      PublishedYear,
+      Editorial
     } = PaginationFilterDto;
 
     const query = this.bookRepository.createQueryBuilder('book');
@@ -119,7 +122,17 @@ export class BooksService {
         ShelfCategory: `%${ShelfCategory}%`,
       });
     }
-
+    if (PublishedYear) {
+      query.andWhere('book.PublishedYear = :PublishedYear', {
+        PublishedYear,
+      });
+    }
+  
+    if (Editorial) {
+      query.andWhere('book.Editorial = :Editorial', {
+        Editorial,
+      });
+    }
     query.skip((page - 1) * limit).take(limit);
 
     const [data, count] = await query.getManyAndCount();
@@ -130,3 +143,5 @@ export class BooksService {
     };
   }
 }
+
+
