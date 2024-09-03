@@ -1,15 +1,7 @@
+/* eslint-disable prettier/prettier */
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsBoolean,
-  IsInt,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
-
-
+import { IsInt, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class PaginationFilterDto {
   @ApiPropertyOptional({ description: 'Número de página', default: 1 })
@@ -50,8 +42,7 @@ export class PaginationFilterDto {
   SignatureCode?: string;
 
   @ApiPropertyOptional({
-    description: 'Filtrar por Estado (habilitado o deshabilitado)',
-    default: true,
+    description: 'Filtrar por Estado (habilitado o deshabilitado)'
   })
   @IsNumber()
   @IsOptional()
@@ -66,12 +57,9 @@ export class PaginationFilterDto {
   @IsOptional()
   @IsNumber()
   PublishedYear?: number;
-  
 
-    @ApiPropertyOptional({ description: 'Filtrar por Editorial del libro' })
-    @IsOptional()
-    @IsString()
-    Editorial: string;
-
-
+  @ApiPropertyOptional({ description: 'Filtrar por Editorial del libro' })
+  @IsOptional()
+  @IsString()
+  Editorial: string;
 }

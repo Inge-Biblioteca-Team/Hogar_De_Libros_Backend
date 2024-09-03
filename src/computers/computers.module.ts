@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { ComputersController } from './computers.controller';
 import { ComputersService } from './computers.service';

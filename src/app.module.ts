@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -12,16 +13,18 @@ import { ComputerLoanModule } from './computer-loan/computer-loan.module';
 import { BookLoan } from './book-loan/book-loan.enity';
 import { ComputerLoan } from './computer-loan/computer-loan.entity';
 import { User } from './user/user.entity';
+import * as dotenv from 'dotenv';
 
+dotenv.config();
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'hogar_de_libros',
+      host: process.env.DB_HOST,
+      port: +process.env.DB_PORT,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
       entities: [Book, Computer, BookLoan, ComputerLoan, User],
       synchronize: true,
     }),

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { BookLoanController } from './book-loan.controller';
 import { BookLoanService } from './book-loan.service';

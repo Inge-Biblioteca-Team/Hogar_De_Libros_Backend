@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { Book } from './book.entity';
@@ -7,7 +8,6 @@ import { UpdateBookDto } from './DTO/update-book.dto';
 import { PaginationFilterDto } from './DTO/pagination-filter.dto';
 import { CreateBookDto } from './DTO/create-book.dto';
 import { EnableBookDto } from './DTO/enable-book.dto';
-
 
 @Injectable()
 export class BooksService {
@@ -36,7 +36,10 @@ export class BooksService {
 
     return this.bookRepository.save(book);
   }
-  async enableBook(bookCode: number, enableBookDto: EnableBookDto): Promise<Book> {
+  async enableBook(
+    bookCode: number,
+    enableBookDto: EnableBookDto,
+  ): Promise<Book> {
     const book = await this.bookRepository.findOne({
       where: { BookCode: bookCode },
     });
@@ -47,7 +50,6 @@ export class BooksService {
       );
     }
 
-    
     book.Status = enableBookDto.Status;
 
     return await this.bookRepository.save(book);
@@ -63,17 +65,17 @@ export class BooksService {
       );
     }
 
-    
     book.Status = false;
     return this.bookRepository.save(book);
   }
 
-  
   async findById(BookCode: number): Promise<Book> {
     const book = await this.bookRepository.findOne({ where: { BookCode } });
 
     if (!book) {
-      throw new NotFoundException(`El libro con código ${BookCode} no fue encontrado`);
+      throw new NotFoundException(
+        `El libro con código ${BookCode} no fue encontrado`,
+      );
     }
 
     return book;
@@ -91,17 +93,17 @@ export class BooksService {
       Status,
       ShelfCategory,
       PublishedYear,
-      Editorial
+      Editorial,
     } = PaginationFilterDto;
 
     const query = this.bookRepository.createQueryBuilder('book');
 
     if (Title) {
-      query.andWhere('book.Title Like :Title', { Title:`%${Title}%`});
-      }
+      query.andWhere('book.Title Like :Title', { Title: `%${Title}%` });
+    }
 
     if (ISBN) {
-    query.andWhere('book.ISBN Like :ISBN', { ISBN:`%${ISBN}%`});
+      query.andWhere('book.ISBN Like :ISBN', { ISBN: `%${ISBN}%` });
     }
 
     if (Author) {
@@ -110,7 +112,8 @@ export class BooksService {
 
     if (SignatureCode) {
       query.andWhere('book.SignatureCode LIKE :SignatureCode', {
-        SignatureCode: `%${SignatureCode }%` });
+        SignatureCode: `%${SignatureCode}%`,
+      });
     }
 
     if (Status !== undefined) {
@@ -127,14 +130,14 @@ export class BooksService {
         PublishedYear,
       });
     }
-  
+
     if (Editorial) {
-      query.andWhere('book.Editorial = :Editorial', {
+      query.andWhere('book.Editorial LIKE :Editorial', {
         Editorial,
       });
     }
     query.skip((page - 1) * limit).take(limit);
-
+    query.orderBy('book.bookCode', 'DESC');
     const [data, count] = await query.getManyAndCount();
 
     return {
@@ -143,5 +146,3 @@ export class BooksService {
     };
   }
 }
-
-

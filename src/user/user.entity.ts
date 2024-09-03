@@ -1,11 +1,12 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { BookLoan } from 'src/book-loan/book-loan.enity';
 import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'User' })
+@Entity({ name: 'users' }) 
 export class User {
-  @ApiProperty({ description: 'Id unico del usuario' })
+  @ApiProperty({ description: 'Id único del usuario' })
   @PrimaryGeneratedColumn()
   UserId: number;
 
@@ -23,7 +24,7 @@ export class User {
 
   @ApiProperty({ description: 'Número de teléfono del usuario' })
   @Column()
-  PhoneNumber: number;
+  PhoneNumber: string;
 
   @ApiProperty({ description: 'Provincia donde vive el usuario' })
   @Column()
@@ -37,7 +38,7 @@ export class User {
   @Column()
   Gender: string;
 
-  @ApiProperty({ description: 'Dirreción de residencia del usuario' })
+  @ApiProperty({ description: 'Dirección de residencia del usuario' })
   @Column()
   Address: string;
 
@@ -49,19 +50,18 @@ export class User {
   @Column()
   Password: string;
 
-  @ApiProperty({ description: 'Fecha de regisro del usuario' })
+  @ApiProperty({ description: 'Fecha de registro del usuario' })
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
   RegisterDate: Date;
 
-  @ApiProperty({ description: 'Número de teléfono del usuario' })
+  @ApiProperty({ description: 'Aceptación de términos y condiciones' })
   @Column()
-  AccpetTermsAndConditions: boolean;
+  AcceptTermsAndConditions: boolean;
 
   // Relaciones
-
-  @OneToMany(() => BookLoan, (bookLoan) => bookLoan.BookLoanId)
+  @OneToMany(() => BookLoan, bookLoan => bookLoan.user)
   bookLoan: BookLoan[];
 
-  @OneToMany(() => ComputerLoan, computerLoan => computerLoan.ComputerLoanId)
+  @OneToMany(() => ComputerLoan, computerLoan => computerLoan.user)
   computerLoan: ComputerLoan[];
 }

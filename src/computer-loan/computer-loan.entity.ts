@@ -1,19 +1,20 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { Computer } from 'src/computers/computer.entity';
 import { User } from 'src/user/user.entity';
-import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'ComputerLoan' })
+@Entity({ name: 'computer_loan' }) 
 export class ComputerLoan {
-  @ApiProperty({ description: 'Id unico del préstamo' })
-  @PrimaryColumn()
+  @ApiProperty({ description: 'Id único del préstamo' })
+  @PrimaryGeneratedColumn()  
   ComputerLoanId: number;
 
   @ApiProperty({ description: 'Fecha en la que se solicita el préstamo' })
   @Column()
   ComputerLoanReserveDate: Date;
 
-  @ApiProperty({ description: 'Fecha en la termina el préstamo' })
+  @ApiProperty({ description: 'Fecha en la que termina el préstamo' })
   @Column()
   ComputerLoanExpireDate: Date;
 
@@ -22,10 +23,9 @@ export class ComputerLoan {
   Status: string;
 
   // Relaciones
-
-  @OneToMany(() => Computer, computer => computer.MachineNumber)
+  @OneToMany(() => Computer, computer => computer.computerLoan)
   Computers: Computer[];
 
-  @ManyToOne(() => User, user => user.UserId)
+  @ManyToOne(() => User, user => user.computerLoan)
   user: User;
 }

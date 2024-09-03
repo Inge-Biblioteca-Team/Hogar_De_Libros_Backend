@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDate, IsNotEmpty, IsNumber } from 'class-validator';
 
@@ -27,7 +28,7 @@ export class CreateBookLoanDto {
   LoanExpirationDate: Date;
 
   @ApiProperty({
-    example: 'Finalizado',
+    example: 'Finalizado ',
     description: 'Estado del préstamo',
   })
   Status: string;

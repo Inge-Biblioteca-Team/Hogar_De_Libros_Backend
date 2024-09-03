@@ -1,10 +1,12 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { Book } from 'src/books/book.entity';
 import { User } from 'src/user/user.entity';
-import { Column, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
+@Entity({ name: 'book_loans' }) 
 export class BookLoan {
-  @ApiProperty({ description: 'Id unico del préstamo' })
+  @ApiProperty({ description: 'Id único del préstamo' })
   @PrimaryGeneratedColumn()
   BookLoanId: number;
 
@@ -25,9 +27,9 @@ export class BookLoan {
   Status: string;
 
   // Relaciones
-  @OneToMany(()=> Book, book => book.BookCode)
+  @OneToMany(() => Book, book => book.bookLoan)
   Books: Book[];
 
-  @ManyToOne(()=> User, user => user.UserId)
-  user: User
+  @ManyToOne(() => User, user => user.bookLoan)
+  user: User;
 }

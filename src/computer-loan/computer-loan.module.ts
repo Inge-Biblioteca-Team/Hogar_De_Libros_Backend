@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { ComputerLoanController } from './computer-loan.controller';
 import { ComputerLoanService } from './computer-loan.service';
