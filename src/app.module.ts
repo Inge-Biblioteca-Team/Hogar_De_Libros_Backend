@@ -6,6 +6,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Book } from './books/book.entity';
 import { Computer } from './computers/computer.entity';
 import { ComputersModule } from './computers/computers.module';
+import { BookLoanModule } from './book-loan/book-loan.module';
+import { UserModule } from './user/user.module';
+import { ComputerLoanModule } from './computer-loan/computer-loan.module';
+
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -19,7 +23,7 @@ import { ComputersModule } from './computers/computers.module';
     synchronize: true
     
 
-   }), BooksModule, ComputersModule],
+   }), BooksModule, ComputersModule, BookLoanModule, UserModule, ComputerLoanModule],
   controllers: [AppController],
   providers: [AppService],
 })

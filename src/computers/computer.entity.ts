@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'computers' })
 export class Computer {
@@ -39,4 +40,9 @@ export class Computer {
   @ApiProperty({
     description: 'Estado del equipo de codigos (si esta de baja o no)',default:true})
   Status: boolean =true;
+
+  // Relaciones
+
+  @ManyToOne(() => ComputerLoan, computerLoan => computerLoan.ComputerLoanId)
+  ComputerLoan: ComputerLoan;
 }

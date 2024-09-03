@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BookLoan } from "src/book-loan/book-loan.enity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'books' })
 export class Book {
@@ -61,4 +62,10 @@ export class Book {
     @Column()
     @ApiProperty({ description: 'Indica si esta deshabilitado' })
     Status :boolean=true;
+
+    // relaciones
+
+    @ManyToOne(() => BookLoan, bookLoan => bookLoan.BookLoanId)
+    bookLoan: BookLoan;
+
   }
