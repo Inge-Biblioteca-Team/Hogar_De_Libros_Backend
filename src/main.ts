@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -18,7 +19,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  //console.log(`Swagger está disponible en http://localhost:3000`);
   app.useGlobalPipes(
     new ValidationPipe({
       transformOptions: {
@@ -26,7 +26,8 @@ async function bootstrap() {
       },
     }),
   );
-
+  
   await app.listen(3000);
+  console.log(`Swagger está disponible en http://localhost:3000/api`);
 }
 bootstrap();

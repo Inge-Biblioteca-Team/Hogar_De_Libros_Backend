@@ -1,5 +1,6 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsString } from "class-validator";
+import { IsBoolean} from "class-validator";
 
 export class DisableBookDto {
     @ApiProperty()

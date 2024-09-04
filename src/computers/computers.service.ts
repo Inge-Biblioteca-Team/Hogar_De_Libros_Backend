@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Computer } from './computer.entity';
@@ -74,7 +75,7 @@ export class ComputersService {
       });
     }
     if (EquipmentBrand) {
-      query.andWhere('computer.EquipmentBrand  LIKE :EquimentBrand', { EquipmentBrand: `%${EquipmentBrand}%` });
+      query.andWhere('computer.EquipmentBrand LIKE :EquipmentBrand', { EquipmentBrand: `%${EquipmentBrand}%` });
     }
     if (EquipmentCategory) {
       query.andWhere('computer.EquipmentCategory = :EquipmentCategory', {
@@ -88,6 +89,7 @@ export class ComputersService {
     }
 
     query.skip((Page - 1) * Limit).take(Limit);
+    query.orderBy('computer.EquipmentUniqueCode', 'DESC');
     const [data, count] = await query.getManyAndCount();
     return { data, count };
   }
