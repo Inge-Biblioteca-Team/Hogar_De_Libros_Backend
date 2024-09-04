@@ -1,4 +1,4 @@
-/* eslint-disable prettier/prettier */
+
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDate, IsNotEmpty, IsNumber } from 'class-validator';
 
@@ -8,7 +8,6 @@ export class CreateBookLoanDto {
     description: 'Fecha en la que se solicita el préstamo',
   })
   @IsDate()
-  @IsNotEmpty()
   LoanRequestDate: Date;
 
   @ApiProperty({
@@ -16,7 +15,6 @@ export class CreateBookLoanDto {
     description: 'Fecha en la que se recoge el libro',
   })
   @IsDate()
-  @IsNotEmpty()
   BookPickUpDate: Date;
 
   @ApiProperty({
