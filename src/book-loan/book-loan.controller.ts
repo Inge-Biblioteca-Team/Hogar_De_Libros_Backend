@@ -4,7 +4,6 @@ import { BookLoanService } from './book-loan.service';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateBookLoanDto } from './DTO/create-book-loan.dto';
 import { BookLoan } from './book-loan.enity';
-import { UpdateBookLoanStatusAcceptedDto } from './DTO/update-book-loan.dto';
 
 @ApiTags('booksLoan')
 @Controller('book-loan')
@@ -26,7 +25,6 @@ export class BookLoanController {
     @Patch(':bookLoanId/accept')
   @ApiOperation({ summary: 'Aceptar una solicitud de préstamo de libro' })
   @ApiParam({ name: 'bookLoanId', description: 'ID del préstamo de libro' })
-  @ApiBody({ type: UpdateBookLoanStatusAcceptedDto })
   @ApiResponse({
     status: 200,
     description: 'Solicitud de préstamo aceptada',
@@ -34,10 +32,9 @@ export class BookLoanController {
   })
   @ApiResponse({ status: 404, description: 'Préstamo de libro no encontrado' })
   async acceptBookLoan(
-    @Param('bookLoanId') bookLoanId: number,
-    @Body() updateBookLoanStatusAcceptedDto: UpdateBookLoanStatusAcceptedDto,
+    @Param('bookLoanId') bookLoanId: number
   ): Promise<BookLoan> {
-    return this.bookLoanService.acceptBookLoan(bookLoanId, updateBookLoanStatusAcceptedDto);
+    return this.bookLoanService.acceptBookLoan(bookLoanId);
   }
   
 }

@@ -3,7 +3,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsString } from "class-validator";
 
 export class UpdateBookLoanStatusAcceptedDto {
-    @ApiProperty({ description: 'Nuevo estado del préstamo', example: 'Aceptado' })
+    @ApiProperty({ description: 'Nuevo estado del préstamo', default:'En Proceso'})
     @IsString()
     Status: string;
    
