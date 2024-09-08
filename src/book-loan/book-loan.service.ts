@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BookLoan } from './book-loan.enity';
 import { Repository } from 'typeorm';
 import { CreateBookLoanDto } from './DTO/create-book-loan.dto';
+import { UpdateBookLoanStatusAcceptedDto } from './DTO/update-book-loan.dto';
 
 
 @Injectable()
@@ -20,7 +21,7 @@ export class BookLoanService {
 
       async acceptBookLoan(
         bookLoanId: number,
-        updateBookLoanStatusAccepetedDto: UpdateBookLoanStatusAccepetedDto,
+        updateBookLoanStatusAccepetedDto: UpdateBookLoanStatusAcceptedDto,
       ): Promise<BookLoan> {
         const bookLoan = await this.bookLoanRepository.findOne({ where: { BookLoanId: bookLoanId } });
     
@@ -28,14 +29,14 @@ export class BookLoanService {
           throw new NotFoundException(`Book loan with ID ${bookLoanId} not found`);
         }
     
-        bookLoan.Status = updateBookLoanStatusAcceptedDto.Status;
+        bookLoan.Status = updateBookLoanStatusAccepetedDto.Status;
     
         return await this.bookLoanRepository.save(bookLoan);
       }
 
       async InProcessBookLoan(
         bookLoanId: number,
-        updateBookLoanStatusDto: UpdateBookLoanStatusDto,
+        updateBookLoanStatusDto: UpdateBookLoanStatusAcceptedDto,
       ): Promise<BookLoan> {
         const bookLoan = await this.bookLoanRepository.findOne({ where: { BookLoanId: bookLoanId } });
     

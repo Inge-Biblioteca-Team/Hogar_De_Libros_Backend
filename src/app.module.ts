@@ -16,18 +16,20 @@ import { User } from './user/user.entity';
 import { BookChildrenModule } from './book-children/book-children.module';
 import * as dotenv from 'dotenv';
 import { BooksChildren } from './book-children/book-children.entity';
+import { FilesModule } from './files/files.module';
 
 dotenv.config();
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host:'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'hogar_de_libros',
-      entities: [Book, Computer, BookLoan, ComputerLoan, User,BooksChildren],
+      host: process.env.DB_HOST,
+      port: +process.env.DB_PORT,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
+      entities: [Book, Computer, BookLoan, ComputerLoan, User, BooksChildren],
       synchronize: true,
     }),
     BooksModule,
@@ -36,6 +38,7 @@ dotenv.config();
     UserModule,
     ComputerLoanModule,
     BookChildrenModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
