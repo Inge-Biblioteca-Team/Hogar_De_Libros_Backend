@@ -28,7 +28,7 @@ export class BookLoan {
 
   @ApiProperty({ description: 'Observaciones ' })
   @Column()
-  Observations: string;
+  Observations: string ="";
 
 
   // Relaciones

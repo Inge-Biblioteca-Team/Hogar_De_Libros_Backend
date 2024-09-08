@@ -43,14 +43,15 @@ export class BookLoanController {
       }
       return updatedBookLoan;
     }
-    @Patch(':id/accept')
-  async acceptBookLoan(@Param('id') bookLoanId: number): Promise<BookLoan> {
-    const updatedBookLoan = await this.bookLoanService.acceptBookLoan(bookLoanId);
-    if (!updatedBookLoan) {
-      throw new NotFoundException(`Préstamo de libro con ID ${bookLoanId} no encontrado`);
+    
+    @Patch(':id/reject')
+    async rejectBookLoan(@Param('id') bookLoanId: number): Promise<BookLoan> {
+      const updatedBookLoan = await this.bookLoanService.rejectBookLoan(bookLoanId);
+      if (!updatedBookLoan) {
+        throw new NotFoundException(`Préstamo de libro con ID ${bookLoanId} no encontrado`);
+      }
+      return updatedBookLoan;
     }
-    return updatedBookLoan;
-  }
 
   @Patch(':id')
   async update(

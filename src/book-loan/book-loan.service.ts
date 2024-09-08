@@ -28,7 +28,7 @@ export class BookLoanService {
             throw new NotFoundException(`Book loan with ID ${bookLoanId} not found`);
         }
     
-        bookLoan.Status = 'En proceso';
+        bookLoan.Status = 'En progreso';
     
         return await this.bookLoanRepository.save(bookLoan);
     }
@@ -46,15 +46,16 @@ export class BookLoanService {
   
       return await this.bookLoanRepository.save(bookLoan);
   }
-  async acceptBookLoan(bookLoanId: number): Promise<BookLoan> {
+  async rejectBookLoan(bookLoanId: number): Promise<BookLoan> {
     const bookLoan = await this.bookLoanRepository.findOne({ where: { BookLoanId: bookLoanId } });
-
+  
     if (!bookLoan) {
       throw new NotFoundException(`Préstamo de libro con ID ${bookLoanId} no encontrado`);
     }
-
-    bookLoan.Status = 'Aceptado';
-
+  
+    // Cambiar el estado a "Reprobado"
+    bookLoan.Status = 'Reprobado';
+  
     return await this.bookLoanRepository.save(bookLoan);
   }
    
