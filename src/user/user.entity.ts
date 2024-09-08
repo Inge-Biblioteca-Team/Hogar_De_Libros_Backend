@@ -8,7 +8,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 export class User {
   @ApiProperty({ description: 'Id único del usuario' })
   @PrimaryGeneratedColumn()
-  UserId: number;
+  Cedula: number;
 
   @ApiProperty({ description: 'Correo electrónico del usuario' })
   @Column({ unique: true })

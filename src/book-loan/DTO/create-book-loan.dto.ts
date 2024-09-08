@@ -26,12 +26,6 @@ export class CreateBookLoanDto {
   LoanExpirationDate: Date;
 
   @ApiProperty({
-    example: 'Finalizado ',
-    description: 'Estado del préstamo',
-  })
-  Status: string;
-
-  @ApiProperty({
     example: 1,
     description: 'Id unico del libro que se va prestar',
   })
@@ -45,5 +39,5 @@ export class CreateBookLoanDto {
   })
   @IsNumber()
   @IsNotEmpty()
-  UserId: number;
+  Cedula: number;
 }
