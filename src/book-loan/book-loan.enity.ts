@@ -24,7 +24,7 @@ export class BookLoan {
 
   @ApiProperty({ description: 'Estado en el cual se encuentra el préstamo' })
   @Column()
-  Status: string;
+  Status: string = "Pendiente";
 
   @ApiProperty({ description: 'Observaciones ' })
   @Column()
