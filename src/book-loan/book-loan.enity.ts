@@ -26,6 +26,11 @@ export class BookLoan {
   @Column()
   Status: string;
 
+  @ApiProperty({ description: 'Observaciones ' })
+  @Column()
+  Observations: string;
+
+
   // Relaciones
   @OneToMany(() => Book, book => book.bookLoan)
   Books: Book[];
