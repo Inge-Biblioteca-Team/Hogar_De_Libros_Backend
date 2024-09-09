@@ -60,7 +60,7 @@ export class User {
 
   // Relaciones
   @OneToMany(() => BookLoan, bookLoan => bookLoan.user)
-  bookLoan: BookLoan[];
+  bookLoans: BookLoan[];
 
   @OneToMany(() => ComputerLoan, computerLoan => computerLoan.user)
   computerLoan: ComputerLoan[];

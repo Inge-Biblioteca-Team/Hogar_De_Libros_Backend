@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { BookLoan } from 'src/book-loan/book-loan.enity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'books' })
 export class Book {
@@ -62,7 +62,9 @@ export class Book {
   Status: boolean = true;
 
   // relaciones
+  @OneToMany(() => BookLoan, bookLoan => bookLoan.book)
+  bookLoans: BookLoan[];
 
-  @ManyToOne(() => BookLoan, (bookLoan) => bookLoan.Books)
-  bookLoan: BookLoan;
+  
+ 
 }
