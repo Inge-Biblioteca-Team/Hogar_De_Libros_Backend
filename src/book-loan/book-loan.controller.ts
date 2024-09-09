@@ -1,11 +1,12 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, NotFoundException, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { BookLoanService } from './book-loan.service';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateBookLoanDto } from './DTO/create-book-loan.dto';
 import { BookLoan } from './book-loan.enity';
 import { FinalizeBookLoanDto } from './DTO/finalize-bookloan.dto';
 import { updatedBookLoan } from './DTO/update-bookLoan.dto';
+import { PaginationFilterBookLoanDto } from './DTO/pagination-filter-bookLoan.dto';
 
 @ApiTags('booksLoan')
 @Controller('book-loan')
@@ -43,7 +44,7 @@ export class BookLoanController {
       }
       return updatedBookLoan;
     }
-    
+
     @Patch(':id/reject')
     async rejectBookLoan(@Param('id') bookLoanId: number): Promise<BookLoan> {
       const updatedBookLoan = await this.bookLoanService.rejectBookLoan(bookLoanId);
@@ -65,4 +66,24 @@ export class BookLoanController {
     return updatedBookLoan;
   }
   
+  @Get('/in-progress')
+  async getInProgressLoans(): Promise<BookLoan[]> {
+    return this.bookLoanService.getInProgressLoans();
+  }
+
+  @Get('/pending')
+  async getPendingLoans(): Promise<BookLoan[]> {
+    return this.bookLoanService.getPendingLoans();
+  }
+  
+  @Get('/completed')
+  async getCompletedLoans(): Promise<BookLoan[]> {
+    return this.bookLoanService.getCompletedLoans();
+  }
+  @Get()
+  async getBookLoans(@Query() filterDto: PaginationFilterBookLoanDto): Promise<{ data: BookLoan[]; count: number }> {
+    return this.bookLoanService.getBookLoans(filterDto);
+  }
+  
+
 }

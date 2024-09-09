@@ -6,6 +6,8 @@ import { Repository } from 'typeorm';
 import { CreateBookLoanDto } from './DTO/create-book-loan.dto';
 import { FinalizeBookLoanDto } from './DTO/finalize-bookloan.dto';
 import { updatedBookLoan } from './DTO/update-bookLoan.dto';
+import { PaginationFilterBookLoanDto } from './DTO/pagination-filter-bookLoan.dto';
+import { query } from 'express';
 
 
 @Injectable()
@@ -53,7 +55,7 @@ export class BookLoanService {
       throw new NotFoundException(`Préstamo de libro con ID ${bookLoanId} no encontrado`);
     }
   
-    // Cambiar el estado a "Reprobado"
+    
     bookLoan.Status = 'Reprobado';
   
     return await this.bookLoanRepository.save(bookLoan);
@@ -72,6 +74,59 @@ export class BookLoanService {
   
     return this.bookLoanRepository.save(bookLoan); 
   }
+
+  async getInProgressLoans(): Promise<BookLoan[]> {
+    return await this.bookLoanRepository.find({
+      where: { Status: 'En progreso' },
+    });
+    }
+  
+    async getPendingLoans(): Promise<BookLoan[]> {
+      return await this.bookLoanRepository.find({
+        where: { Status: 'Pendiente' },
+      });
+    }
+
+    async getCompletedLoans(): Promise<BookLoan[]> {
+      return await this.bookLoanRepository.find({
+        where: { Status: 'Finalizado' },
+      });
+    }
+
+  async getBookLoans(filterDto: PaginationFilterBookLoanDto): Promise<{ data: BookLoan[]; count: number }> {
+    const {
+      page = 1,
+      limit = 10,
+      LoanRequestDate,
+      BookPickUpDate,
+      LoanExpirationDate,
+      SignatureCode,
+      Cedula,
+    } = filterDto;
+
+    const query = this.bookLoanRepository.createQueryBuilder('bookLoan');
+
+    
+   
+
+ 
+    query.skip((page - 1) * limit).take(limit);
+
+    const [data, count] = await query.getManyAndCount();
+
+    return { data, count };
+  }
+  
+
+   
+    }
+
+    
+  
+   
+
+    
+    
   
  
-      }
+      
