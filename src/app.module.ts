@@ -17,6 +17,7 @@ import { BookChildrenModule } from './book-children/book-children.module';
 import * as dotenv from 'dotenv';
 import { BooksChildren } from './book-children/book-children.entity';
 import { FilesModule } from './files/files.module';
+import { AuthModule } from './auth/auth.module';
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ dotenv.config();
     ComputerLoanModule,
     BookChildrenModule,
     FilesModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

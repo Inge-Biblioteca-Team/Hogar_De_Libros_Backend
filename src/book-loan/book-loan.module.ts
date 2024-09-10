@@ -4,10 +4,15 @@ import { BookLoanController } from './book-loan.controller';
 import { BookLoanService } from './book-loan.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BookLoan } from './book-loan.enity';
+import { UserModule } from 'src/user/user.module';
+import { BooksModule } from 'src/books/books.module';
 
 
 @Module({
-  imports:[TypeOrmModule.forFeature([BookLoan])],
+  imports:[
+    UserModule,
+    BooksModule,
+    TypeOrmModule.forFeature([BookLoan])],
   controllers: [BookLoanController],
   providers: [BookLoanService]
 })
