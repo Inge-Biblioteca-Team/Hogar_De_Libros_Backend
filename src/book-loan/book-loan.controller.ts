@@ -7,6 +7,7 @@ import { BookLoan } from './book-loan.enity';
 import { FinalizeBookLoanDto } from './DTO/finalize-bookloan.dto';
 import { updatedBookLoan } from './DTO/update-bookLoan.dto';
 import { PaginationFilterBookLoanDto } from './DTO/pagination-filter-bookLoan.dto';
+import { PaginationBookLoanDto } from './DTO/pagination-bookLoans.dto';
 
 @ApiTags('booksLoan')
 @Controller('book-loan')
@@ -45,15 +46,7 @@ export class BookLoanController {
       return updatedBookLoan;
     }
 
-    @Patch(':id/reject')
-    async rejectBookLoan(@Param('id') bookLoanId: number): Promise<BookLoan> {
-      const updatedBookLoan = await this.bookLoanService.rejectBookLoan(bookLoanId);
-      if (!updatedBookLoan) {
-        throw new NotFoundException(`Préstamo de libro con ID ${bookLoanId} no encontrado`);
-      }
-      return updatedBookLoan;
-    }
-
+   
   @Patch(':id')
   async update(
     @Param('id') bookLoanId: number,
@@ -67,22 +60,22 @@ export class BookLoanController {
   }
   
   @Get('/in-progress')
-  async getInProgressLoans(): Promise<BookLoan[]> {
-    return this.bookLoanService.getInProgressLoans();
+  async getInProgressLoans(@Query() paginationDto: PaginationBookLoanDto): Promise<{ data: BookLoan[], count: number }> {
+    return this.bookLoanService.getInProgressLoans(paginationDto);
   }
 
   @Get('/pending')
-  async getPendingLoans(): Promise<BookLoan[]> {
-    return this.bookLoanService.getPendingLoans();
+  async getPendingLoans(@Query() paginationDto: PaginationBookLoanDto): Promise<{ data: BookLoan[], count: number }> {
+    return this.bookLoanService.getPendingLoans(paginationDto);
   }
-  
+
   @Get('/completed')
-  async getCompletedLoans(): Promise<BookLoan[]> {
-    return this.bookLoanService.getCompletedLoans();
+  async getCompletedLoans(@Query() paginationDto: PaginationBookLoanDto): Promise<{ data: BookLoan[], count: number }> {
+    return this.bookLoanService.getCompletedLoans(paginationDto);
   }
   @Get()
-  async getBookLoans(@Query() filterDto: PaginationFilterBookLoanDto): Promise<{ data: BookLoan[]; count: number }> {
-    return this.bookLoanService.getBookLoans(filterDto);
+  async findBookLoans(@Query() filters: PaginationFilterBookLoanDto) {
+    return this.bookLoanService.findBookLoans(filters);
   }
   
 

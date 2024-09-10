@@ -9,7 +9,7 @@ import {
   IsString,
 } from 'class-validator';
 
-export class CreateUserDto {
+export class UpdateUserDto {
   @ApiProperty()
   cedula:string;
   @ApiProperty({ description: 'Correo electrónico del usuario' })
@@ -57,16 +57,8 @@ export class CreateUserDto {
   @IsNotEmpty()
   birthDate: Date;
 
-  @ApiProperty({ description: 'Contraseña del usuario' })
-  @IsString()
-  @IsNotEmpty()
-  password: string;
-  @ApiProperty()
-  registerDate: Date;
-  @ApiProperty({ description: 'Número de teléfono del usuario' })
-  @IsBoolean()
-  @IsNotEmpty()
-  acceptTermsAndConditions: boolean;
-
+ 
+  
+  
   
 }

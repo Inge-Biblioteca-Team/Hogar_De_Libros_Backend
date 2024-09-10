@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsDate, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateBookLoanDto {
@@ -16,6 +17,7 @@ export class CreateBookLoanDto {
     description: 'Fecha en la que se recoge el libro',
   })
   @IsDate()
+  
   BookPickUpDate: Date;
 
   @ApiProperty({
@@ -32,7 +34,7 @@ export class CreateBookLoanDto {
   })
   @IsNumber()
   @IsNotEmpty()
-  BookCode: number;
+  bookBookCode: number;
 
   @ApiProperty({
     example: 1,
@@ -40,5 +42,5 @@ export class CreateBookLoanDto {
   })
   @IsNumber()
   @IsNotEmpty()
-  Cedula: number;
+  userId: number;
 }

@@ -31,10 +31,17 @@ export class BookLoan {
   Observations: string ="";
 
 
+  @ApiProperty({ description: 'BookCode ' })
+  @Column()
+  bookBookCode: number;
+
+  @Column()
+  userId:number;
+
   // Relaciones
-  @ManyToOne(() => Book, book => book.bookLoans)
+  @ManyToOne(() => Book, book => book.bookLoans,{ eager: true })
   book: Book;
 
-  @ManyToOne(() => User, user => user.bookLoans)
+  @ManyToOne(() => User, user => user.bookLoans,{ eager: true })
   user: User;
 }
