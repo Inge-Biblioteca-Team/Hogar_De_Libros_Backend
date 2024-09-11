@@ -1,8 +1,15 @@
-import { Body, Controller, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ComputerLoanService } from './computer-loan.service';
 import { CreateComputerLoanDto } from './DTO/create-computer-loan.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UpdateComputerLoanDto } from './DTO/update-computer-loan.dto';
 import { PaginationQueryDTO } from './DTO/Pagination-querry.dto';
 import { ComputerLoan } from './computer-loan.entity';
 
@@ -18,32 +25,27 @@ export class ComputerLoanController {
 
   @Get()
   @ApiOperation({ summary: 'Obtener todos los préstamos con paginación' })
-  @ApiResponse({ status: 200, description: 'Lista de préstamos', type: [ComputerLoan] })
-  async getAllComputerLoans(
-    @Query() paginationQuery: PaginationQueryDTO,
-  ) {
-    const { data, count } = await this.computerLoanService.getAllComputerLoans(paginationQuery);
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de préstamos',
+    type: [ComputerLoan],
+  })
+  async getAllComputerLoans(@Query() paginationQuery: PaginationQueryDTO) {
+    const { data, count } =
+      await this.computerLoanService.getAllComputerLoans(paginationQuery);
     return { data, count };
   }
 
-  @Patch(':ComputerLoanId')
-  AcceptComputerLoanRequest(@Param('ComputerLoanId') ComputerLoanId: number) {
-    return this.computerLoanService.AcceptComputerLoanRequest(ComputerLoanId);
-  }
-
-  @Patch(':ComputerLoanId')
-  CancelComputerLoanRequest(@Param('ComputerLoanId') ComputerLoanId: number) {
-    return this.computerLoanService.CancelComputerLoanRequest(ComputerLoanId);
-  }
-
-  @Put(':ComputerLoanId')
-  ModifyComputerLoanRequest(
-    @Param('ComputerLoanId') ComputerLoanId: number,
-    @Body() updateComputerLoanDto: UpdateComputerLoanDto,
+  @Patch('finish/:workStationNumber')
+  @ApiOperation({ summary: 'Finalizar el préstamo' })
+  @ApiResponse({
+    status: 200,
+    description: 'Préstamo finalizado',
+    type: [ComputerLoan],
+  })
+  async FinishComputerLoan(
+    @Param('workStationNumber') workStationNumber: number,
   ) {
-    return this.computerLoanService.ModifyComputerLoanRequest(
-      ComputerLoanId,
-      updateComputerLoanDto,
-    );
+    return this.computerLoanService.FinishComputerLoan(workStationNumber);
   }
 }

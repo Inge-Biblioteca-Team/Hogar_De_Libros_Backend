@@ -21,11 +21,11 @@ export class ComputerLoan {
   LoanStartDate: Date;
 
   @ApiProperty({ description: 'Fecha en la que termina el préstamo' })
-  @Column()
-  LoanExpireDate: Date;
+  @Column({nullable: true})
+  LoanExpireDate: Date | null;
 
   @ApiProperty({ description: 'Estado en el cual se encuentra el préstamo' })
-  @Column({ default: 'Solcitud' })
+  @Column({ default: 'En curso' })
   Status: string;
 
   @ApiProperty({ description: 'Nombre del ususario solicitante del préstamo' })
@@ -34,13 +34,17 @@ export class ComputerLoan {
 
   @ApiProperty({ description: 'Id del administrador que acepta el préstamo' })
   @Column()
-  AdminId: number;
+  AdminCedula: string;
 
+  @ApiProperty({ description: 'WorkStation del préstamo' })
+  @Column()
+  WorkStation: number;
+  
   // Relaciones
   @OneToMany(() => WorkStation, (workStation) => workStation.computerLoan)
   workStation: WorkStation[];
 
   @ManyToOne(() => User, (user) => user.computerLoan)
   user: User;
-  computerLoan: WorkStation;
+  //computerLoan: WorkStation;
 }

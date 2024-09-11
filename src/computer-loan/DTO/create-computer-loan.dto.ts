@@ -2,15 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateComputerLoanDto {
-  @ApiProperty({ description: 'Fecha en la que se solicita el préstamo' })
-  @IsDate()
-  @IsNotEmpty()
-  ComputerLoanReserveDate: Date;
 
-  @ApiProperty({ description: 'Fecha en la termina el préstamo' })
-  @IsDate()
-  @IsNotEmpty()
-  ComputerLoanExpireDate: Date;
 
   @ApiProperty({
     example: 1,
@@ -22,11 +14,19 @@ export class CreateComputerLoanDto {
 
   @ApiProperty({
     example: 1,
-    description: 'Id unico del usuario que solicita el préstamo',
+    description: 'Id unico del usuario administrador que aprueba el préstamo',
   })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  UserId: number;
+  AdminCedula: string;
+
+  @ApiProperty({
+    example: "Manuel ",
+    description: 'Nombre del usuario que solicita el préstamo',
+  })
+  @IsString()
+  @IsNotEmpty()
+  UserName: string;
 
 }
 
