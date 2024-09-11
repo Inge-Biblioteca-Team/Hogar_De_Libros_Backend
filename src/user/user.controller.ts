@@ -20,11 +20,11 @@ export class UserController {
 
     @Patch(':id')
     update(@Param('id') id:string, @Body() updateUserDto:UpdateUserDto){
-        return this.userService.update(+id, updateUserDto)
+        return this.userService.update(id, updateUserDto)
     }
 
     @Patch('status/:id')
     changeStatus(@Param('id') id:string){
-        return this.userService.changeStatus(+id);
+        return this.userService.changeStatus(id);
     }
 }

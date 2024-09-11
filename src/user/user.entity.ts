@@ -9,9 +9,6 @@ export class User {
 
   @ApiProperty()
   @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
   cedula:string;
 
   @ApiProperty({ description: 'Correo electrónico del usuario' })

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Body,
   Controller,
@@ -36,16 +37,18 @@ export class ComputerLoanController {
     return { data, count };
   }
 
-  @Patch('finish/:workStationNumber')
-  @ApiOperation({ summary: 'Finalizar el préstamo' })
+  @Patch('/finish/:machineNumber')
+  @ApiOperation({
+    summary: 'Finalizar un préstamo de cómputo por número de máquina',
+  })
   @ApiResponse({
     status: 200,
     description: 'Préstamo finalizado',
-    type: [ComputerLoan],
   })
-  async FinishComputerLoan(
-    @Param('workStationNumber') workStationNumber: number,
-  ) {
-    return this.computerLoanService.FinishComputerLoan(workStationNumber);
+  @ApiResponse({ status: 404, description: 'Préstamo no encontrado' })
+  async finish(@Param('machineNumber') machineNumber: number): Promise<string> {
+    return this.computerLoanService.FinishComputerLoanByMachineNumber(
+      machineNumber,
+    );
   }
 }

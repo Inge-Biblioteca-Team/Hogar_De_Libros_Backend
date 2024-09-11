@@ -7,18 +7,13 @@ import { CreateBookLoanDto } from './DTO/create-book-loan.dto';
 import { FinalizeBookLoanDto } from './DTO/finalize-bookloan.dto';
 import { updatedBookLoan } from './DTO/update-bookLoan.dto';
 import { PaginationFilterBookLoanDto } from './DTO/pagination-filter-bookLoan.dto';
-import { query } from 'express';
 import { PaginationBookLoanDto } from './DTO/pagination-bookLoans.dto';
-import { User } from 'src/user/user.entity';
-import { Book } from 'src/books/book.entity';
 
 @Injectable()
 export class BookLoanService {
   constructor(
     @InjectRepository(BookLoan)
     private readonly bookLoanRepository: Repository<BookLoan>,
-
-    
   ) {}
 
   async createLoan(createBookLoanDto: CreateBookLoanDto): Promise<BookLoan> {
@@ -180,6 +175,3 @@ export class BookLoanService {
   }
 }
 
-function leftJoinAndSelect(arg0: string, arg1: string) {
-  throw new Error('Function not implemented.');
-}

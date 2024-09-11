@@ -1,5 +1,6 @@
+/* eslint-disable prettier/prettier */
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   ArrayMinSize,
@@ -79,6 +80,3 @@ export class PaginationFilterBookLoanDto {
   userId?: number;
 }
 
-function moment(value: any) {
-  throw new Error('Function not implemented.');
-}

@@ -5,8 +5,8 @@ import { User } from 'src/user/user.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -17,7 +17,7 @@ export class ComputerLoan {
   ComputerLoanId: number;
 
   @ApiProperty({ description: 'Fecha en la que se solicita el préstamo' })
-  @Column({type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+  @Column()
   LoanStartDate: Date;
 
   @ApiProperty({ description: 'Fecha en la que termina el préstamo' })
@@ -34,17 +34,18 @@ export class ComputerLoan {
 
   @ApiProperty({ description: 'Id del administrador que acepta el préstamo' })
   @Column()
-  AdminCedula: string;
+  cedula: string;
 
   @ApiProperty({ description: 'WorkStation del préstamo' })
   @Column()
-  WorkStation: number;
+  MachineNumber: number;
   
   // Relaciones
-  @OneToMany(() => WorkStation, (workStation) => workStation.computerLoan)
-  workStation: WorkStation[];
-
+  @ManyToOne(() => WorkStation, (workStation) => workStation.computerLoans)
+  @JoinColumn({ name: 'MachineNumber', referencedColumnName: 'MachineNumber' })
+  workStation: WorkStation;
+  
   @ManyToOne(() => User, (user) => user.computerLoan)
+  @JoinColumn({ name: 'cedula', referencedColumnName: 'cedula' })
   user: User;
-  //computerLoan: WorkStation;
 }

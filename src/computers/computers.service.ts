@@ -16,31 +16,27 @@ export class ComputersService {
     @InjectRepository(WorkStation)
     private workStationRepository: Repository<WorkStation>,
   ) {}
-  // método para agregar un equipo de cómputo
-  async addComputer(computerDTO: ComputerDTO): Promise<Computer> {
-    const computer = this.computerRepository.create(computerDTO);
+  async createComputer(createComputerDto: ComputerDTO): Promise<Computer> {
+    let workStation = await this.workStationRepository.findOne({
+      where: { MachineNumber: createComputerDto.MachineNumber },
+    });
 
-    // Buscar una estación de trabajo existente con el mismo MachineNumber
-    let workStation = await this.workStationRepository.findOne({ where: { MachineNumber: computerDTO.MachineNumber } });
-
-    // Si no existe, crear una nueva estación de trabajo
     if (!workStation) {
-      workStation = new WorkStation();
-      workStation.MachineNumber = computerDTO.MachineNumber;
-      workStation.WorkStation = computerDTO.MachineNumber; // Asignar el número de máquina del DTO
-
-      // Guardar la nueva estación de trabajo en la base de datos
-      workStation = await this.workStationRepository.save(workStation);
+      workStation = this.workStationRepository.create({
+        MachineNumber: createComputerDto.MachineNumber,
+        Location: 'Biblioteca pública', 
+        Status: 'Disponible', 
+      });
+      await this.workStationRepository.save(workStation);
     }
 
-    // Asociar la estación de trabajo al equipo de cómputo
-    computer.workStation = workStation;
+    const computer = this.computerRepository.create({
+      ...createComputerDto,
+      workStation,
+    });
 
-    // Guardar el equipo de cómputo en la base de datos
-    return await this.computerRepository.save(computer);
+    return this.computerRepository.save(computer);
   }
-
-
   async findByEquipmentUniqueCode(
     EquipmentUniqueCode: number,
   ): Promise<Computer> {
@@ -124,50 +120,46 @@ export class ComputersService {
     return { data, count };
   }
 
-  async setWorkStationMaintenance(WorkStation: number): Promise<WorkStation> {
-    const workStation = await this.workStationRepository.findOne({
-      where: { WorkStation },
-    });
-    if (!workStation) {
-      throw new NotFoundException(
-        `La WorkStation con código ${WorkStation} no fue encontrada`,
-      );
-    }
-    workStation.Status = 'Mantenimiento';
-    return this.workStationRepository.save(workStation);
-  }
 
-  async setWorkStationAvalible(WorkStation: number): Promise<WorkStation> {
-    const workStation = await this.workStationRepository.findOne({
-      where: { WorkStation },
-    });
-    if (!workStation) {
-      throw new NotFoundException(
-        `La WorkStation con código ${WorkStation} no fue encontrada`,
-      );
-    }
-    workStation.Status = 'Disponible';
-    return this.workStationRepository.save(workStation);
-  }
-
-  async setWorkStationInUse(WorkStation: number): Promise<WorkStation> {
-    const workStation = await this.workStationRepository.findOne({
-      where: { WorkStation },
-    });
-    if (!workStation) {
-      throw new NotFoundException(
-        `La WorkStation con código ${WorkStation} no fue encontrada`,
-      );
-    }
-    workStation.Status = 'En uso';
-    return this.workStationRepository.save(workStation);
-  }
-
-  async getStatusWorkStation(): Promise<{ MachineNumber: number; Status: string }[]> {
+  async getStatusWorkStation(): Promise<
+    { MachineNumber: number; Status: string }[]
+  > {
     return this.workStationRepository.find({
       select: ['MachineNumber', 'Status'],
       order: { MachineNumber: 'ASC' },
     });
   }
   
+  async SetWorkStationToMaintenance(machineNumber: number, location: string, userName: string): Promise<string> {
+    const workStation = await this.workStationRepository.findOne({
+      where: { MachineNumber: machineNumber },
+    });
+  
+    if (!workStation) {
+      return 'No se encontró la máquina';
+    }
+
+    const locationWitInCharge = `${location}; ${userName}`;
+  
+    workStation.Status = 'Mantenimiento';
+    workStation.Location = locationWitInCharge;
+    await this.workStationRepository.save(workStation);
+  
+    return 'Estado actualizado a Mantenimiento';
+  }
+  async ResetWorkStation(machineNumber: number): Promise<string> {
+    const workStation = await this.workStationRepository.findOne({
+      where: { MachineNumber: machineNumber },
+    });
+  
+    if (!workStation) {
+      return 'No se encontró la máquina';
+    }
+  
+    workStation.Status = 'Disponible';
+    workStation.Location = 'Biblioteca pública';
+    await this.workStationRepository.save(workStation);
+  
+    return 'Estado actualizado a Disponible';
+  }
 }

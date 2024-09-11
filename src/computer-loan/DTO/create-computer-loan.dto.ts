@@ -1,16 +1,15 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateComputerLoanDto {
-
-
   @ApiProperty({
     example: 1,
     description: 'Id unico del equipo de computo que se va prestar',
   })
   @IsNumber()
   @IsNotEmpty()
-  workStation: number;
+  MachineNumber: number;
 
   @ApiProperty({
     example: 1,
@@ -18,15 +17,13 @@ export class CreateComputerLoanDto {
   })
   @IsString()
   @IsNotEmpty()
-  AdminCedula: string;
+  cedula: string;
 
   @ApiProperty({
-    example: "Manuel ",
+    example: 'Manuel ',
     description: 'Nombre del usuario que solicita el préstamo',
   })
   @IsString()
   @IsNotEmpty()
   UserName: string;
-
 }
-

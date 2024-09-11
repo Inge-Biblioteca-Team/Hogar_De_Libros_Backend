@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -34,23 +35,23 @@ export class UserService {
     
       }
     
-      async update(id: number, updateUserDto: UpdateUserDto) {
-        const user = await this.UserRepository.findOneBy({ id });
+      async update(cedula: string, updateUserDto: UpdateUserDto) {
+        const user = await this.UserRepository.findOneBy({ cedula });
         if (!user)
           throw new HttpException(
-            `Area with ID ${id} not found`,
+            `Area with cedula ${cedula} not found`,
             HttpStatus.NOT_FOUND,
           );
-        await this.UserRepository.update(id, updateUserDto);
-        return await this.UserRepository.findOneBy({ id });
+        await this.UserRepository.update(cedula, updateUserDto);
+        return await this.UserRepository.findOneBy({ cedula });
       }
     
-      async changeStatus(id: number) {
-        const user = await this.UserRepository.findOneBy({ id });
+      async changeStatus(cedula: string) {
+        const user = await this.UserRepository.findOneBy({ cedula });
     
         if (!user) {
           throw new HttpException(
-            `user with ID ${id} not found`,
+            `user with cedula ${cedula} not found`,
             HttpStatus.NOT_FOUND,
           );
         }

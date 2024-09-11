@@ -1,28 +1,23 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Computer } from "./computer.entity";
-import { ComputerLoan } from "src/computer-loan/computer-loan.entity";
+/* eslint-disable prettier/prettier */
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Computer } from './computer.entity';
+import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
 
-@Entity({name: 'workstations'})
+@Entity({ name: 'workstations' })
 export class WorkStation {
   @PrimaryGeneratedColumn()
-  id: number;
-  
-  @Column()
-  WorkStation: number;
-  
-  @Column()
   MachineNumber: number;
 
-  @Column({default: 'Biblioteca pública'})
+  @Column({ default: 'Biblioteca pública' })
   Location: string;
 
-  @Column({default: 'Disponible'})
-  Status: string;
+  @Column({ default: 'Disponible' })
+  Status: string="Disponible";
 
   // Relaciones
   @OneToMany(() => Computer, (computer) => computer.workStation)
   computers: Computer[];
-  
-  @ManyToOne(() => ComputerLoan, (computerLoan) => computerLoan.workStation)
-  computerLoan: ComputerLoan;
+
+  @OneToMany(() => ComputerLoan, (computerLoan) => computerLoan.workStation)
+  computerLoans: ComputerLoan[];
 }

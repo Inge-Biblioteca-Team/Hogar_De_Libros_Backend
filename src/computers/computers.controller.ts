@@ -22,7 +22,6 @@ import {
 import { ModifyComputerDTO } from './DTO/modify-computer.dto';
 import { Computer } from './computer.entity';
 import { PaginationQueryDTO } from './DTO/pagination-querry.dto';
-import { WorkStation } from './WorkStation.entity';
 
 @ApiTags('computers')
 @Controller('computers')
@@ -38,8 +37,10 @@ export class ComputersController {
     type: ComputerDTO,
   })
   addComputer(@Body() computerDTO: ComputerDTO): Promise<ComputerDTO> {
-    return this.computerService.addComputer(computerDTO);
+    return this.computerService.createComputer(computerDTO);
   }
+
+
   @Get(':EquipmentUniqueCode')
   @ApiProperty({ description: 'Obtiene un equipo de cómputo  por su código' })
   async findById(
@@ -95,37 +96,8 @@ export class ComputersController {
     return await this.computerService.getAllComputers(paginationDTO);
   }
 
-  @Patch('workstation/:WorkStation/maintenance')
-  @ApiOperation({ summary: 'set in maintenance a workstation ' })
-  @ApiResponse({
-    status: 200,
-    description: 'The WorkStation status has been successfully updated to maintenance.',
-  })
-  async setMaintenance(@Param('WorkStation') WorkStation: number): Promise<WorkStation> {
-    return await this.computerService.setWorkStationMaintenance(WorkStation);
-  }
 
-  @Patch('workstation/:WorkStation/avalible')
-  @ApiOperation({ summary: 'set in avalible a workstation ' })
-  @ApiResponse({
-    status: 200,
-    description: 'The WorkStation status has been avalible updated to maintenance.',
-  })
-  async setAvalible(@Param('WorkStation') WorkStation: number): Promise<WorkStation> {
-    return await this.computerService.setWorkStationAvalible(WorkStation);
-  }
-
-  @Patch('workstation/:WorkStation/inUse')
-  @ApiOperation({ summary: 'set in use a workstation ' })
-  @ApiResponse({
-    status: 200,
-    description: 'The WorkStation status has been successfully updated to in Use.',
-  })
-  async setInUse(@Param('WorkStation') WorkStation: number): Promise<WorkStation> {
-    return await this.computerService.setWorkStationInUse(WorkStation);
-  }
-
-  @Get('workstation/:WorkStation')
+  @Get('workstation/Status')
   @ApiOperation({ summary: 'Watch the status of a workstation ' })
   @ApiResponse({
     status: 200,
@@ -134,5 +106,22 @@ export class ComputersController {
   async getStatusWorkStation(): Promise<{MachineNumber: number, Status: string}[]> {
     return await this.computerService.getStatusWorkStation();
   }
+
+  @Patch(':machineNumber/maintenance')
+  async setWorkStationToMaintenance(
+    @Param('machineNumber') machineNumber: number,
+    @Body('location') location: string,
+    @Body('userName') userName: string
+  ): Promise<string> {
+    return this.computerService.SetWorkStationToMaintenance(machineNumber, location, userName);
+  }
+
+  @Patch(':machineNumber/available')
+  async setWorkStationToAvailable(
+    @Param('machineNumber') machineNumber: number
+  ): Promise<string> {
+    return this.computerService.ResetWorkStation(machineNumber);
+  }
+
  
 }

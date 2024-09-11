@@ -1,6 +1,10 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ResponseHistoryDto {
+  @ApiProperty({ description: 'Número de máquina' })
+  ComputerLoanId: number;
+
   @ApiProperty({ description: 'Número de máquina' })
   workStation: number;
 
