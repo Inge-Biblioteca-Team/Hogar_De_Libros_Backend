@@ -17,9 +17,11 @@ import { BookChildrenModule } from './book-children/book-children.module';
 import * as dotenv from 'dotenv';
 import { BooksChildren } from './book-children/book-children.entity';
 import { FilesModule } from './files/files.module';
-import { AuthModule } from './auth/auth.module';
 import { LocalArtist } from './local-artist/local-artist.entity';
+import { Furniture } from './furniture/furniture.entity';
 import { LocalArtistModule } from './local-artist/local-artist.module';
+import { FurnitureModule } from './furniture/furniture.module';
+import { AuthModule } from './auth/auth.module';
 
 dotenv.config();
 
@@ -31,8 +33,8 @@ dotenv.config();
       port: 3308,
       username: "root",
       password: "root",
-      database: "hogar_de_libros",
-      entities: [Book, Computer, BookLoan, ComputerLoan, User, BooksChildren, LocalArtist],
+      database: "test",
+      entities: [Book, Computer, BookLoan, ComputerLoan, User, BooksChildren, LocalArtist, Furniture],
       synchronize: true,
     }),
     BooksModule,
@@ -42,6 +44,9 @@ dotenv.config();
     ComputerLoanModule,
     BookChildrenModule,
     FilesModule,
+    LocalArtistModule,
+    FurnitureModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

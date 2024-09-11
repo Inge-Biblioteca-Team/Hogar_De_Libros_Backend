@@ -30,28 +30,30 @@ export class LocalArtistService {
       ArtisProfession,
       Actived,
     } = PaginationFilterDto;
-  
-    const queryBuilder = this.localArtistRepository.createQueryBuilder('artist');
-  
+
+    const queryBuilder =
+      this.localArtistRepository.createQueryBuilder('artist');
+
     if (Name) {
       queryBuilder.andWhere('artist.Name LIKE :Name', { Name: `%${Name}%` });
     }
-  
+
     if (ArtisProfession) {
-      queryBuilder.andWhere('artist.ArtisProfession LIKE :ArtisProfession', { ArtisProfession: `%${ArtisProfession}%` });
+      queryBuilder.andWhere('artist.ArtisProfession LIKE :ArtisProfession', {
+        ArtisProfession: `%${ArtisProfession}%`,
+      });
     }
-  
+
     if (Actived !== undefined) {
       queryBuilder.andWhere('artist.Actived = :Actived', { Actived });
     }
-  
+
     queryBuilder.skip((page - 1) * limit).take(limit);
-  
+
     const [data, count] = await queryBuilder.getManyAndCount();
-  
+
     return { data, count };
   }
-  
 
   async findOne(id: number): Promise<LocalArtist> {
     const artist = await this.localArtistRepository.findOne({
@@ -69,11 +71,6 @@ export class LocalArtistService {
   ): Promise<LocalArtist> {
     await this.localArtistRepository.update(id, updateLocalArtistDto);
     return this.findOne(id);
-  }
-
-  async delete(id: number): Promise<void> {
-    const artist = await this.findOne(id);
-    await this.localArtistRepository.remove(artist);
   }
 
   async DownArtist(ArtistID: number): Promise<LocalArtist> {

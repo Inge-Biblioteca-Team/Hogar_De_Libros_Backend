@@ -1,35 +1,57 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Param, Get, Query } from '@nestjs/common';
 import { FurnitureService } from './furniture.service';
 import { CreateFurnitureDto } from './DTO/create-furniture.dto';
-import { UpdateFurnitureDto } from './DTO/update-furniture.dto';
+import { Furniture } from './furniture.entity';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { PaginatedDTO } from './DTO/PaginationQueryDTO';
 
+@ApiTags('Furniture')
 @Controller('furniture')
 export class FurnitureController {
   constructor(private readonly furnitureService: FurnitureService) {}
 
   @Post()
-  create(@Body() createFurnitureDto: CreateFurnitureDto) {
+  @ApiOperation({ summary: 'Create a new Furniture' })
+  @ApiBody({ type: CreateFurnitureDto })
+  async create(
+    @Body() createFurnitureDto: CreateFurnitureDto,
+  ): Promise<Furniture> {
     return this.furnitureService.create(createFurnitureDto);
   }
 
   @Get()
-  findAll() {
-    return this.furnitureService.findAll();
+  @ApiOperation({ summary: 'Get all paginated' })
+  async findAll(@Query() query: PaginatedDTO) {
+    return this.furnitureService.findAll(query);
   }
 
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.furnitureService.findOne(+id);
+  @ApiOperation({ summary: 'Get Furniture by ID for See operation' })
+  async findOne(@Param('id') id: number): Promise<Furniture> {
+    return this.furnitureService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFurnitureDto: UpdateFurnitureDto) {
-    return this.furnitureService.update(+id, updateFurnitureDto);
+  @ApiOperation({ summary: 'Edit register' })
+  @ApiBody({ type: CreateFurnitureDto })
+  async update(
+    @Param('id') id: number,
+    @Body() updateFurniture: CreateFurnitureDto,
+  ): Promise<Furniture> {
+    return this.furnitureService.update(id, updateFurniture);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.furnitureService.remove(+id);
+  @Patch(':id/Down')
+  @ApiOperation({ summary: 'Change Status to Baja' })
+  async DownFurniture(@Param('id') Id: number) {
+    return await this.furnitureService.DowFurniture(Id);
+  }
+
+  @Patch(':id/SE')
+  @ApiOperation({ summary: 'Change Status To S.E.' })
+  async SEFurniture(@Param('id') Id: number) {
+    return await this.furnitureService.NAFurniture(Id);
   }
 }
