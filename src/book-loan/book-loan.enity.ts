@@ -35,8 +35,9 @@ export class BookLoan {
   @Column()
   bookBookCode: number;
 
+
   @Column()
-  userId:number;
+  userCedula:string;
 
   // Relaciones
   @ManyToOne(() => Book, book => book.bookLoans,{ eager: true })

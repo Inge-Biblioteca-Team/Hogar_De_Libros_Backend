@@ -8,8 +8,10 @@ import {
   IsDate,
   IsDateString,
   IsInt,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsString,
   Min,
  
 } from 'class-validator';
@@ -36,19 +38,19 @@ export class PaginationFilterBookLoanDto {
 
   @ApiPropertyOptional({
     description: 'Rango de fechas de solicitud de préstamo (formato ISO 8601)',
-    example: ['2024-01-01T00:00:00Z', '2024-12-31T23:59:59Z'],
+    example: ['2024-01-01', '2024-12-31'],
     type: [String]
   })
   @IsOptional()
   @IsArray()
   @ArrayMinSize(2, { message: 'Debe proporcionar dos fechas para el rango de solicitud.' })
   @ArrayMaxSize(2, { message: 'El rango de fechas debe contener exactamente dos fechas.' })
-  @IsDateString({}, { each: true, message: 'Cada fecha debe estar en formato ISO 8601.' })
+  @IsDateString({}, { each: true })
   LoanRequestDateRange?: [string, string];
 
   @ApiPropertyOptional({
     description: 'Fecha de vencimiento del préstamo ',
-    example: '2024-12-31T23:59:59Z',
+    example: '2024-12-31',
   })
   @IsOptional()
   @IsDate({  })
@@ -56,7 +58,7 @@ export class PaginationFilterBookLoanDto {
   
   @ApiPropertyOptional({
     description: 'Fecha en la que se recoge el libro ',
-    example: '2024-12-30T15:00:00Z',
+    example: '2024-12-30',
   })
   @IsOptional()
   @IsDate()
@@ -65,18 +67,16 @@ export class PaginationFilterBookLoanDto {
 
   @ApiPropertyOptional({
     description: 'Código del libro',
-    example: '12345',
   })
   @IsOptional()
-  @IsNumber({}, { message: 'El código del libro debe ser un número.' })
-  bookBookCode?: number;
+  @IsString({ message: 'Añada el codigo.' })
+  signatureCode?: string;
 
   @ApiPropertyOptional({
     description: 'Cédula del usuario (solo para préstamos finalizados)',
-    example: '1234567890',
   })
   @IsOptional()
-  @IsNumber({}, { message: 'La cédula debe ser un número.' })
-  userId?: number;
+  @IsString( { message: 'Agregar el numero de cedula.' })
+  cedula?: string;
 }
 

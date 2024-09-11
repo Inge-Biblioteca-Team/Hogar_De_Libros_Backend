@@ -75,7 +75,9 @@ export class BookLoanController {
   }
   @Get()
   async findBookLoans(@Query() filters: PaginationFilterBookLoanDto) {
+    console.log('Filters:', filters)
     return this.bookLoanService.findBookLoans(filters);
+    
   }
   
 

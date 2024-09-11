@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateBookLoanDto {
   @ApiProperty({
@@ -31,15 +31,20 @@ export class CreateBookLoanDto {
     example: 1,
     description: 'Id unico del libro que se va prestar',
   })
+  
+  @ApiProperty({
+    example: 1,
+    description: 'Id unico del libro que se va prestar',
+  })
   @IsNumber()
   @IsNotEmpty()
   bookBookCode: number;
-
+  
   @ApiProperty({
     example: 1,
     description: 'Id unico del usuario que solicita el préstamo',
   })
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  userId: number;
+  userCedula: string;
 }

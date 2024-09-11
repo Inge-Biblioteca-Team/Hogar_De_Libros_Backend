@@ -39,7 +39,7 @@ export class PaginationFilterDto {
   @ApiPropertyOptional({ description: 'Filtrar por Código de Firma' })
   @IsOptional()
   @IsString()
-  SignatureCode?: string;
+  signatureCode?: string;
 
   @ApiPropertyOptional({
     description: 'Filtrar por Estado (habilitado o deshabilitado)'

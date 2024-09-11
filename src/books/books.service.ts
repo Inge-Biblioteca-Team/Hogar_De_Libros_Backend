@@ -89,7 +89,7 @@ export class BooksService {
       Title,
       ISBN,
       Author,
-      SignatureCode,
+      signatureCode,
       Status,
       ShelfCategory,
       PublishedYear,
@@ -110,9 +110,9 @@ export class BooksService {
       query.andWhere('book.Author LIKE :Author', { Author: `%${Author}%` });
     }
 
-    if (SignatureCode) {
+    if (signatureCode) {
       query.andWhere('book.SignatureCode LIKE :SignatureCode', {
-        SignatureCode: `%${SignatureCode}%`,
+        SignatureCode: `%${signatureCode}%`,
       });
     }
 
