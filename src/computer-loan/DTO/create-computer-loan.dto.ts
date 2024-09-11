@@ -12,18 +12,13 @@ export class CreateComputerLoanDto {
   @IsNotEmpty()
   ComputerLoanExpireDate: Date;
 
-  @ApiProperty({ description: 'Estado en el cual se encuentra el préstamo' })
-  @IsString()
-  @IsNotEmpty()
-  Status: string;
-
   @ApiProperty({
     example: 1,
     description: 'Id unico del equipo de computo que se va prestar',
   })
   @IsNumber()
   @IsNotEmpty()
-  MachineNumber: number;
+  workStation: number;
 
   @ApiProperty({
     example: 1,

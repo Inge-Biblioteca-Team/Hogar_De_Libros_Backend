@@ -17,6 +17,7 @@ import { BookChildrenModule } from './book-children/book-children.module';
 import * as dotenv from 'dotenv';
 import { BooksChildren } from './book-children/book-children.entity';
 import { FilesModule } from './files/files.module';
+import { WorkStation } from './computers/WorkStation.entity';
 
 dotenv.config();
 
@@ -29,7 +30,7 @@ dotenv.config();
       username: "root",
       password: "root",
       database: "hogar_de_libros",
-      entities: [Book, Computer, BookLoan, ComputerLoan, User, BooksChildren],
+      entities: [Book, Computer, BookLoan, ComputerLoan, User, BooksChildren, WorkStation],
       synchronize: true,
     }),
     BooksModule,

@@ -22,6 +22,7 @@ import {
 import { ModifyComputerDTO } from './DTO/modify-computer.dto';
 import { Computer } from './computer.entity';
 import { PaginationQueryDTO } from './DTO/pagination-querry.dto';
+import { WorkStation } from './WorkStation.entity';
 
 @ApiTags('computers')
 @Controller('computers')
@@ -93,4 +94,45 @@ export class ComputersController {
   async getAllComputers(@Query() paginationDTO: PaginationQueryDTO) {
     return await this.computerService.getAllComputers(paginationDTO);
   }
+
+  @Patch('workstation/:WorkStation/maintenance')
+  @ApiOperation({ summary: 'set in maintenance a workstation ' })
+  @ApiResponse({
+    status: 200,
+    description: 'The WorkStation status has been successfully updated to maintenance.',
+  })
+  async setMaintenance(@Param('WorkStation') WorkStation: number): Promise<WorkStation> {
+    return await this.computerService.setWorkStationMaintenance(WorkStation);
+  }
+
+  @Patch('workstation/:WorkStation/avalible')
+  @ApiOperation({ summary: 'set in avalible a workstation ' })
+  @ApiResponse({
+    status: 200,
+    description: 'The WorkStation status has been avalible updated to maintenance.',
+  })
+  async setAvalible(@Param('WorkStation') WorkStation: number): Promise<WorkStation> {
+    return await this.computerService.setWorkStationAvalible(WorkStation);
+  }
+
+  @Patch('workstation/:WorkStation/inUse')
+  @ApiOperation({ summary: 'set in use a workstation ' })
+  @ApiResponse({
+    status: 200,
+    description: 'The WorkStation status has been successfully updated to in Use.',
+  })
+  async setInUse(@Param('WorkStation') WorkStation: number): Promise<WorkStation> {
+    return await this.computerService.setWorkStationInUse(WorkStation);
+  }
+
+  @Get('workstation/:WorkStation')
+  @ApiOperation({ summary: 'Watch the status of a workstation ' })
+  @ApiResponse({
+    status: 200,
+    description: 'The WorkStation status has been finded.',
+  })
+  async getStatusWorkStation(): Promise<{MachineNumber: number, Status: string}[]> {
+    return await this.computerService.getStatusWorkStation();
+  }
+ 
 }
