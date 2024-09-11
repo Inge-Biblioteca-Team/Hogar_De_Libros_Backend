@@ -2,7 +2,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Book } from 'src/books/book.entity';
 import { User } from 'src/user/user.entity';
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'book_loans' }) 
 export class BookLoan {
@@ -28,13 +28,20 @@ export class BookLoan {
 
   @ApiProperty({ description: 'Observaciones ' })
   @Column()
-  Observations: string;
+  Observations: string ="";
 
+
+  @ApiProperty({ description: 'BookCode ' })
+  @Column()
+  bookBookCode: number;
+
+  @Column()
+  userId:number;
 
   // Relaciones
-  @OneToMany(() => Book, book => book.bookLoan)
-  Books: Book[];
+  @ManyToOne(() => Book, book => book.bookLoans,{ eager: true })
+  book: Book;
 
-  @ManyToOne(() => User, user => user.bookLoan)
+  @ManyToOne(() => User, user => user.bookLoans,{ eager: true })
   user: User;
 }

@@ -6,61 +6,68 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' }) 
 export class User {
-  @ApiProperty({ description: 'Id único del usuario' })
+
+  @ApiProperty()
   @PrimaryGeneratedColumn()
-  Cedula: number;
+  id: number;
+
+  @Column()
+  cedula:string;
 
   @ApiProperty({ description: 'Correo electrónico del usuario' })
   @Column({ unique: true })
-  Email: string;
+  email: string;
 
   @ApiProperty({ description: 'Nombre del usuario' })
   @Column()
-  Name: string;
+  name: string;
 
   @ApiProperty({ description: 'Apellido del usuario' })
   @Column()
-  LastName: string;
+  lastName: string;
 
   @ApiProperty({ description: 'Número de teléfono del usuario' })
   @Column()
-  PhoneNumber: string;
+  phoneNumber: string;
 
   @ApiProperty({ description: 'Provincia donde vive el usuario' })
   @Column()
-  Province: string;
+  province: string;
 
   @ApiProperty({ description: 'Distrito donde vive el usuario' })
   @Column()
-  District: string;
+  district: string;
 
   @ApiProperty({ description: 'Género del usuario' })
   @Column()
-  Gender: string;
+  gender: string;
 
   @ApiProperty({ description: 'Dirección de residencia del usuario' })
   @Column()
-  Address: string;
+  address: string;
 
   @ApiProperty({ description: 'Fecha de nacimiento del usuario' })
   @Column()
-  BirthDate: Date;
+  birthDate: Date;
 
   @ApiProperty({ description: 'Contraseña del usuario' })
   @Column()
-  Password: string;
+  password: string;
 
   @ApiProperty({ description: 'Fecha de registro del usuario' })
   @Column({ default: () => 'CURRENT_TIMESTAMP' })
-  RegisterDate: Date;
+  registerDate: Date;
 
   @ApiProperty({ description: 'Aceptación de términos y condiciones' })
   @Column()
-  AcceptTermsAndConditions: boolean;
+  acceptTermsAndConditions: boolean;
+
+  @Column()
+  status:boolean;
 
   // Relaciones
   @OneToMany(() => BookLoan, bookLoan => bookLoan.user)
-  bookLoan: BookLoan[];
+  bookLoans: BookLoan[];
 
   @OneToMany(() => ComputerLoan, computerLoan => computerLoan.user)
   computerLoan: ComputerLoan[];

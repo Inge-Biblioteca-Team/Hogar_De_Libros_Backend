@@ -1,11 +1,13 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, NotFoundException, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { BookLoanService } from './book-loan.service';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateBookLoanDto } from './DTO/create-book-loan.dto';
 import { BookLoan } from './book-loan.enity';
 import { FinalizeBookLoanDto } from './DTO/finalize-bookloan.dto';
 import { updatedBookLoan } from './DTO/update-bookLoan.dto';
+import { PaginationFilterBookLoanDto } from './DTO/pagination-filter-bookLoan.dto';
+import { PaginationBookLoanDto } from './DTO/pagination-bookLoans.dto';
 
 @ApiTags('booksLoan')
 @Controller('book-loan')
@@ -43,15 +45,8 @@ export class BookLoanController {
       }
       return updatedBookLoan;
     }
-    @Patch(':id/accept')
-  async acceptBookLoan(@Param('id') bookLoanId: number): Promise<BookLoan> {
-    const updatedBookLoan = await this.bookLoanService.acceptBookLoan(bookLoanId);
-    if (!updatedBookLoan) {
-      throw new NotFoundException(`Préstamo de libro con ID ${bookLoanId} no encontrado`);
-    }
-    return updatedBookLoan;
-  }
 
+   
   @Patch(':id')
   async update(
     @Param('id') bookLoanId: number,
@@ -64,4 +59,24 @@ export class BookLoanController {
     return updatedBookLoan;
   }
   
+  @Get('/in-progress')
+  async getInProgressLoans(@Query() paginationDto: PaginationBookLoanDto): Promise<{ data: BookLoan[], count: number }> {
+    return this.bookLoanService.getInProgressLoans(paginationDto);
+  }
+
+  @Get('/pending')
+  async getPendingLoans(@Query() paginationDto: PaginationBookLoanDto): Promise<{ data: BookLoan[], count: number }> {
+    return this.bookLoanService.getPendingLoans(paginationDto);
+  }
+
+  @Get('/completed')
+  async getCompletedLoans(@Query() paginationDto: PaginationBookLoanDto): Promise<{ data: BookLoan[], count: number }> {
+    return this.bookLoanService.getCompletedLoans(paginationDto);
+  }
+  @Get()
+  async findBookLoans(@Query() filters: PaginationFilterBookLoanDto) {
+    return this.bookLoanService.findBookLoans(filters);
+  }
+  
+
 }
