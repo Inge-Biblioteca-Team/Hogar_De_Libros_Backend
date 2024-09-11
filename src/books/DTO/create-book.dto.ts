@@ -36,11 +36,11 @@ export class CreateBookDto {
   @ApiProperty({ example: '8' })
   @IsNumber()
   BookConditionRating: number;
-
-  @ApiProperty({ example: '4' })
+ 
+  @ApiProperty({ description: 'Código de firma' })
   @IsString()
-  SignatureCode: string;
-
+  signatureCode: string;
+  
   @ApiProperty({ example: '683251' })
   @IsString()
   InscriptionCode: string;

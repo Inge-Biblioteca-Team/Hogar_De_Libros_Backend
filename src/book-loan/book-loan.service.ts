@@ -1,25 +1,61 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookLoan } from './book-loan.enity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateBookLoanDto } from './DTO/create-book-loan.dto';
 import { FinalizeBookLoanDto } from './DTO/finalize-bookloan.dto';
 import { updatedBookLoan } from './DTO/update-bookLoan.dto';
 import { PaginationFilterBookLoanDto } from './DTO/pagination-filter-bookLoan.dto';
 import { PaginationBookLoanDto } from './DTO/pagination-bookLoans.dto';
+import { Book } from 'src/books/book.entity';
+
+
 
 @Injectable()
 export class BookLoanService {
   constructor(
     @InjectRepository(BookLoan)
     private readonly bookLoanRepository: Repository<BookLoan>,
+    @InjectRepository(Book)
+    private readonly bookRepository: Repository<Book>, 
+  
+
+    
   ) {}
 
   async createLoan(createBookLoanDto: CreateBookLoanDto): Promise<BookLoan> {
+    const book = await this.bookRepository.findOne({
+      where: { BookCode: createBookLoanDto.bookBookCode },
+    });
+  
+    if (!book) {
+      throw new NotFoundException(`El libro con código ${createBookLoanDto.bookBookCode} no fue encontrado`);
+    }
+  
+    if  (book.Status === false) {
+      throw new BadRequestException(`El libro con código ${book.BookCode} está inactivo y no puede ser prestado.`);
+    }
+  
+    // Verificar si ya existe un préstamo pendiente o en progreso
+    const existingLoan = await this.bookLoanRepository.findOne({
+      where: { 
+        bookBookCode: book.BookCode, 
+        Status: In(['Pendiente', 'En progreso']) 
+      },
+    });
+  
+    if (existingLoan) {
+      throw new BadRequestException(`El libro con código ${book.BookCode} ya está prestado.`);
+    }
+  
+    
     const newBookLoan = this.bookLoanRepository.create(createBookLoanDto);
     newBookLoan.Status = 'Pendiente';
-    return await this.bookLoanRepository.save(newBookLoan);
+    newBookLoan.book = book;  
+    return await this.bookLoanRepository.save(newBookLoan); 
+  
+    
   }
   async setInProcess(bookLoanId: number): Promise<BookLoan> {
     const bookLoan = await this.bookLoanRepository.findOne({
@@ -42,6 +78,8 @@ export class BookLoanService {
     const bookLoan = await this.bookLoanRepository.findOne({
       where: { BookLoanId: bookLoanId },
     });
+   
+
 
     if (!bookLoan) {
       throw new NotFoundException(`Book loan with ID ${bookLoanId} not found`);
@@ -154,16 +192,21 @@ export class BookLoanService {
     }
     console.log(filters.BookPickUpDate);
 
-    if (filters.bookBookCode) {
-      query.andWhere('bookLoan.bookBookCode = :bookBookCode', {
-        bookBookCode: filters.bookBookCode,
-      });
+    if (filters.signatureCode) {
+      console.log('signatureCode:', filters.signatureCode); // Verifica que el valor esté llegando aquí
+      query
+        .leftJoinAndSelect('bookLoan.book', 'book')  // Asegúrate del JOIN correcto
+        .andWhere('book.signatureCode = :signatureCode', {
+          signatureCode:String(filters.signatureCode), // Asegúrate de usar el valor correctamente
+        });
+    
+      console.log(filters.signatureCode);
     }
 
-    if (filters.userId) {
+    if (filters.cedula) {
       query
         .andWhere('bookLoan.Status = :status', { status: 'Finalizado' })
-        .andWhere('bookLoan.userId = :userId', { userId: filters.userId });
+        .andWhere('bookLoan.userCedula = :userCedula', { userCedula: filters.cedula });
     }
 
     const [data, count] = await query

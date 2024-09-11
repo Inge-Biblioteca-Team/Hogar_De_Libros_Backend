@@ -14,6 +14,7 @@ import { BooksModule } from 'src/books/books.module';
     BooksModule,
     TypeOrmModule.forFeature([BookLoan])],
   controllers: [BookLoanController],
-  providers: [BookLoanService]
+  providers: [BookLoanService],
+  exports:[TypeOrmModule]
 })
 export class BookLoanModule {}

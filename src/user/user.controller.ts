@@ -18,13 +18,13 @@ export class UserController {
         return this.userService.findAll();
     }
 
-    @Patch(':id')
-    update(@Param('id') id:string, @Body() updateUserDto:UpdateUserDto){
-        return this.userService.update(id, updateUserDto)
+    @Patch(':cedula')
+    update(@Param('cedula') cedula:string, @Body() updateUserDto:UpdateUserDto){
+        return this.userService.update(cedula, updateUserDto)
     }
 
-    @Patch('status/:id')
-    changeStatus(@Param('id') id:string){
-        return this.userService.changeStatus(id);
+    @Patch('status/:cedula')
+    changeStatus(@Param('cedula') cedula:string){
+        return this.userService.changeStatus(cedula);
     }
 }
