@@ -79,6 +79,21 @@ export class FurnitureService {
     Furniture.Status = 'N.A.';
     return this.FurnitureRepository.save(Furniture);
   }
+  async SEFurniture(Id: number): Promise<Furniture> {
+    const Furniture = await this.FurnitureRepository.findOne({
+      where: { Id: Id },
+    });
+    if (!Furniture) {
+      throw new NotFoundException(`No hay moviliario con el ${Id}`);
+    }
+    if (Furniture.Status === 'Baja') {
+      throw new BadRequestException(
+        `No se puede cambiar el estado de un mobiliario dado de baja`,
+      );
+    }
+    Furniture.Status = 'S.E.';
+    return this.FurnitureRepository.save(Furniture);
+  }
 
   async findAll(
     query: PaginatedDTO,

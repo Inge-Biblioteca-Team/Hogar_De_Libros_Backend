@@ -49,6 +49,11 @@ export class FurnitureController {
     return await this.furnitureService.DowFurniture(Id);
   }
 
+  @Patch(':id/NA')
+  @ApiOperation({ summary: 'Change Status To N.A.' })
+  async NAFurniture(@Param('id') Id: number) {
+    return await this.furnitureService.NAFurniture(Id);
+  }
   @Patch(':id/SE')
   @ApiOperation({ summary: 'Change Status To S.E.' })
   async SEFurniture(@Param('id') Id: number) {
