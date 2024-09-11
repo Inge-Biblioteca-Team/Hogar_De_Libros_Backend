@@ -17,6 +17,7 @@ import { BookChildrenModule } from './book-children/book-children.module';
 import * as dotenv from 'dotenv';
 import { BooksChildren } from './book-children/book-children.entity';
 import { FilesModule } from './files/files.module';
+import { AuthModule } from './auth/auth.module';
 import { LocalArtist } from './local-artist/local-artist.entity';
 import { LocalArtistModule } from './local-artist/local-artist.module';
 
@@ -41,7 +42,6 @@ dotenv.config();
     ComputerLoanModule,
     BookChildrenModule,
     FilesModule,
-    LocalArtistModule
   ],
   controllers: [AppController],
   providers: [AppService],
