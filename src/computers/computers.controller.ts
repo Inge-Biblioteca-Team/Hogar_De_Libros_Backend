@@ -122,6 +122,13 @@ export class ComputersController {
   ): Promise<string> {
     return this.computerService.ResetWorkStation(machineNumber);
   }
+  
+  @Patch(':machineNumber/reactive')
+  async ReactiveMachine(
+    @Param('machineNumber') machineNumber: number
+  ): Promise<string> {
+    return this.computerService.ReactiveMachine(machineNumber);
+  }
 
  
 }

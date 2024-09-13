@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ComputerLoan } from './computer-loan.entity';
 import { Repository } from 'typeorm';
@@ -25,36 +25,38 @@ export class ComputerLoanService {
       where: { MachineNumber: createComputerLoanDto.MachineNumber },
       relations: ['computers', 'computerLoans'],
     });
-
+  
     if (!workStation) {
-      return 'No se encontró la máquina';
+      throw new HttpException('No se encontró la máquina', HttpStatus.NOT_FOUND);
     }
+    
     if (workStation.Status !== 'Disponible') {
-      return 'La máquina no está disponible para préstamo';
+      throw new HttpException('La máquina no está disponible para préstamo', HttpStatus.BAD_REQUEST);
     }
-
+  
     const user = await this.userRepository.findOne({
       where: { cedula: createComputerLoanDto.cedula },
     });
-
+  
     if (!user) {
-      return 'No se encontró el usuario';
+      throw new HttpException('La cedula no corresponde a un administrador', HttpStatus.NOT_FOUND);
     }
+  
     const computerLoan = new ComputerLoan();
     computerLoan.UserName = createComputerLoanDto.UserName;
     computerLoan.user = user;
     computerLoan.workStation = workStation;
     computerLoan.LoanStartDate = new Date();
     computerLoan.Status = 'En curso';
-
+  
     workStation.Status = 'En Uso';
     await this.workStationRepository.save(workStation);
-
+  
     const savedLoan = await this.computerLoanRepository.save(computerLoan);
-
+  
     return { success: true, loanId: savedLoan.ComputerLoanId };
   }
-
+  
   async getAllComputerLoans(
     paginationDTO: PaginationQueryDTO,
   ): Promise<{ data: ResponseHistoryDto[]; count: number }> {

@@ -24,8 +24,8 @@ export class ComputersService {
     if (!workStation) {
       workStation = this.workStationRepository.create({
         MachineNumber: createComputerDto.MachineNumber,
-        Location: 'Biblioteca pública', 
-        Status: 'Disponible', 
+        Location: 'Biblioteca pública',
+        Status: 'Disponible',
       });
       await this.workStationRepository.save(workStation);
     }
@@ -120,7 +120,6 @@ export class ComputersService {
     return { data, count };
   }
 
-
   async getStatusWorkStation(): Promise<
     { MachineNumber: number; Status: string }[]
   > {
@@ -129,37 +128,60 @@ export class ComputersService {
       order: { MachineNumber: 'ASC' },
     });
   }
-  
-  async SetWorkStationToMaintenance(machineNumber: number, location: string, userName: string): Promise<string> {
+
+  async SetWorkStationToMaintenance(
+    machineNumber: number,
+    location: string,
+    userName: string,
+  ): Promise<string> {
     const workStation = await this.workStationRepository.findOne({
       where: { MachineNumber: machineNumber },
     });
-  
+
     if (!workStation) {
       return 'No se encontró la máquina';
     }
 
     const locationWitInCharge = `${location}; ${userName}`;
-  
+
     workStation.Status = 'Mantenimiento';
     workStation.Location = locationWitInCharge;
     await this.workStationRepository.save(workStation);
-  
+
     return 'Estado actualizado a Mantenimiento';
   }
   async ResetWorkStation(machineNumber: number): Promise<string> {
     const workStation = await this.workStationRepository.findOne({
       where: { MachineNumber: machineNumber },
     });
-  
+
     if (!workStation) {
       return 'No se encontró la máquina';
     }
-  
+
     workStation.Status = 'Disponible';
     workStation.Location = 'Biblioteca pública';
     await this.workStationRepository.save(workStation);
-  
+
     return 'Estado actualizado a Disponible';
+  }
+
+  async ReactiveMachine(machineNumber: number): Promise<string> {
+    const workStation = await this.workStationRepository.findOne({
+      where: { MachineNumber: machineNumber },
+    });
+
+    if (!workStation) {
+      return 'No se encontró un equipo con ese número';
+    }
+
+    if (workStation.Status === 'Mantenimiento') {
+      workStation.Status = 'Disponible';
+      workStation.Location = 'Biblioteca Publica';
+      await this.workStationRepository.save(workStation);
+      return 'El Equipo ha sido reactivado y ahora está disponible';
+    }
+
+    return 'El Equipo no está en mantenimiento, no se realizaron cambios';
   }
 }
