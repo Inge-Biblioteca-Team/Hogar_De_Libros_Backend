@@ -1,13 +1,13 @@
 /* eslint-disable prettier/prettier */
 import { Body, Controller, Get, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { BookLoanService } from './book-loan.service';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateBookLoanDto } from './DTO/create-book-loan.dto';
 import { BookLoan } from './book-loan.enity';
 import { FinalizeBookLoanDto } from './DTO/finalize-bookloan.dto';
 import { updatedBookLoan } from './DTO/update-bookLoan.dto';
-import { PaginationFilterBookLoanDto } from './DTO/pagination-filter-bookLoan.dto';
-import { PaginationBookLoanDto } from './DTO/pagination-bookLoans.dto';
+import { GETResponseDTO } from './DTO/GETSResponse';
+import { BookLoanResponseDTO } from './DTO/RequestDTO';
 
 @ApiTags('booksLoan')
 @Controller('book-loan')
@@ -58,7 +58,7 @@ export class BookLoanController {
     }
     return updatedBookLoan;
   }
-  
+  /*
   @Get('/in-progress')
   async getInProgressLoans(@Query() paginationDto: PaginationBookLoanDto): Promise<{ data: BookLoan[], count: number }> {
     return this.bookLoanService.getInProgressLoans(paginationDto);
@@ -75,8 +75,24 @@ export class BookLoanController {
   }
   @Get()
   async findBookLoans(@Query() filters: PaginationFilterBookLoanDto) {
+    console.log('Filters:', filters)
     return this.bookLoanService.findBookLoans(filters);
+    
   }
-  
+  */
+  @Get('in-progress')
+  async getInProgressLoans(@Query() paginationDto: GETResponseDTO): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
+    return this.bookLoanService.getInProgressLoans(paginationDto);
+  }
+
+  @Get('pending')
+  async getPendingLoans(@Query() paginationDto: GETResponseDTO): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
+    return this.bookLoanService.getPendingLoans(paginationDto);
+  }
+
+  @Get('completed')
+  async getCompletedLoans(@Query() paginationDto: GETResponseDTO): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
+    return this.bookLoanService.getCompletedLoans(paginationDto);
+  }
 
 }

@@ -2,16 +2,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BookLoan } from 'src/book-loan/book-loan.enity';
 import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' }) 
 export class User {
 
   @ApiProperty()
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
+  @PrimaryColumn()
   cedula:string;
 
   @ApiProperty({ description: 'Correo electrónico del usuario' })
@@ -69,6 +66,6 @@ export class User {
   @OneToMany(() => BookLoan, bookLoan => bookLoan.user)
   bookLoans: BookLoan[];
 
-  @OneToMany(() => ComputerLoan, computerLoan => computerLoan.user)
+  @OneToMany(() => ComputerLoan, (computerLoan) => computerLoan.user)
   computerLoan: ComputerLoan[];
 }

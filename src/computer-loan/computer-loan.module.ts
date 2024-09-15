@@ -4,9 +4,11 @@ import { ComputerLoanController } from './computer-loan.controller';
 import { ComputerLoanService } from './computer-loan.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ComputerLoan } from './computer-loan.entity';
+import { ComputersModule } from 'src/computers/computers.module';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([ComputerLoan])],
+  imports:[TypeOrmModule.forFeature([ComputerLoan]), ComputersModule, UserModule],
   controllers: [ComputerLoanController],
   providers: [ComputerLoanService]
 })

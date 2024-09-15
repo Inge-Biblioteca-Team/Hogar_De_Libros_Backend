@@ -37,8 +37,10 @@ export class ComputersController {
     type: ComputerDTO,
   })
   addComputer(@Body() computerDTO: ComputerDTO): Promise<ComputerDTO> {
-    return this.computerService.addComputer(computerDTO);
+    return this.computerService.createComputer(computerDTO);
   }
+
+
   @Get(':EquipmentUniqueCode')
   @ApiProperty({ description: 'Obtiene un equipo de cómputo  por su código' })
   async findById(
@@ -93,4 +95,40 @@ export class ComputersController {
   async getAllComputers(@Query() paginationDTO: PaginationQueryDTO) {
     return await this.computerService.getAllComputers(paginationDTO);
   }
+
+
+  @Get('workstation/Status')
+  @ApiOperation({ summary: 'Watch the status of a workstation ' })
+  @ApiResponse({
+    status: 200,
+    description: 'The WorkStation status has been finded.',
+  })
+  async getStatusWorkStation(): Promise<{MachineNumber: number, Status: string}[]> {
+    return await this.computerService.getStatusWorkStation();
+  }
+
+  @Patch(':machineNumber/maintenance')
+  async setWorkStationToMaintenance(
+    @Param('machineNumber') machineNumber: number,
+    @Body('location') location: string,
+    @Body('userName') userName: string
+  ): Promise<string> {
+    return this.computerService.SetWorkStationToMaintenance(machineNumber, location, userName);
+  }
+
+  @Patch(':machineNumber/available')
+  async setWorkStationToAvailable(
+    @Param('machineNumber') machineNumber: number
+  ): Promise<string> {
+    return this.computerService.ResetWorkStation(machineNumber);
+  }
+  
+  @Patch(':machineNumber/reactive')
+  async ReactiveMachine(
+    @Param('machineNumber') machineNumber: number
+  ): Promise<string> {
+    return this.computerService.ReactiveMachine(machineNumber);
+  }
+
+ 
 }

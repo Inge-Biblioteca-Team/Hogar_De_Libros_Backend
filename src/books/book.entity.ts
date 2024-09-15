@@ -42,8 +42,9 @@ export class Book {
   BookConditionRating: number;
 
   @Column()
+ 
   @ApiProperty({ description: 'Código de firma' })
-  SignatureCode: string;
+  signatureCode: string;
 
   @Column()
   @ApiProperty({ description: 'Código de inscripción' })

@@ -22,6 +22,7 @@ import { Furniture } from './furniture/furniture.entity';
 import { LocalArtistModule } from './local-artist/local-artist.module';
 import { FurnitureModule } from './furniture/furniture.module';
 import { AuthModule } from './auth/auth.module';
+import { WorkStation } from './computers/WorkStation.entity';
 
 dotenv.config();
 
@@ -34,7 +35,7 @@ dotenv.config();
       username: "root",
       password: "root",
       database: "test",
-      entities: [Book, Computer, BookLoan, ComputerLoan, User, BooksChildren, LocalArtist, Furniture],
+      entities: [Book, Computer, BookLoan, ComputerLoan, User, BooksChildren, LocalArtist, Furniture,WorkStation],
       synchronize: true,
     }),
     BooksModule,

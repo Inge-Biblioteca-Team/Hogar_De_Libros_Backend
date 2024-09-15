@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { WorkStation } from './WorkStation.entity';
 
 @Entity({ name: 'computers' })
 export class Computer {
@@ -45,6 +45,8 @@ export class Computer {
   Status: boolean = true;
 
   // Relaciones
-  @ManyToOne(() => ComputerLoan, (computerLoan) => computerLoan.Computers)
-  computerLoan: ComputerLoan;
+
+  @ManyToOne(() => WorkStation, (workStation) => workStation.computers)
+  @JoinColumn({ name: 'MachineNumber', referencedColumnName: 'MachineNumber' })
+  workStation: WorkStation;
 }

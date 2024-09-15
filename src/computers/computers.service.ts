@@ -6,28 +6,52 @@ import { Repository } from 'typeorm';
 import { ComputerDTO } from './DTO/create-computer.dto';
 import { PaginationQueryDTO } from './DTO/pagination-querry.dto';
 import { ModifyComputerDTO } from './DTO/modify-computer.dto';
+import { WorkStation } from './WorkStation.entity';
 
 @Injectable()
 export class ComputersService {
   constructor(
     @InjectRepository(Computer)
     private computerRepository: Repository<Computer>,
+    @InjectRepository(WorkStation)
+    private workStationRepository: Repository<WorkStation>,
   ) {}
-  // método para agregar un equipo de cómputo
-  async addComputer(computerDTO: ComputerDTO): Promise<Computer> {
-    const newComputer = this.computerRepository.create(computerDTO);
-    return this.computerRepository.save(newComputer);
-  }
+  async createComputer(createComputerDto: ComputerDTO): Promise<Computer> {
+    let workStation = await this.workStationRepository.findOne({
+      where: { MachineNumber: createComputerDto.MachineNumber },
+    });
 
-  async findByEquipmentUniqueCode(EquipmentUniqueCode: number): Promise<Computer> {
-    const computer = await this.computerRepository.findOne({ where: { EquipmentUniqueCode } });
+    if (!workStation) {
+      workStation = this.workStationRepository.create({
+        MachineNumber: createComputerDto.MachineNumber,
+        Location: 'Biblioteca pública',
+        Status: 'Disponible',
+      });
+      await this.workStationRepository.save(workStation);
+    }
+
+    const computer = this.computerRepository.create({
+      ...createComputerDto,
+      workStation,
+    });
+
+    return this.computerRepository.save(computer);
+  }
+  async findByEquipmentUniqueCode(
+    EquipmentUniqueCode: number,
+  ): Promise<Computer> {
+    const computer = await this.computerRepository.findOne({
+      where: { EquipmentUniqueCode },
+    });
     if (!computer) {
-        throw new NotFoundException(`El equipo de cómputo con código ${EquipmentUniqueCode} no fue encontrado`);
+      throw new NotFoundException(
+        `El equipo de cómputo con código ${EquipmentUniqueCode} no fue encontrado`,
+      );
     }
 
     // Devuelve el equipo encontrado
     return computer;
-}
+  }
   // método para modificar un equipo de cómputo
   async modifyComputer(
     EquipmentUniqueCode: number,
@@ -75,7 +99,9 @@ export class ComputersService {
       });
     }
     if (EquipmentBrand) {
-      query.andWhere('computer.EquipmentBrand LIKE :EquipmentBrand', { EquipmentBrand: `%${EquipmentBrand}%` });
+      query.andWhere('computer.EquipmentBrand LIKE :EquipmentBrand', {
+        EquipmentBrand: `%${EquipmentBrand}%`,
+      });
     }
     if (EquipmentCategory) {
       query.andWhere('computer.EquipmentCategory = :EquipmentCategory', {
@@ -92,5 +118,70 @@ export class ComputersService {
     query.orderBy('computer.EquipmentUniqueCode', 'DESC');
     const [data, count] = await query.getManyAndCount();
     return { data, count };
+  }
+
+  async getStatusWorkStation(): Promise<
+    { MachineNumber: number; Status: string }[]
+  > {
+    return this.workStationRepository.find({
+      select: ['MachineNumber', 'Status'],
+      order: { MachineNumber: 'ASC' },
+    });
+  }
+
+  async SetWorkStationToMaintenance(
+    machineNumber: number,
+    location: string,
+    userName: string,
+  ): Promise<string> {
+    const workStation = await this.workStationRepository.findOne({
+      where: { MachineNumber: machineNumber },
+    });
+
+    if (!workStation) {
+      return 'No se encontró la máquina';
+    }
+
+    const locationWitInCharge = `${location}; ${userName}`;
+
+    workStation.Status = 'Mantenimiento';
+    workStation.Location = locationWitInCharge;
+    await this.workStationRepository.save(workStation);
+
+    return 'Estado actualizado a Mantenimiento';
+  }
+  async ResetWorkStation(machineNumber: number): Promise<string> {
+    const workStation = await this.workStationRepository.findOne({
+      where: { MachineNumber: machineNumber },
+    });
+
+    if (!workStation) {
+      return 'No se encontró la máquina';
+    }
+
+    workStation.Status = 'Disponible';
+    workStation.Location = 'Biblioteca pública';
+    await this.workStationRepository.save(workStation);
+
+    return 'Estado actualizado a Disponible';
+  }
+
+  async ReactiveMachine(machineNumber: number): Promise<string> {
+    const workStation = await this.workStationRepository.findOne({
+      where: { MachineNumber: machineNumber },
+    });
+
+    if (!workStation) {
+      return 'No se encontró un equipo con ese número';
+    }
+
+    if (workStation.Status === 'Mantenimiento') {
+      workStation.Status = 'Disponible';
+      workStation.Location = 'Biblioteca Publica';
+      await this.workStationRepository.save(workStation);
+      return 'El Equipo ha sido reactivado y ahora está disponible';
+    }
+
+    return 'El Equipo no está en mantenimiento, no se realizaron cambios';
   }
 }
