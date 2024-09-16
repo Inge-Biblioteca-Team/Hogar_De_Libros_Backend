@@ -6,6 +6,9 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './DTO/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './DTO/update-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import { Role } from './loan-policy';
+import { MailService } from 'src/auth/email.service';
 
 @Injectable()
 export class UserService {
@@ -13,6 +16,8 @@ export class UserService {
     constructor(
         @InjectRepository(User)
         private readonly UserRepository: Repository<User>,
+
+        
       ) {}
 
       async findAll() {
@@ -34,7 +39,25 @@ export class UserService {
         return await this.UserRepository.save(newUser)
     
       }
-    
+       
+      async createExternalUser(createUserDto: CreateUserDto): Promise<User> {
+       
+        createUserDto.role = Role.ExternalUser;
+      
+        return await this.create(createUserDto);
+      }
+      
+      async createViewerUser(createUserDto: CreateUserDto): Promise<User> {
+        createUserDto.role = Role.Viewer;
+      
+        return await this.create(createUserDto);
+      }
+      
+      async createCreatorUser(createUserDto: CreateUserDto): Promise<User> {
+        createUserDto.role = Role.Creator;
+      
+        return await this.create(createUserDto);
+      }
       async update(cedula: string, updateUserDto: UpdateUserDto) {
         const user = await this.UserRepository.findOneBy({ cedula });
         if (!user)
@@ -59,4 +82,18 @@ export class UserService {
         user.status = !user.status;
         return await this.UserRepository.save(user);
       }
+
+      async getUserByCedula(cedula: string): Promise<User> {
+        const user = await this.UserRepository.findOne({ where: { cedula } });
+      
+        if (!user) {
+          throw new HttpException(
+            `Usuario con cédula ${cedula} no encontrado`,
+            HttpStatus.NOT_FOUND,
+          );
+        }
+      
+        return user;
+      }
+      
 }

@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import { PaginationFilterBookLoanDto } from './DTO/pagination-filter-bookLoan.dt
 import { Book } from 'src/books/book.entity';
 import { GETResponseDTO } from './DTO/GETSResponse';
 import { BookLoanResponseDTO } from './DTO/RequestDTO';
+import { LoanPolicy, Role } from 'src/user/loan-policy';
 
 @Injectable()
 export class BookLoanService {
@@ -22,9 +24,16 @@ export class BookLoanService {
     private readonly bookLoanRepository: Repository<BookLoan>,
     @InjectRepository(Book)
     private readonly bookRepository: Repository<Book>,
-  ) {}
 
-  async createLoan(createBookLoanDto: CreateBookLoanDto): Promise<BookLoan> {
+  ) {}
+  async createLoan(createBookLoanDto: CreateBookLoanDto, user: any): Promise<BookLoan> {
+    const role = user.role;
+    
+   
+    if (!LoanPolicy.canLoan(role)) {
+      throw new ForbiddenException('No tienes permisos para realizar préstamos.');
+    }
+    
     const book = await this.bookRepository.findOne({
       where: { BookCode: createBookLoanDto.bookBookCode },
     });
@@ -41,7 +50,7 @@ export class BookLoanService {
       );
     }
 
-    // Verificar si ya existe un préstamo pendiente o en progreso
+ 
     const existingLoan = await this.bookLoanRepository.findOne({
       where: {
         bookBookCode: book.BookCode,
@@ -55,11 +64,42 @@ export class BookLoanService {
       );
     }
 
+   
+    const userCurrentLoans = await this.bookLoanRepository.count({
+      where: {
+        userCedula: createBookLoanDto.userCedula,
+        Status: In(['Pendiente', 'En progreso']),
+      },
+    });
+
+  
+    const loanLimits = LoanPolicy.getLoanLimits(role, userCurrentLoans + 1);  
+
+    const maxBooksAllowed = loanLimits.maxBooks;
+    if (maxBooksAllowed !== 'unlimited' && userCurrentLoans >= maxBooksAllowed) {
+      throw new BadRequestException(
+        `Has alcanzado el límite máximo de ${maxBooksAllowed} préstamos para tu rol.`,
+      );
+    }
+
+    
     const newBookLoan = this.bookLoanRepository.create(createBookLoanDto);
     newBookLoan.Status = 'Pendiente';
     newBookLoan.book = book;
+
+   
+    const maxDaysAllowed = loanLimits.days;
+    if (maxDaysAllowed !== 'unlimited') {
+      const expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + maxDaysAllowed);
+      newBookLoan.LoanExpirationDate = expirationDate;
+    }
+
     return await this.bookLoanRepository.save(newBookLoan);
   }
+
+
+
   async setInProcess(bookLoanId: number): Promise<BookLoan> {
     const bookLoan = await this.bookLoanRepository.findOne({
       where: { BookLoanId: bookLoanId },
