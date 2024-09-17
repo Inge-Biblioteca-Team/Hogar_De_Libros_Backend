@@ -25,42 +25,51 @@ export class ComputerLoanService {
       where: { MachineNumber: createComputerLoanDto.MachineNumber },
       relations: ['computers', 'computerLoans'],
     });
-  
+
     if (!workStation) {
-      throw new HttpException('No se encontró la máquina', HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        'No se encontró la máquina',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    
+
     if (workStation.Status !== 'Disponible') {
-      throw new HttpException('La máquina no está disponible para préstamo', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'La máquina no está disponible para préstamo',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-  
+
     const user = await this.userRepository.findOne({
       where: { cedula: createComputerLoanDto.cedula },
     });
-  
+
     if (!user) {
-      throw new HttpException('La cedula no corresponde a un administrador', HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        'La cedula no corresponde a un administrador',
+        HttpStatus.NOT_FOUND,
+      );
     }
-  
+
     const computerLoan = new ComputerLoan();
     computerLoan.UserName = createComputerLoanDto.UserName;
     computerLoan.user = user;
     computerLoan.workStation = workStation;
     computerLoan.LoanStartDate = new Date();
     computerLoan.Status = 'En curso';
-  
+
     workStation.Status = 'En Uso';
     await this.workStationRepository.save(workStation);
-  
+
     const savedLoan = await this.computerLoanRepository.save(computerLoan);
-  
+
     return { success: true, loanId: savedLoan.ComputerLoanId };
   }
-  
+
   async getAllComputerLoans(
     paginationDTO: PaginationQueryDTO,
   ): Promise<{ data: ResponseHistoryDto[]; count: number }> {
-    const { Page = 1, Limit = 10 } = paginationDTO;
+    const { Page = 1, Limit = 10, StartDate, MachineNumber } = paginationDTO;
 
     const query = this.computerLoanRepository
       .createQueryBuilder('computerLoan')
@@ -70,6 +79,16 @@ export class ComputerLoanService {
       .skip((Page - 1) * Limit)
       .take(Limit);
 
+    if (StartDate)
+      query.andWhere('Date(computerLoan.LoanStartDate) >= :StartDate', {
+        StartDate,
+      });
+
+    if (MachineNumber) {
+      query.andWhere('computerLoan.MachineNumber = :MachineNumber',{
+        MachineNumber,
+      });
+    }
     const [computerLoans, count] = await query.getManyAndCount();
 
     const data = computerLoans.map((loan) => ({
@@ -111,5 +130,4 @@ export class ComputerLoanService {
 
     return 'Préstamo finalizado';
   }
-  
 }

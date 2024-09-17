@@ -7,18 +7,25 @@ import {
   Patch,
   Param,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { LocalArtistService } from './local-artist.service';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginatedQueryDTO } from './DTO/Paginated-Query';
 import { CreateLocalArtistDTO } from './DTO/create-local-artist.dto';
 import { LocalArtist } from './local-artist.entity';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('localArtist')
 @Controller('local-artist')
 export class LocalArtistController {
   constructor(private readonly localArtistService: LocalArtistService) {}
 
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   @Post()
   @ApiOperation({ summary: 'Create a new local artist' })
   @ApiBody({ type: CreateLocalArtistDTO })
@@ -53,6 +60,9 @@ export class LocalArtistController {
     return this.localArtistService.findOne(id);
   }
 
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin','creator')
   @Patch(':id')
   @ApiOperation({ summary: 'Update a local artist' })
   @ApiBody({ type: CreateLocalArtistDTO })
@@ -65,6 +75,9 @@ export class LocalArtistController {
     return this.localArtistService.update(id, updateLocalArtistDto);
   }
 
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   @Patch(':id/Down')
   @ApiOperation({ summary: 'Disable a local artist' })
   @ApiResponse({ status: 200, description: 'Artist disabled successfully.' })
