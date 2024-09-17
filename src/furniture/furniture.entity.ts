@@ -27,5 +27,9 @@ export class Furniture {
   @Column()
   @ApiProperty({ description: 'Nombre completo' })
   Status: string = "S.E.";
+
+  @Column()
+  @ApiProperty({description:'Numero de placa'})
+  LicenseNumber:string;
 }
 

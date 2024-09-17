@@ -5,18 +5,22 @@ import { IsNumber, IsString } from 'class-validator';
 
 export class CreateFurnitureDto {
   @IsString()
-  @ApiProperty({ description: 'Nombre completo' })
+  @ApiProperty({ description: 'Nombre del objeto' })
   Description: string;
 
   @IsString()
-  @ApiProperty({ description: 'Nombre completo' })
+  @ApiProperty({ description: 'Ubicacion del Mobiliario' })
   Location: string;
 
   @IsString()
-  @ApiProperty({ description: 'Nombre completo' })
+  @ApiProperty({ description: 'Nombre completo de la persona acargo' })
   InChargePerson: string;
 
   @IsNumber()
-  @ApiProperty({ description: 'Nombre completo' })
+  @ApiProperty({ description: 'COndicion del 1-5' })
   ConditionRating: number;
+
+  @IsString()
+  @ApiProperty({description: "Numero de Placa del Elemento"})
+  LicenseNumber:string
 }
