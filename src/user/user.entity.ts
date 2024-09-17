@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BookLoan } from 'src/book-loan/book-loan.enity';
 import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
 import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Role } from './loan-policy';
 
 @Entity({ name: 'users' }) 
 export class User {
@@ -61,6 +62,12 @@ export class User {
 
   @Column()
   status:boolean;
+
+  @Column({
+    type: 'enum',
+    enum: Role,
+  })
+  role: Role;
 
   // Relaciones
   @OneToMany(() => BookLoan, bookLoan => bookLoan.user)

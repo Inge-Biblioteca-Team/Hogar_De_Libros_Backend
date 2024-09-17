@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Patch, Post } from '@nestjs/common';
 import { CreateUserDto } from './DTO/create-user.dto';
 import { UpdateUserDto } from './DTO/update-user.dto';
 import { UserService } from './user.service';
@@ -18,13 +18,32 @@ export class UserController {
         return this.userService.findAll();
     }
 
-    @Patch(':cedula')
-    update(@Param('cedula') cedula:string, @Body() updateUserDto:UpdateUserDto){
-        return this.userService.update(cedula, updateUserDto)
+    @Get(':cedula')
+  async getUserByCedula(@Param('cedula') cedula: string) {
+    const user = await this.userService.getUserByCedula(cedula);
+    if (!user) {
+      throw new HttpException(`User with cedula ${cedula} not found`, HttpStatus.NOT_FOUND);
     }
+    return user;
+  }
 
-    @Patch('status/:cedula')
-    changeStatus(@Param('cedula') cedula:string){
-        return this.userService.changeStatus(cedula);
+   
+  @Patch('update/:cedula')
+  async updateUser(@Param('cedula') cedula: string, @Body() updateUserDto: UpdateUserDto) {
+    try {
+      return await this.userService.update(cedula, updateUserDto);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
     }
+  }
+    @Patch('change-status/:cedula')
+  async changeUserStatus(@Param('cedula') cedula: string) {
+    try {
+      return await this.userService.changeStatus(cedula);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+    }
+  }
+
+
 }

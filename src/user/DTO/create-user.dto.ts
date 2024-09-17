@@ -4,9 +4,11 @@ import {
   IsBoolean,
   IsDate,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsString,
 } from 'class-validator';
+import { Role } from '../loan-policy';
 
 export class CreateUserDto {
   @ApiProperty()
@@ -66,6 +68,8 @@ export class CreateUserDto {
   @IsBoolean()
   @IsNotEmpty()
   acceptTermsAndConditions: boolean;
-
+  
+  @IsEnum(Role)
+   role: Role;
   
 }

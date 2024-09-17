@@ -9,10 +9,12 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ComputersService } from './computers.service';
 import { ComputerDTO } from './DTO/create-computer.dto';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiProperty,
@@ -22,12 +24,19 @@ import {
 import { ModifyComputerDTO } from './DTO/modify-computer.dto';
 import { Computer } from './computer.entity';
 import { PaginationQueryDTO } from './DTO/pagination-querry.dto';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @ApiTags('computers')
 @Controller('computers')
 export class ComputersController {
   constructor(private computerService: ComputersService) {}
 
+
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   @Post()
   @ApiBody({ type: ComputerDTO })
   @ApiOperation({ summary: 'Create a new Computer equipment' })
@@ -40,7 +49,9 @@ export class ComputersController {
     return this.computerService.createComputer(computerDTO);
   }
 
-
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   @Get(':EquipmentUniqueCode')
   @ApiProperty({ description: 'Obtiene un equipo de cómputo  por su código' })
   async findById(
@@ -55,6 +66,10 @@ export class ComputersController {
     }
   }
 
+
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   //controlador de modificación de un equipo de cómputo
   @Put(':EquipmentUniqueCode')
   @ApiOperation({ summary: 'Modify a Computer equipment' })
@@ -72,6 +87,9 @@ export class ComputersController {
     );
   }
 
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   //metodo desabilitar un equipo de cómputo
   @Patch(':EquipmentUniqueCode')
   @ApiOperation({ summary: 'Inactivates a computer equipment ' })
@@ -84,6 +102,10 @@ export class ComputersController {
   ) {
     return await this.computerService.DisableEquipment(EquipmentUniqueCode);
   }
+
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'external_user')
   //método para ver todo con filtro y paginado
   @Get()
   @ApiOperation({ summary: 'get all equipments and filters' })
@@ -96,7 +118,9 @@ export class ComputersController {
     return await this.computerService.getAllComputers(paginationDTO);
   }
 
-
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin','external_user')
   @Get('workstation/Status')
   @ApiOperation({ summary: 'Watch the status of a workstation ' })
   @ApiResponse({
@@ -107,6 +131,9 @@ export class ComputersController {
     return await this.computerService.getStatusWorkStation();
   }
 
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   @Patch(':machineNumber/maintenance')
   async setWorkStationToMaintenance(
     @Param('machineNumber') machineNumber: number,
@@ -116,6 +143,9 @@ export class ComputersController {
     return this.computerService.SetWorkStationToMaintenance(machineNumber, location, userName);
   }
 
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   @Patch(':machineNumber/available')
   async setWorkStationToAvailable(
     @Param('machineNumber') machineNumber: number
@@ -123,6 +153,9 @@ export class ComputersController {
     return this.computerService.ResetWorkStation(machineNumber);
   }
   
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   @Patch(':machineNumber/reactive')
   async ReactiveMachine(
     @Param('machineNumber') machineNumber: number
