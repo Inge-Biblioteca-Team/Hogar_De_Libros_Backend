@@ -15,7 +15,7 @@ import { PaginationFilterBookLoanDto } from './DTO/pagination-filter-bookLoan.dt
 import { Book } from 'src/books/book.entity';
 import { GETResponseDTO } from './DTO/GETSResponse';
 import { BookLoanResponseDTO } from './DTO/RequestDTO';
-import { LoanPolicy, Role } from 'src/user/loan-policy';
+import { LoanPolicy } from 'src/user/loan-policy';
 
 @Injectable()
 export class BookLoanService {
@@ -24,16 +24,19 @@ export class BookLoanService {
     private readonly bookLoanRepository: Repository<BookLoan>,
     @InjectRepository(Book)
     private readonly bookRepository: Repository<Book>,
-
   ) {}
-  async createLoan(createBookLoanDto: CreateBookLoanDto, user: any): Promise<BookLoan> {
+  async createLoan(
+    createBookLoanDto: CreateBookLoanDto,
+    user: any,
+  ): Promise<BookLoan> {
     const role = user.role;
-    
-   
+
     if (!LoanPolicy.canLoan(role)) {
-      throw new ForbiddenException('No tienes permisos para realizar préstamos.');
+      throw new ForbiddenException(
+        'No tienes permisos para realizar préstamos.',
+      );
     }
-    
+
     const book = await this.bookRepository.findOne({
       where: { BookCode: createBookLoanDto.bookBookCode },
     });
@@ -50,7 +53,6 @@ export class BookLoanService {
       );
     }
 
- 
     const existingLoan = await this.bookLoanRepository.findOne({
       where: {
         bookBookCode: book.BookCode,
@@ -64,7 +66,6 @@ export class BookLoanService {
       );
     }
 
-   
     const userCurrentLoans = await this.bookLoanRepository.count({
       where: {
         userCedula: createBookLoanDto.userCedula,
@@ -72,22 +73,22 @@ export class BookLoanService {
       },
     });
 
-  
-    const loanLimits = LoanPolicy.getLoanLimits(role, userCurrentLoans + 1);  
+    const loanLimits = LoanPolicy.getLoanLimits(role, userCurrentLoans + 1);
 
     const maxBooksAllowed = loanLimits.maxBooks;
-    if (maxBooksAllowed !== 'unlimited' && userCurrentLoans >= maxBooksAllowed) {
+    if (
+      maxBooksAllowed !== 'unlimited' &&
+      userCurrentLoans >= maxBooksAllowed
+    ) {
       throw new BadRequestException(
         `Has alcanzado el límite máximo de ${maxBooksAllowed} préstamos para tu rol.`,
       );
     }
 
-    
     const newBookLoan = this.bookLoanRepository.create(createBookLoanDto);
     newBookLoan.Status = 'Pendiente';
     newBookLoan.book = book;
 
-   
     const maxDaysAllowed = loanLimits.days;
     if (maxDaysAllowed !== 'unlimited') {
       const expirationDate = new Date();
@@ -97,8 +98,6 @@ export class BookLoanService {
 
     return await this.bookLoanRepository.save(newBookLoan);
   }
-
-
 
   async setInProcess(bookLoanId: number): Promise<BookLoan> {
     const bookLoan = await this.bookLoanRepository.findOne({
@@ -186,11 +185,11 @@ export class BookLoanService {
     console.log(filters.BookPickUpDate);
 
     if (filters.signatureCode) {
-      console.log('signatureCode:', filters.signatureCode); // Verifica que el valor esté llegando aquí
+      console.log('signatureCode:', filters.signatureCode);
       query
-        .leftJoinAndSelect('bookLoan.book', 'book') // Asegúrate del JOIN correcto
+        .leftJoinAndSelect('bookLoan.book', 'book')
         .andWhere('book.signatureCode = :signatureCode', {
-          signatureCode: String(filters.signatureCode), // Asegúrate de usar el valor correctamente
+          signatureCode: String(filters.signatureCode),
         });
 
       console.log(filters.signatureCode);
@@ -212,57 +211,6 @@ export class BookLoanService {
     return { data, count };
   }
 
-  /**  async getInProgressLoans(
-    paginationDto: PaginationBookLoanDto,
-  ): Promise<{ data: BookLoan[]; count: number }> {
-    const { page = 1, limit = 10 } = paginationDto;
-    const query = this.bookLoanRepository
-      .createQueryBuilder('bookLoan')
-      .leftJoinAndSelect('bookLoan.book', 'book')
-      .leftJoinAndSelect('bookLoan.user', 'user')
-      .where('bookLoan.Status = :status', { status: 'En progreso' })
-      .andWhere('bookLoan.book IS NOT NULL')  
-  .andWhere('bookLoan.user IS NOT NULL'); 
-    query.skip((page - 1) * limit).take(limit);
-
-    const [data, count] = await query.getManyAndCount();
-    return { data, count };
-  }
-
-  async getPendingLoans(
-    paginationDto: PaginationBookLoanDto,
-  ): Promise<{ data: BookLoan[]; count: number }> {
-    const { page = 1, limit = 10 } = paginationDto;
-    const query = this.bookLoanRepository
-      .createQueryBuilder('bookLoan')
-      .leftJoinAndSelect('bookLoan.book', 'book')
-      .leftJoinAndSelect('bookLoan.user', 'user')
-      .where('bookLoan.Status = :status', { status: 'Pendiente' });
-      
-
-    query.skip((page - 1) * limit).take(limit);
-
-    const [data, count] = await query.getManyAndCount();
-    return { data, count };
-  }
-
-  async getCompletedLoans(
-    paginationDto: PaginationBookLoanDto,
-  ): Promise<{ data: BookLoan[]; count: number }> {
-    const { page = 1, limit = 10 } = paginationDto;
-    const query = this.bookLoanRepository
-      .createQueryBuilder('bookLoan')
-      .leftJoinAndSelect('bookLoan.book', 'book')
-      .leftJoinAndSelect('bookLoan.user', 'user')
-      .where('bookLoan.Status = :status', { status: 'Finalizado' });
-
-    query.skip((page - 1) * limit).take(limit);
-
-    const [data, count] = await query.getManyAndCount();
-    return { data, count };
-  }
- */
-
   async getInProgressLoans(
     paginationDto: GETResponseDTO,
   ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
@@ -270,9 +218,9 @@ export class BookLoanService {
       page = 1,
       limit = 10,
       StartDate,
-      EndDate,
       LoanExpirationDate,
-      BookPickUpDate,
+      signatureCode,
+      cedula,
     } = paginationDto;
     const query = this.bookLoanRepository
       .createQueryBuilder('bookLoan')
@@ -281,21 +229,30 @@ export class BookLoanService {
       .where('bookLoan.Status = :status', { status: 'En progreso' })
       .andWhere('bookLoan.book IS NOT NULL')
       .andWhere('bookLoan.user IS NOT NULL');
-
-    if (StartDate)
-      query.andWhere('bookLoan.LoanRequestDate >= :StartDate', { StartDate });
-    if (EndDate)
-      query.andWhere('bookLoan.LoanRequestDate <= :EndDate', { EndDate });
-    if (LoanExpirationDate)
-      query.andWhere('bookLoan.LoanExpirationDate = :LoanExpirationDate', {
-        LoanExpirationDate,
+    if (StartDate) {
+      query.andWhere('bookLoan.LoanRequestDate >= :StartDate', {
+        StartDate,
       });
-    if (BookPickUpDate)
-      query.andWhere('bookLoan.BookPickUpDate = :BookPickUpDate', {
-        BookPickUpDate,
+    }
+    if (LoanExpirationDate)
+      query.andWhere(
+        'Date(bookLoan.LoanExpirationDate) <= :LoanExpirationDate',
+        {
+          LoanExpirationDate,
+        },
+      );
+    if (signatureCode) {
+      query.andWhere('book.signatureCode LIKE :signatureCode', {
+        signatureCode: `%${signatureCode}%`,
+      });
+    }
+    if (cedula)
+      query.andWhere('user.cedula LIKE :cedula', {
+        cedula: `%${cedula}%`,
       });
 
     query.skip((page - 1) * limit).take(limit);
+    query.orderBy('bookLoan.LoanRequestDate', 'DESC');
 
     const [data, count] = await query.getManyAndCount();
 
@@ -323,58 +280,6 @@ export class BookLoanService {
   }
 
   async getPendingLoans(
-    paginationDto: GETResponseDTO,
-  ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
-    const {
-      page = 1,
-      limit = 10,
-      StartDate,
-      EndDate,
-      LoanExpirationDate,
-    } = paginationDto;
-    const query = this.bookLoanRepository
-      .createQueryBuilder('bookLoan')
-      .leftJoinAndSelect('bookLoan.book', 'book')
-      .leftJoinAndSelect('bookLoan.user', 'user')
-      .where('bookLoan.Status = :status', { status: 'Pendiente' });
-
-    if (StartDate)
-      query.andWhere('bookLoan.LoanRequestDate >= :StartDate', { StartDate });
-    if (EndDate)
-      query.andWhere('bookLoan.LoanRequestDate <= :EndDate', { EndDate });
-    if (LoanExpirationDate)
-      query.andWhere('bookLoan.LoanExpirationDate = :LoanExpirationDate', {
-        LoanExpirationDate,
-      });
-
-    query.skip((page - 1) * limit).take(limit);
-
-    const [data, count] = await query.getManyAndCount();
-
-    const result = data.map((loan) => ({
-      Status: loan.Status,
-      BookLoanId: loan.BookLoanId,
-      LoanRequestDate: loan.LoanRequestDate,
-      BookPickUpDate: loan.BookPickUpDate,
-      LoanExpirationDate: loan.LoanExpirationDate,
-      Observations: loan.Observations,
-      user: {
-        name: loan.user.name,
-        lastName: loan.user.lastName,
-        cedula: loan.user.cedula,
-      },
-      book: {
-        Title: loan.book.Title,
-        signatureCode: loan.book.signatureCode,
-        InscriptionCode: loan.book.InscriptionCode,
-        BookCode: loan.book.BookCode,
-      },
-    }));
-
-    return { data: result, count };
-  }
-
-  async getCompletedLoans(
     paginationDto: GETResponseDTO,
   ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
     const {
@@ -384,7 +289,69 @@ export class BookLoanService {
       EndDate,
       LoanExpirationDate,
       cedula,
+    } = paginationDto;
+    const query = this.bookLoanRepository
+      .createQueryBuilder('bookLoan')
+      .leftJoinAndSelect('bookLoan.book', 'book')
+      .leftJoinAndSelect('bookLoan.user', 'user')
+      .where('bookLoan.Status = :status', { status: 'Pendiente' });
+
+    if (StartDate)
+      query.andWhere('Date(bookLoan.LoanRequestDate) >= :StartDate', {
+        StartDate,
+      });
+    if (EndDate)
+      query.andWhere('Date(bookLoan.LoanRequestDate) <= :EndDate', { EndDate });
+    if (LoanExpirationDate)
+      query.andWhere(
+        'Date(bookLoan.LoanExpirationDate) = :LoanExpirationDate',
+        {
+          LoanExpirationDate,
+        },
+      );
+    if (cedula)
+      query.andWhere('user.cedula LIKE :cedula', {
+        cedula: `%${cedula}%`,
+      });
+
+    query.skip((page - 1) * limit).take(limit);
+    query.orderBy('bookLoan.LoanRequestDate', 'DESC');
+    const [data, count] = await query.getManyAndCount();
+
+    const result = data.map((loan) => ({
+      Status: loan.Status,
+      BookLoanId: loan.BookLoanId,
+      LoanRequestDate: loan.LoanRequestDate,
+      BookPickUpDate: loan.BookPickUpDate,
+      LoanExpirationDate: loan.LoanExpirationDate,
+      Observations: loan.Observations,
+      user: {
+        name: loan.user.name,
+        lastName: loan.user.lastName,
+        cedula: loan.user.cedula,
+      },
+      book: {
+        Title: loan.book.Title,
+        signatureCode: loan.book.signatureCode,
+        InscriptionCode: loan.book.InscriptionCode,
+        BookCode: loan.book.BookCode,
+      },
+    }));
+
+    return { data: result, count };
+  }
+
+  async getCompletedLoans(
+    paginationDto: GETResponseDTO,
+  ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
+    const {
+      page = 1,
+      limit = 10,
+      StartDate,
+      EndDate,
+      name,
       signatureCode,
+      cedula,
     } = paginationDto;
     const query = this.bookLoanRepository
       .createQueryBuilder('bookLoan')
@@ -393,19 +360,26 @@ export class BookLoanService {
       .where('bookLoan.Status = :status', { status: 'Finalizado' });
 
     if (StartDate)
-      query.andWhere('bookLoan.LoanRequestDate >= :StartDate', { StartDate });
-    if (EndDate)
-      query.andWhere('bookLoan.LoanRequestDate <= :EndDate', { EndDate });
-    if (LoanExpirationDate)
-      query.andWhere('bookLoan.LoanExpirationDate = :LoanExpirationDate', {
-        LoanExpirationDate,
+      query.andWhere('Date(bookLoan.LoanRequestDate) >= :StartDate', {
+        StartDate,
       });
-    if (cedula) query.andWhere('user.cedula = :cedula', { cedula });
-    if (signatureCode)
-      query.andWhere('book.signatureCode = :signatureCode', { signatureCode });
-
+    if (EndDate)
+      query.andWhere('Date(bookLoan.LoanRequestDate) <= :EndDate', { EndDate });
+    if (name)
+      query.andWhere('user.name LIKE :name', {
+        name: `%${name}%`,
+      });
+    if (cedula)
+      query.andWhere('user.cedula LIKE :cedula', {
+        cedula: `%${cedula}%`,
+      });
+    if (signatureCode) {
+      query.andWhere('book.signatureCode LIKE :signatureCode', {
+        signatureCode: `%${signatureCode}%`,
+      });
+    }
     query.skip((page - 1) * limit).take(limit);
-
+    query.orderBy('bookLoan.LoanRequestDate', 'DESC');
     const [data, count] = await query.getManyAndCount();
     const result = data.map((loan) => ({
       Status: loan.Status,

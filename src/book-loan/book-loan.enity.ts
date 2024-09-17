@@ -11,15 +11,15 @@ export class BookLoan {
   BookLoanId: number;
 
   @ApiProperty({ description: 'Fecha en la que se solicita el préstamo' })
-  @Column()
+  @Column({ type: 'datetime' })
   LoanRequestDate: Date;
 
   @ApiProperty({ description: 'Fecha en la que se recoge el libro' })
-  @Column()
+  @Column({ type: 'date' })
   BookPickUpDate: Date;
 
   @ApiProperty({ description: 'Fecha en la que se debe devolver el libro' })
-  @Column()
+  @Column({ type: 'date' })
   LoanExpirationDate: Date;
 
   @ApiProperty({ description: 'Estado en el cual se encuentra el préstamo' })
