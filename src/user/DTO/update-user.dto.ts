@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsDate,
   IsEmail,
-  IsNotEmpty,
+  IsOptional,
   IsString,
 } from 'class-validator';
 
@@ -12,51 +12,46 @@ export class UpdateUserDto {
   cedula:string;
   @ApiProperty({ description: 'Correo electrónico del usuario' })
   @IsEmail()
-  @IsNotEmpty()
+  @IsOptional()
   email: string;
 
   @ApiProperty({ description: 'Nombre del usuario' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   name: string;
 
   @ApiProperty({ description: 'Apellido del usuario' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   lastName: string;
 
   @ApiProperty({ description: 'Número de teléfono del usuario' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   phoneNumber: string;
 
   @ApiProperty({ description: 'Provincia donde vive el usuario' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   province: string;
 
   @ApiProperty({ description: 'Distrito donde vive el usuario' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   district: string;
 
   @ApiProperty({ description: 'Género del usuario' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   gender: string;
 
   @ApiProperty({ description: 'Dirreción de residencia del usuario' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   address: string;
 
   @ApiProperty({ description: 'Fecha de nacimiento del usuario' })
   @IsDate()
-  @IsNotEmpty()
-  birthDate: Date;
-
- 
-  
-  
-  
+  @IsOptional()
+  birthDate: Date; 
 }

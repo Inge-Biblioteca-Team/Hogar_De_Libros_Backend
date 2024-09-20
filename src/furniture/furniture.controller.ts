@@ -88,6 +88,6 @@ export class FurnitureController {
   @Patch(':id/SE')
   @ApiOperation({ summary: 'Change Status To S.E.' })
   async SEFurniture(@Param('id') Id: number) {
-    return await this.furnitureService.NAFurniture(Id);
+    return await this.furnitureService.SEFurniture(Id);
   }
 }

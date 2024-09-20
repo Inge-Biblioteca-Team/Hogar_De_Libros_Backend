@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Body, Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -19,7 +20,7 @@ export class AuthController {
   @Post('send-password-reset')
   @HttpCode(HttpStatus.OK)
   async sendPasswordReset(@Body() sendPasswordResetDto: SendPasswordResetDto): Promise<void> {
-    const { email } = sendPasswordResetDto;
-    await this.authService.sendPasswordReset(email);
+    const { email, cedula } = sendPasswordResetDto;
+    await this.authService.sendPasswordReset(email, cedula);
   }
 }

@@ -34,7 +34,7 @@ dotenv.config();
       port: 3308,
       username: "root",
       password: "root",
-      database: "otra",
+      database: "hogar_de_libros",
       entities: [Book, Computer, BookLoan, ComputerLoan, User, BooksChildren, LocalArtist, Furniture,WorkStation],
       synchronize: true,
     }),
