@@ -55,8 +55,8 @@ export class GETResponseDTO {
     description: 'Cédula del usuario (solo para préstamos finalizados)',
   })
   @IsOptional()
-  @IsString({ message: 'Agregar el numero de cedula.' })
-  cedula?: string;
+  @IsString({ message: 'Agregar el Nombre del solicitante.' })
+  name?: string;
 
   @ApiPropertyOptional({
     description: 'Código del libro',
@@ -64,4 +64,8 @@ export class GETResponseDTO {
   @IsOptional()
   @IsString({ message: 'Añada el codigo.' })
   signatureCode?: string;
+
+  @IsOptional()
+  @IsString({message:"Cedula"})
+  cedula:string
 }

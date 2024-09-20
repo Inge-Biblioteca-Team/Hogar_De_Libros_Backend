@@ -5,14 +5,14 @@ import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateBookLoanDto {
   @ApiProperty({
-    example: '2024-09-10T00:00:00Z',
+    example: '2024-09-10 00:00:00',
     description: 'Fecha en la que se solicita el préstamo',
   })
-  @IsDate()
-  LoanRequestDate: Date;
+  @IsString()
+  LoanRequestDate: string;
 
   @ApiProperty({
-    example: '2024-09-11T13:30:00Z',
+    example: '2024-09-11',
     description: 'Fecha en la que se recoge el libro',
   })
   @IsDate()
@@ -20,7 +20,7 @@ export class CreateBookLoanDto {
   BookPickUpDate: Date;
 
   @ApiProperty({
-    example: '2024-09-18T13:30:00Z',
+    example: '2024-09-18',
     description: 'Fecha en la que se debe devolver el libro',
   })
   @IsDate()

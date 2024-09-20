@@ -17,6 +17,10 @@ import { BookChildrenModule } from './book-children/book-children.module';
 import * as dotenv from 'dotenv';
 import { BooksChildren } from './book-children/book-children.entity';
 import { FilesModule } from './files/files.module';
+import { LocalArtist } from './local-artist/local-artist.entity';
+import { Furniture } from './furniture/furniture.entity';
+import { LocalArtistModule } from './local-artist/local-artist.module';
+import { FurnitureModule } from './furniture/furniture.module';
 import { AuthModule } from './auth/auth.module';
 import { WorkStation } from './computers/WorkStation.entity';
 
@@ -27,11 +31,11 @@ dotenv.config();
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: "localhost",
-      port: 3306,
+      port: 3308,
       username: "root",
       password: "root",
       database: "hogar_de_libros",
-      entities: [Book, Computer, BookLoan, ComputerLoan, User, BooksChildren, WorkStation],
+      entities: [Book, Computer, BookLoan, ComputerLoan, User, BooksChildren, LocalArtist, Furniture,WorkStation],
       synchronize: true,
     }),
     BooksModule,
@@ -41,7 +45,9 @@ dotenv.config();
     ComputerLoanModule,
     BookChildrenModule,
     FilesModule,
-    AuthModule,
+    LocalArtistModule,
+    FurnitureModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],

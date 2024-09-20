@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export enum Role {
     Viewer = 'viewer',
     Creator = 'creator',

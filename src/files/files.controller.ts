@@ -4,9 +4,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('files')
 export class FilesController {
+
   @Post('upload')
   @UseInterceptors(FileInterceptor('image'))
-  async uploadFile(@UploadedFile() file): Promise<{ filePath: string }> {
+  async uploadCover(@UploadedFile() file): Promise<{ filePath: string }> {
     if (!file) {
       throw new Error('No file uploaded');
     }

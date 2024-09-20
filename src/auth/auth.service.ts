@@ -1,10 +1,8 @@
 /* eslint-disable prettier/prettier */
-import { HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { Repository } from 'typeorm';
-import { User } from 'src/user/user.entity';
 import { MailService } from './email.service';
 
 @Injectable()
@@ -48,25 +46,24 @@ export class AuthService {
   }
 
 
-  async sendPasswordReset(email: string): Promise<void> {
-    const user = await this.usersService.findOne(email);
+  async sendPasswordReset(email: string, cedula:string): Promise<void> {
+    const user = await this.usersService.findUser(email, cedula);
 
     if (!user) {
-      throw new HttpException('Correo no registrado.', HttpStatus.BAD_REQUEST);
+      throw new HttpException('No registrado.', HttpStatus.BAD_REQUEST);
     }
 
     const token = this.jwtService.sign({ id: user.cedula }, { expiresIn: '1h' });
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+    const resetLink = `http://localhost:5173/reset-password?token=${token}`;
    
 
     await this.mailService.sendPasswordReset(
       user.email, 
-      `Haz clic en el siguiente enlace para restablecer tu contraseña: ${resetLink}` ,
-      'Restablecer tu contraseña', 
+      `
+      <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+      <a href="${resetLink}"> recuperar contraseña </a>`,
+      'Restablecer tu contraseña',
     );
   }
-
-
    
-
 }

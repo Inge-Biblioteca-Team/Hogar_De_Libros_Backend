@@ -2,7 +2,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BookLoan } from 'src/book-loan/book-loan.enity';
 import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
-import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { Role } from './loan-policy';
 
 @Entity({ name: 'users' }) 
@@ -45,7 +45,7 @@ export class User {
   address: string;
 
   @ApiProperty({ description: 'Fecha de nacimiento del usuario' })
-  @Column()
+  @Column({ type: 'date' })
   birthDate: Date;
 
   @ApiProperty({ description: 'Contraseña del usuario' })
@@ -53,8 +53,8 @@ export class User {
   password: string;
 
   @ApiProperty({ description: 'Fecha de registro del usuario' })
-  @Column({ default: () => 'CURRENT_TIMESTAMP' })
-  registerDate: Date;
+  @Column({ type: 'date'})
+  registerDate: Date = new Date();
 
   @ApiProperty({ description: 'Aceptación de términos y condiciones' })
   @Column()
@@ -66,6 +66,7 @@ export class User {
   @Column({
     type: 'enum',
     enum: Role,
+    default: Role.Viewer
   })
   role: Role;
 

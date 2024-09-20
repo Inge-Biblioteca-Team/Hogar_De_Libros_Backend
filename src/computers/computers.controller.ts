@@ -36,7 +36,7 @@ export class ComputersController {
 
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('admin','creator')
   @Post()
   @ApiBody({ type: ComputerDTO })
   @ApiOperation({ summary: 'Create a new Computer equipment' })
@@ -51,7 +51,7 @@ export class ComputersController {
 
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('admin','creator')
   @Get(':EquipmentUniqueCode')
   @ApiProperty({ description: 'Obtiene un equipo de cómputo  por su código' })
   async findById(
@@ -69,8 +69,7 @@ export class ComputersController {
 
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin')
-  //controlador de modificación de un equipo de cómputo
+  @Roles('admin','creator')
   @Put(':EquipmentUniqueCode')
   @ApiOperation({ summary: 'Modify a Computer equipment' })
   @ApiResponse({
@@ -90,7 +89,6 @@ export class ComputersController {
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
-  //metodo desabilitar un equipo de cómputo
   @Patch(':EquipmentUniqueCode')
   @ApiOperation({ summary: 'Inactivates a computer equipment ' })
   @ApiResponse({
@@ -105,8 +103,7 @@ export class ComputersController {
 
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'external_user')
-  //método para ver todo con filtro y paginado
+  @Roles('admin', 'creator')
   @Get()
   @ApiOperation({ summary: 'get all equipments and filters' })
   @ApiResponse({
@@ -118,9 +115,6 @@ export class ComputersController {
     return await this.computerService.getAllComputers(paginationDTO);
   }
 
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin','external_user')
   @Get('workstation/Status')
   @ApiOperation({ summary: 'Watch the status of a workstation ' })
   @ApiResponse({

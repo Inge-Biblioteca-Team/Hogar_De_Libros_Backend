@@ -62,14 +62,13 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   password: string;
-  @ApiProperty()
-  registerDate: Date;
+  
   @ApiProperty({ description: 'Número de teléfono del usuario' })
   @IsBoolean()
   @IsNotEmpty()
   acceptTermsAndConditions: boolean;
   
   @IsEnum(Role)
-   role: Role;
+   role: Role = Role.Viewer;
   
 }
