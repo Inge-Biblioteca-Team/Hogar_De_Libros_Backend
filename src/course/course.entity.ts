@@ -1,47 +1,60 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Enrollment } from 'src/enrollment/enrollment.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, ManyToOne, OneToMany } from 'typeorm';
 
 //import { Program } from './program.entity';
 
-@Entity()
+@Entity(({ name: 'Courses' }) )
 export class Course {
   @PrimaryGeneratedColumn()
-  id: number;
+  courseId: number;
 
-  @Column({ type: 'date' })
   @ApiProperty({ description: ' Fecha del curso' })
+  @Column({ type: 'date' })
   date: Date;
 
-  @Column()
+  @ApiProperty( { description: ' Hora del curso' })
+  @Column({ type: 'time' })
+  courseTime: string;
+
+ 
   @ApiProperty({ description: ' Ubicacion' })
+  @Column()
   location: string;
 
-  
-  @Column()
   @ApiProperty({ description: ' Perscona a cargo' })
+  @Column()
   instructor: string;
 
- 
-  @Column()
   @ApiProperty({ description: ' Nombre del curso' })
+  @Column()
   courseType: string;
 
- 
-  @Column()
   @ApiProperty({ description: ' Edad Objetivo' })
+  @Column()
   targetAge: number;
 
-  @Column()
   @ApiProperty({ description: ' Cupos disponibles' })
+  @Column()
   capacity: number;
 
+  @ApiProperty({ description: 'Estado actual del curso' })
   @Column()
+  Status: boolean = true;
+
   @ApiProperty({ description: 'Imagen Curso' })
+  @Column()
   image: string;
 
-  @ManyToMany(() => Enrollment, (enrollment) => enrollment.courses)
-  @JoinTable()
+  @ApiProperty({ description: 'Duración del curso (por ejemplo, 2 horas)' })
+  @Column()
+  duration: string;  
+
+  @ApiProperty({ description: 'Fecha final del curso' })
+  @Column({ type: 'date' })
+  endDate: Date;  
+
+  @OneToMany(() => Enrollment, (enrollment) => enrollment.course)
   enrollments: Enrollment[];
 
   // Relación 0.1 con Program
