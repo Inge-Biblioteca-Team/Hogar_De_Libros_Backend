@@ -4,6 +4,7 @@ import { BookLoan } from 'src/book-loan/book-loan.enity';
 import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { Role } from './loan-policy';
+import { Enrollment } from 'src/enrollment/enrollment.entity';
 
 @Entity({ name: 'users' }) 
 export class User {
@@ -76,4 +77,7 @@ export class User {
 
   @OneToMany(() => ComputerLoan, (computerLoan) => computerLoan.user)
   computerLoan: ComputerLoan[];
+
+  @OneToMany(() => Enrollment, (enrollment) => enrollment.user)
+  enrollments: Enrollment[];
 }

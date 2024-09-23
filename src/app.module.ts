@@ -23,8 +23,13 @@ import { LocalArtistModule } from './local-artist/local-artist.module';
 import { FurnitureModule } from './furniture/furniture.module';
 import { AuthModule } from './auth/auth.module';
 import { WorkStation } from './computers/WorkStation.entity';
-import { EventsModule } from './events/events.module';
+import { CourseModule } from './course/course.module';
+import { EnrollmentModule } from './enrollment/enrollment.module';
+import { ProgramsModule } from './programs/programs.module';
+import { Enrollment } from './enrollment/enrollment.entity';
+import { Course } from './course/course.entity';
 import { events } from './events/events.entity';
+import { EventsModule } from './events/events.module';
 
 dotenv.config();
 
@@ -32,12 +37,25 @@ dotenv.config();
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: "localhost",
+      host: 'localhost',
       port: 3306,
-      username: "root",
-      password: "root",
-      database: "hogar_de_libros",
-      entities: [Book, Computer, BookLoan, ComputerLoan, User, BooksChildren, LocalArtist, Furniture,WorkStation,events],
+      username: 'root',
+      password: 'root',
+      database: 'hogar_de_libros',
+      entities: [
+        Book,
+        Computer,
+        BookLoan,
+        ComputerLoan,
+        User,
+        BooksChildren,
+        LocalArtist,
+        Furniture,
+        WorkStation,
+        Enrollment,
+        Course,
+        events,
+      ],
       synchronize: true,
     }),
     BooksModule,
@@ -50,7 +68,10 @@ dotenv.config();
     LocalArtistModule,
     FurnitureModule,
     AuthModule,
-    EventsModule
+    CourseModule,
+    EnrollmentModule,
+    ProgramsModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

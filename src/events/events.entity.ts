@@ -3,7 +3,6 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'events' })
 export class events {
-
   @PrimaryGeneratedColumn()
   @ApiProperty({ description: 'Id del evento' })
   EventId: number;
@@ -21,8 +20,16 @@ export class events {
   Details: string;
 
   @Column()
+  @ApiProperty({ description: 'Categoría del evento' })
+  Category: string;
+
+  @Column()
   @ApiProperty({ description: 'Fecha del evento' })
   Date: Date;
+
+  @Column({ type: 'time' })
+  @ApiProperty({ description: 'Hora del evento' })
+  Time: string;
 
   @Column()
   @ApiProperty({ description: 'Imagen del evento' })
@@ -32,9 +39,9 @@ export class events {
   @ApiProperty({ description: 'Público objetivo del evento' })
   TargetAudience: string;
 
-  @Column()
+  @Column({ type: 'char', length: 1, default: 'P' })
   @ApiProperty({ description: 'Estado del evento' })
-  Status: boolean;
+  Status: string;
 
   @Column()
   @ApiProperty({ description: 'Persona encargada del evento' })
