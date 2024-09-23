@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Course } from 'src/course/course.entity';
 import { User } from 'src/user/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, ManyToOne, JoinColumn } from 'typeorm';
@@ -5,20 +6,28 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, M
 
 @Entity()
 export class Enrollment {
-  @PrimaryGeneratedColumn()
-  id: number; 
-
  
+  @PrimaryGeneratedColumn()
+  enrollmentId: number; 
+
+  @ApiProperty({ description: 'UserCedula ' })
+  @Column()
+	userCedula: number;
+ 
+  @ApiProperty()
   @Column({ type: 'timestamp' })
   enrollmentDate: Date; 
 
-  @Column({ default: 'Active' })
-  status: string;
+  @ApiProperty({ description: 'CourseId ' })
+  @Column()
+	courseCourseId: number;
 
-  // Relación muchos a muchos con Course
-  @ManyToMany(() => Course, (course) => course.enrollments)
-  courses: Course[];
-
+ 
+    // Relación muchos a uno con Course
+    @ManyToOne(() => Course, (course) => course.enrollments)
+    @JoinColumn({ name: 'courseId' })  
+    course: Course;
+    
    // Relación muchos a uno con User
    @ManyToOne(() => User, (user) => user.enrollments)
    @JoinColumn({ name: 'userCedula' })
