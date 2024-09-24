@@ -42,4 +42,30 @@ export class CourseService {
     return await this.courseRepository.save(course);
   }
   
+  async disableCourse(courseId: number): Promise<Course> {
+    // Buscar el curso por su ID
+    const course = await this.courseRepository.findOne({ where: { courseId } });
+    
+    if (!course) {
+      throw new NotFoundException(`Course with ID ${courseId} not found.`);
+    }
+
+    // Cambiar el estado a "false" (deshabilitado)
+    course.Status = false;
+
+    // Guardar el curso actualizado
+    return await this.courseRepository.save(course);
+  }
+
+  async getActiveCourseById(courseId: number): Promise<Course> {
+    const course = await this.courseRepository.findOne({ 
+      where: { courseId, Status: true },  // Solo cursos activos
+    });
+
+    if (!course) {
+      throw new NotFoundException(`Active course with ID ${courseId} not found.`);
+    }
+
+    return course;
+  }
 }

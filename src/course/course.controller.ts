@@ -127,4 +127,53 @@ export class CourseController {
       throw new BadRequestException('Error actualizando el curso.');
     }
   }
+
+  @Patch(':courseId/disable')
+  @ApiResponse({
+    status: 200,
+    description: 'Course disabled successfully',
+    type: Course,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Course not found',
+  })
+  async disableCourse(
+    @Param('courseId', ParseIntPipe) courseId: number,
+  ): Promise<Course> {
+    try {
+      const disabledCourse = await this.courseService.disableCourse(courseId);
+      return disabledCourse;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(`Course with ID ${courseId} not found.`);
+      }
+      throw new Error('Error deshabilitando el curso.');
+    }
+  }
+
+  @Get(':courseId/active')
+  @ApiResponse({
+    status: 200,
+    description: 'Active course found',
+    type: Course,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Active course not found',
+  })
+  async getActiveCourseById(
+    @Param('courseId', ParseIntPipe) courseId: number,
+  ): Promise<Course> {
+    try {
+      const course = await this.courseService.getActiveCourseById(courseId);
+      return course;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(`Active course with ID ${courseId} not found.`);
+      }
+      throw new Error('Error retrieving active course.');
+    }
+  }
+  
 }
