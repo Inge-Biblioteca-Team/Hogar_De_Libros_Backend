@@ -17,14 +17,18 @@ export class CourseService {
     return savedCourse;
   }
 
-  async findAllCourses(): Promise<Course[]> {
-    const courses = await this.courseRepository.find();
+  async findAllCourses(page: number, limit: number): Promise<{ data: Course[], count: number }> {
+    const [courses, count] = await this.courseRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+  
     
-    // Lanzar NotFoundException si no se encontraron cursos
     if (!courses || courses.length === 0) {
       throw new NotFoundException('No se encontraron cursos.');
     }
-    return courses;
+  
+    return { data: courses, count };
   }
 
   async updateCourseById(courseId: number, updateCourseDto: Partial<CreateCourseDto>): Promise<Course> {
@@ -42,4 +46,30 @@ export class CourseService {
     return await this.courseRepository.save(course);
   }
   
+  async disableCourse(courseId: number): Promise<Course> {
+    // Buscar el curso por su ID
+    const course = await this.courseRepository.findOne({ where: { courseId } });
+    
+    if (!course) {
+      throw new NotFoundException(`Course with ID ${courseId} not found.`);
+    }
+
+    // Cambiar el estado a "false" (deshabilitado)
+    course.Status = false;
+
+    // Guardar el curso actualizado
+    return await this.courseRepository.save(course);
+  }
+
+  async getActiveCourseById(courseId: number): Promise<Course> {
+    const course = await this.courseRepository.findOne({ 
+      where: { courseId, Status: true },  // Solo cursos activos
+    });
+
+    if (!course) {
+      throw new NotFoundException(`Active course with ID ${courseId} not found.`);
+    }
+
+    return course;
+  }
 }
