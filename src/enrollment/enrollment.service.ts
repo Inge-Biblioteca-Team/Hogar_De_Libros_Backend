@@ -21,37 +21,38 @@ export class EnrollmentService {
   ) {}
 
   async enrollUser(courseId: number, userCedula: string): Promise<Enrollment> {
-    
+    // Buscar el curso por ID
     const course = await this.courseRepository.findOne({ where: { courseId } });
     if (!course) {
       throw new NotFoundException(`Course with ID ${courseId} not found`);
     }
   
-    const user = await this.userRepository.findOne({
-      where: { cedula: userCedula },
-    });
-    if (!user) {
-      throw new NotFoundException(`User with ID ${userCedula} not found`);
-    }
-
-    
+    // Buscar al usuario por cédula
+    let user = await this.userRepository.findOne({ where: { cedula: userCedula } });
+  
     if (course.capacity <= 0) {
       throw new BadRequestException('No hay cupos disponibles para este curso');
     }
-
+  
+    if (!user) {
+      user = this.userRepository.create({ cedula: userCedula });
+      user = await this.userRepository.save(user);
+    }
+  
    
+
     const enrollment = this.enrollmentRepository.create({
       course,
       user, 
     });
-
-    
+  
     const savedEnrollment = await this.enrollmentRepository.save(enrollment);
-
-    
+  
+   
     course.capacity -= 1;
     await this.courseRepository.save(course);
-
+  
     return savedEnrollment;
   }
+  
 }

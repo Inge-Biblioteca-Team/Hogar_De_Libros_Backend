@@ -41,7 +41,7 @@ dotenv.config();
       password: "root",
       database: "hogar_de_libros",
       entities: [Book, Computer, BookLoan, ComputerLoan, User, BooksChildren, LocalArtist, Furniture,WorkStation,Enrollment,Course],
-      synchronize: true,
+      synchronize: false,
     }),
     BooksModule,
     ComputersModule,
