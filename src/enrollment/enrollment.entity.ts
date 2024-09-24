@@ -10,9 +10,9 @@ export class Enrollment {
   @PrimaryGeneratedColumn()
   enrollmentId: number; 
 
-  @ApiProperty({ description: 'UserCedula ' })
+  @ApiProperty({ description: 'UserCedula ' ,nullable: true})
   @Column()
-	userCedula: number;
+	userCedula?: number;
  
   @ApiProperty()
   @Column({ type: 'timestamp' })
@@ -29,7 +29,7 @@ export class Enrollment {
     course: Course;
     
    // Relación muchos a uno con User
-   @ManyToOne(() => User, (user) => user.enrollments)
+   @ManyToOne(() => User, (user) => user.enrollments, { nullable: true })
    @JoinColumn({ name: 'userCedula' })
    user: User;
 }
