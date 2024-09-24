@@ -17,14 +17,18 @@ export class CourseService {
     return savedCourse;
   }
 
-  async findAllCourses(): Promise<Course[]> {
-    const courses = await this.courseRepository.find();
+  async findAllCourses(page: number, limit: number): Promise<{ data: Course[], count: number }> {
+    const [courses, count] = await this.courseRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+  
     
-    // Lanzar NotFoundException si no se encontraron cursos
     if (!courses || courses.length === 0) {
       throw new NotFoundException('No se encontraron cursos.');
     }
-    return courses;
+  
+    return { data: courses, count };
   }
 
   async updateCourseById(courseId: number, updateCourseDto: Partial<CreateCourseDto>): Promise<Course> {

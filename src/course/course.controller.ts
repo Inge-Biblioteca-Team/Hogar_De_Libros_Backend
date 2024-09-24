@@ -1,4 +1,4 @@
-import { BadRequestException, Body, ConflictException, Controller, Get, InternalServerErrorException, NotFoundException, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Controller, Get, InternalServerErrorException, NotFoundException, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { EnrollmentService } from 'src/enrollment/enrollment.service';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './DTO/create-course.dto';
@@ -9,6 +9,7 @@ import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags, PartialType } from '@nest
 import { Roles } from 'src/auth/decorators/roles.decorators';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { GetCoursesDto } from './DTO/get.-course.dto';
 
 @ApiTags('Courses')
 @Controller('courses')
@@ -79,23 +80,40 @@ export class CourseController {
     status: 400,
     description: 'Bad Request: Error en la solicitud',
   })
-  async findAllCourses(): Promise<Course[]> {
+  
+  @Get()
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de cursos obtenida exitosamente',
+    type: [Course],  
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No se encontraron cursos',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Error en la solicitud',
+  })
+
+  async findAllCourses(@Query() query: GetCoursesDto): Promise<{ data: Course[], count: number }> {
     try {
-      // Intentamos obtener todos los cursos
-      const courses = await this.courseService.findAllCourses();
-      if (!courses || courses.length === 0) {
+      const { page, limit } = query;
+      const courses = await this.courseService.findAllCourses(page, limit);
+      
+      if (!courses.data || courses.data.length === 0) {
         throw new NotFoundException('No se encontraron cursos.');
       }
+      
       return courses;
     } catch (error) {
-      // Manejo de errores por solicitud inválida
       if (error.name === 'QueryFailedError') {
         throw new BadRequestException('Error al procesar la solicitud.');
       }
-      // Si el error es otro, se puede lanzar una excepción genérica
       throw new BadRequestException('Ocurrió un error al intentar obtener los cursos.');
     }
   }
+
   @Patch(':courseId')
   @ApiBody({ type: PartialType(CreateCourseDto) })
   @ApiResponse({

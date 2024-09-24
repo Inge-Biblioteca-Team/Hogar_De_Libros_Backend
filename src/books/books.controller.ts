@@ -98,9 +98,7 @@ export class BooksController {
     return await this.booksService.disableBook(bookCode);
   }
   
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'creator')
+  
   @Get(':BookCode')
   @ApiProperty({ description: 'Obtiene un libro por su código' })
   async findById(@Param('BookCode') BookCode: number): Promise<Book> {
