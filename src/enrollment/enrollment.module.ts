@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { forwardRef, Module } from '@nestjs/common';
 import { EnrollmentService } from './enrollment.service';
 import { EnrollmentController } from './enrollment.controller';
@@ -13,6 +14,6 @@ import { Enrollment } from './enrollment.entity';
     TypeOrmModule.forFeature([Enrollment])],
   providers: [EnrollmentService],
   controllers: [EnrollmentController],
-  exports:[TypeOrmModule]
+  exports:[TypeOrmModule, EnrollmentService],
 })
 export class EnrollmentModule {}

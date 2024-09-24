@@ -1,10 +1,11 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { Enrollment } from 'src/enrollment/enrollment.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 //import { Program } from './program.entity';
 
-@Entity(({ name: 'Courses' }) )
+@Entity(({ name: 'course' }) )
 export class Course {
   @PrimaryGeneratedColumn()
   courseId: number;
