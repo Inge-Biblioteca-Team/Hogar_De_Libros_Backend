@@ -1,15 +1,12 @@
-import { BadRequestException, Body, ConflictException, Controller, Get, InternalServerErrorException, NotFoundException, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
-import { EnrollmentService } from 'src/enrollment/enrollment.service';
+/* eslint-disable prettier/prettier */
+import { BadRequestException, Body, ConflictException, Controller, Get, NotFoundException, Param, ParseIntPipe, Patch, Post, Query, } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './DTO/create-course.dto';
 import { Course } from './course.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Enrollment } from 'src/enrollment/enrollment.entity';
-import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags, PartialType } from '@nestjs/swagger';
-import { Roles } from 'src/auth/decorators/roles.decorators';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { ApiBody, ApiResponse, ApiTags, PartialType } from '@nestjs/swagger';
 import { GetCoursesDto } from './DTO/get.-course.dto';
+import { NexCorusesDTO } from './DTO/NexCoursesDTO';
+import { SearchDTO } from './DTO/SearchDTO';
 
 @ApiTags('Courses')
 @Controller('courses')
@@ -192,6 +189,20 @@ export class CourseController {
       }
       throw new Error('Error retrieving active course.');
     }
+  }
+
+  @Get('/NextCourtes')
+  async getNextCourses(
+    @Query() SearchDTO: SearchDTO,
+  ): Promise<{ data: NexCorusesDTO[]; count: number }> {
+    return this.courseService.getNextCourses(SearchDTO);
+  }
+
+  @Get('User_Courses')
+  async getCoursesByUserCedula(
+    @Query() searchDTO: SearchDTO,
+  ): Promise<{ data: NexCorusesDTO[]; count: number }> {
+    return this.courseService.getCoursesByUserCedula(searchDTO);
   }
   
 }

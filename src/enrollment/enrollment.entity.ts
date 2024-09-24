@@ -1,7 +1,8 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { Course } from 'src/course/course.entity';
 import { User } from 'src/user/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 
 @Entity()
@@ -22,6 +23,9 @@ export class Enrollment {
   @Column()
 	courseCourseId: number;
 
+  @ApiProperty({ description: 'Estado De la matricula ' })
+  @Column()
+  status: string = 'Activo';
  
     // Relación muchos a uno con Course
     @ManyToOne(() => Course, (course) => course.enrollments)

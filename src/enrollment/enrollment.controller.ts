@@ -1,11 +1,9 @@
-import { Controller, Param, ParseIntPipe, Post } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import { Controller, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { EnrollmentService } from 'src/enrollment/enrollment.service';
 import { Enrollment } from 'src/enrollment/enrollment.entity';
 import { CourseService } from 'src/course/course.service';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Course } from 'src/course/course.entity';
 import { UserService } from 'src/user/user.service';
-import { User } from 'src/user/user.entity';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Enrollments')
@@ -29,4 +27,17 @@ export class EnrollmentController {
     );
     return enrollment;
   }
+  @Patch('/cancel')
+  async cancelEnrollment(
+    @Query('courseId') courseId: number,
+    @Query('userCedula') userCedula: string,
+    @Query('enrollmentNumber') enrollmentNumber: number,
+  ): Promise<{ message: string }> {
+    return this.enrollmentService.cancelEnrollment(
+      courseId,
+      userCedula,
+      enrollmentNumber,
+    );
+  }
 }
+
