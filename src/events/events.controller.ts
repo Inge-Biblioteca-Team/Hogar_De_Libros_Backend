@@ -7,34 +7,52 @@ import {
   Put,
   Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventsDTO } from './DTO/create-events.dto';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationEventsDTO } from './DTO/pagination-events.dto';
 import { events } from './events.entity';
 import { UpdateEventsDTO } from './DTO/update-events.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorators';
 @ApiTags('events')
 @Controller('events')
 export class EventsController {
   constructor(private eventsService: EventsService) {}
 
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'creator')
   @Post()
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: '../assets/events',
+        filename: (req, file, cb) => {
+          cb(null, file.originalname);
+        },
+      }),
+    }),
+  )
   @ApiResponse({ status: 201, description: 'Evento creado exitosamente' })
   @ApiResponse({ status: 400, description: 'Error al crear el evento' })
   @ApiResponse({
     status: 500,
     description: 'Un error a ocurrido en el servidor',
   })
-  createEvent(
+  async createEvent(
     @Body() createEventsDTO: CreateEventsDTO,
-    @UploadedFile() file,
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<{ message: string; eventId?: number }> {
     if (file) {
-      const filePath = `http://localhost:3000/assets/${file.filename}`;
+      const baseUrl = 'http://localhost:3000';
+      const filePath = `${baseUrl}/assets/events/${file.filename}`;
       createEventsDTO.Image = filePath;
     }
     return this.eventsService.createEvent(createEventsDTO);
@@ -51,8 +69,20 @@ export class EventsController {
     return this.eventsService.getAllEvents(paginationEventsDTO);
   }
 
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'creator')
   @Put()
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: '../assets/events',
+        filename: (req, file, cb) => {
+          cb(null, file.originalname);
+        },
+      }),
+    }),
+  )
   @ApiResponse({
     status: 200,
     description: 'Actualización del evento se a realizado correctamente',
@@ -64,15 +94,20 @@ export class EventsController {
   })
   updateEvent(
     @Body() updateEvetsDTO: UpdateEventsDTO,
-    @Query('id') id: number, @UploadedFile() file
+    @Query('id') id: number,
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<{ message: string }> {
     if (file) {
-        const filePath = `http://localhost:3000/assets/${file.filename}`;
-        updateEvetsDTO.Image = filePath;
-      }
+      const baseUrl = 'http://localhost:3000';
+      const filePath = `${baseUrl}/assets/events/${file.filename}`;
+      updateEvetsDTO.Image = filePath;
+    }
     return this.eventsService.updateEvent(updateEvetsDTO, id);
   }
 
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'creator')
   @Patch('ejecution-status')
   @ApiResponse({
     status: 200,
@@ -86,6 +121,9 @@ export class EventsController {
     return this.eventsService.updateEjecutionStatus(id);
   }
 
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'creator')
   @Patch('finalized-status')
   @ApiResponse({
     status: 200,

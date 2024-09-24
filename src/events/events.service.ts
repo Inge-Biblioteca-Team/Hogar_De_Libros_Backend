@@ -70,6 +70,7 @@ export class EventsService {
       query.andWhere('events.Date <= :EndDate', { EndDate });
     }
 
+    query.orderBy('events.Date', 'ASC').addOrderBy('events.Time', 'ASC');
     query.skip((Page - 1) * Limit).take(Limit);
     const [data, count] = await query.getManyAndCount();
     return { data, count };
