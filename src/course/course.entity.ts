@@ -1,14 +1,20 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { Enrollment } from 'src/enrollment/enrollment.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Programs } from 'src/programs/programs.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne } from 'typeorm';
 
-//import { Program } from './program.entity';
 
-@Entity(({ name: 'course' }) )
+
+@Entity(({ name: 'courses' }) )
 export class Course {
+  
   @PrimaryGeneratedColumn()
   courseId: number;
+
+  @ApiProperty({ description: 'Nombre del curso' })
+  @Column( )
+  courseName: string;
 
   @ApiProperty({ description: ' Fecha del curso' })
   @Column({ type: 'date' })
@@ -55,10 +61,14 @@ export class Course {
   @Column({ type: 'date' })
   endDate: Date;  
 
+  @ApiProperty({ description: 'Id Programa' })
+  @Column()
+  programProgramsId: number;
+
   @OneToMany(() => Enrollment, (enrollment) => enrollment.course)
   enrollments: Enrollment[];
-
-  // Relación 0.1 con Program
-  //@ManyToOne(() => Program, (program) => program.courses, { nullable: true })
- // program: Program;
+  
+  @ManyToOne(() => Programs, (program) => program.courses)
+  program: Programs;
+  
 }

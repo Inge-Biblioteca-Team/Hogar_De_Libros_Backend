@@ -6,9 +6,14 @@ import {
   IsNumber,
   IsDateString,
   IsNotEmpty,
+  IsOptional,
 } from 'class-validator';
 
 export class CreateCourseDto {
+  @ApiProperty({ description: 'Nombre del curso' })
+  @IsString()
+  @IsNotEmpty()
+  courseName: string;
   @ApiProperty({ description: 'Fecha de inicio del curso' })
   @IsDate()
   @IsNotEmpty()
@@ -56,4 +61,10 @@ export class CreateCourseDto {
   @IsDate()
   @IsNotEmpty()
   endDate: Date;
+
+  @ApiProperty({ description: 'Id Programa' })
+  @IsNumber()
+  @IsOptional()
+  programProgramsId: number;
+  
 }

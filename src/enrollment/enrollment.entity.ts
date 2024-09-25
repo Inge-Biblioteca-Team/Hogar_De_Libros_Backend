@@ -13,15 +13,15 @@ export class Enrollment {
 
   @ApiProperty({ description: 'UserCedula ' ,nullable: true})
   @Column()
-	userCedula?: number;
+	userCedula?: string;
  
   @ApiProperty()
-  @Column({ type: 'timestamp' })
+  @Column()
   enrollmentDate: Date; 
 
   @ApiProperty({ description: 'CourseId ' })
   @Column()
-	courseCourseId: number;
+	courseId: number;
 
   @ApiProperty({ description: 'Estado De la matricula ' })
   @Column()
