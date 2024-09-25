@@ -22,7 +22,7 @@ export class Programs {
   image: string;
 
   @ApiProperty({ description: 'Estado' ,default:true})
-  @Column()
+  @Column({ default: true })
   status: boolean;
   
   @OneToMany(() => Course, (course) => course.program)
