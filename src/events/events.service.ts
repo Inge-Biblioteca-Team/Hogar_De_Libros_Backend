@@ -56,7 +56,14 @@ export class EventsService {
       query.andWhere('events.Status = :Status', { Status });
     }
     if (Title) {
-      query.andWhere('events.Title = :Title', { Title });
+      const normalizedTitle = Title.toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, ''); // Elimina las tildes
+
+      query.andWhere(
+        `LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(events.Title, 'á', 'a'), 'é', 'e'), 'í', 'i'), 'ó', 'o'), 'ú', 'u')) LIKE LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(:Title, 'á', 'a'), 'é', 'e'), 'í', 'i'), 'ó', 'o'), 'ú', 'u'))`,
+        { Title: `%${normalizedTitle}%` },
+      );
     }
     if (TargetAudience) {
       query.andWhere('events.TargetAudience = :TargetAudience', {
@@ -127,6 +134,24 @@ export class EventsService {
         return { message: 'No se encontró el evento' };
       }
       await this.EventsRepository.update(id, { Status: 'F' });
+      return { message: 'Se cambió el estado a finalizado exitosamente' };
+    } catch (error) {
+      if (error instanceof InternalServerErrorException) {
+        return { message: 'Error en el servidor, no se pudo crear el evento' };
+      }
+      return { message: 'Hubo un error al actualizar el estado del evento' };
+    }
+  }
+
+  async updatePendientStatus(id: number) {
+    try {
+      const findEvent = await this.EventsRepository.findOne({
+        where: { EventId: id },
+      });
+      if (!findEvent) {
+        return { message: 'No se encontró el evento' };
+      }
+      await this.EventsRepository.update(id, { Status: 'P' });
       return { message: 'Se cambió el estado a finalizado exitosamente' };
     } catch (error) {
       if (error instanceof InternalServerErrorException) {

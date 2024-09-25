@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
+  Matches,
 } from 'class-validator';
 
 export class CreateEventsDTO {
@@ -38,6 +39,9 @@ export class CreateEventsDTO {
   @ApiProperty({ example: '10:00:00' })
   @IsString()
   @IsNotEmpty()
+  @Matches(/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/, {
+    message: 'El tiempo debe respetar el formato de 24 horas HH:mm:ss',
+  })
   Time: string;
 
   @ApiProperty({ example: 'URL de la imagen del evento' })
