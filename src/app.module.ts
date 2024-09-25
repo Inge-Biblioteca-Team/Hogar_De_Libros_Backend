@@ -28,6 +28,8 @@ import { EnrollmentModule } from './enrollment/enrollment.module';
 import { ProgramsModule } from './programs/programs.module';
 import { Enrollment } from './enrollment/enrollment.entity';
 import { Course } from './course/course.entity';
+import { events } from './events/events.entity';
+import { EventsModule } from './events/events.module';
 
 dotenv.config();
 
@@ -35,7 +37,7 @@ dotenv.config();
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: "localhost",
+      host: 'localhost',
       port: 3306,
       username: "root",
       password: "root",
@@ -55,7 +57,8 @@ dotenv.config();
     AuthModule,
     CourseModule,
     EnrollmentModule,
-    ProgramsModule
+    ProgramsModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
