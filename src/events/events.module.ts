@@ -1,7 +1,7 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { EventsController } from './events.controller';
 import { EventsService } from './events.service';
-import { Type } from 'class-transformer';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { events } from './events.entity';
 

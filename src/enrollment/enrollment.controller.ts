@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { BadRequestException, Body, Controller, HttpException, HttpStatus, NotFoundException, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, HttpException, HttpStatus, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { EnrollmentService } from 'src/enrollment/enrollment.service';
 import { Enrollment } from 'src/enrollment/enrollment.entity';
 import { CourseService } from 'src/course/course.service';
@@ -90,13 +90,7 @@ export class EnrollmentController {
   async cancelEnrollment(
     @Query('courseId') courseId: number,
     @Query('userCedula') userCedula: string,
-    @Query('enrollmentNumber') enrollmentNumber: number,
   ): Promise<{ message: string }> {
-    return this.enrollmentService.cancelEnrollment(
-      courseId,
-      userCedula,
-      enrollmentNumber,
-    );
+    return this.enrollmentService.cancelEnrollment(courseId, userCedula);
   }
 }
-

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   BadRequestException,
   Body,
@@ -10,6 +11,8 @@ import { Repository } from 'typeorm';
 import { CreateEventsDTO } from './DTO/create-events.dto';
 import { PaginationEventsDTO } from './DTO/pagination-events.dto';
 import { UpdateEventsDTO } from './DTO/update-events.dto';
+import { SeachDTO } from './DTO/SeachDTO';
+import { NexEventsDTO } from './DTO/NextEvents';
 
 @Injectable()
 export class EventsService {
@@ -134,5 +137,62 @@ export class EventsService {
       }
       return { message: 'Hubo un error al actualizar el estado del evento' };
     }
+  }
+
+  async getNextEventsSchedule(
+    searchDTO: SeachDTO,
+  ): Promise<{ data: NexEventsDTO[]; count: number }> {
+    const { month, category } = searchDTO;
+
+    const query = this.EventsRepository.createQueryBuilder('events');
+
+    let data: events[];
+    let count: number;
+
+    const currentDate = new Date();
+    const threeMonthsLater = new Date();
+    threeMonthsLater.setMonth(currentDate.getMonth() + 3);
+
+    try {
+      query
+        .where('events.Date > :currentDate', { currentDate })
+        .andWhere('events.Date <= :threeMonthsLater', { threeMonthsLater });
+
+      if (month) {
+        query.andWhere('MONTH(events.Date) = :month', { month });
+      }
+
+      if (category) {
+        query.andWhere('events.Category Like :category', {
+          category: `%${category}%`,
+        });
+      }
+
+      query.orderBy('events.Date', 'ASC');
+
+      [data, count] = await query.getManyAndCount();
+    } catch (error) {
+      throw new InternalServerErrorException('Error Al cargar los cursos');
+    }
+
+    const result = await Promise.all(
+      data.map(async (event) => {
+        return {
+          id: event.EventId,
+          eventType: event.Category,
+          image: event.Image,
+          instructor: event.InchargePerson,
+          location: event.Location,
+          date: event.Date,
+          eventTime: event.Time,
+          objetiveAge: event.TargetAudience,
+          status: event.Status,
+          details: event.Details,
+          title: event.Title,
+        };
+      }),
+    );
+
+    return { data: result, count };
   }
 }

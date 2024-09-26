@@ -39,11 +39,11 @@ dotenv.config();
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
-      port: 3306,
+      port: 3308,
       username: "root",
       password: "root",
       database: "hogar_de_libros",
-      entities: [Book, Computer, BookLoan, ComputerLoan, User, BooksChildren, LocalArtist, Furniture,WorkStation,Enrollment,Course,Programs],
+      entities: [Book, Computer, BookLoan, ComputerLoan, User, BooksChildren, LocalArtist, Furniture,WorkStation,Enrollment,Course, events,Programs],
       synchronize: true,
     }),
     BooksModule,
