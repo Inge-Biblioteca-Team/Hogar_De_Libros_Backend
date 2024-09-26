@@ -12,6 +12,7 @@ import { NexCorusesDTO } from './DTO/NexCoursesDTO';
 import { SearchDTO } from './DTO/SearchDTO';
 import { EnrollmentService } from 'src/enrollment/enrollment.service';
 import { Programs } from 'src/programs/programs.entity';
+import { GetCoursesDto } from './DTO/get.-course.dto';
 
 @Injectable()
 export class CourseService {
@@ -20,20 +21,20 @@ export class CourseService {
     private readonly courseRepository: Repository<Course>,
     private readonly enrollmentService: EnrollmentService,
     @InjectRepository(Programs)
-    private readonly programRepository:Repository<Programs>
+    private readonly programRepository: Repository<Programs>,
   ) {}
 
   async createCourse(createCourseDto: CreateCourseDto): Promise<Course> {
     try {
       // Verificamos si el programa está activo
       const program = await this.programRepository.findOne({
-        where: { programsId: createCourseDto.programProgramsId, status:true },
+        where: { programsId: createCourseDto.programProgramsId, status: true },
       });
-  
+
       if (!program) {
         throw new Error('El programa asociado está inactivo o no existe.');
       }
-  
+
       // Creamos el curso si el programa está activo
       const course = this.courseRepository.create(createCourseDto);
       const savedCourse = await this.courseRepository.save(course);
@@ -41,25 +42,20 @@ export class CourseService {
     } catch (error) {
       console.error('Error al crear el curso:', error);
       throw new Error(
-        error.message || 'Error al crear el curso. Por favor, inténtelo nuevamente.',
+        error.message ||
+          'Error al crear el curso. Por favor, inténtelo nuevamente.',
       );
     }
   }
-<<<<<<< Updated upstream
 
   async findAllCourses(
-    page: number,
-    limit: number,
+    filter: GetCoursesDto,
   ): Promise<{ data: Course[]; count: number }> {
-=======
-  
-  async findAllCourses(page: number, limit: number): Promise<{ data: Course[], count: number }> {
->>>>>>> Stashed changes
-    const [courses, count] = await this.courseRepository.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    const { page = 1, limit = 10 } = filter;
+    const query = this.courseRepository.createQueryBuilder('courses');
+    query.skip((page - 1) * limit).take(limit);
 
+    const [courses, count] = await query.getManyAndCount();
     if (!courses || courses.length === 0) {
       throw new NotFoundException('No se encontraron cursos.');
     }
@@ -115,7 +111,7 @@ export class CourseService {
     SearchDTO: SearchDTO,
   ): Promise<{ data: NexCorusesDTO[]; count: number }> {
     const { month, type } = SearchDTO;
-    const query = this.courseRepository.createQueryBuilder('course');
+    const query = this.courseRepository.createQueryBuilder('courses');
 
     let data: Course[];
     let count: number;
@@ -126,17 +122,17 @@ export class CourseService {
 
     try {
       query
-        .where('course.date > :currentDate', { currentDate })
-        .andWhere('course.date <= :threeMonthsLater', { threeMonthsLater });
+        .where('courses.date > :currentDate', { currentDate })
+        .andWhere('courses.date <= :threeMonthsLater', { threeMonthsLater });
 
       if (month) {
-        query.andWhere('MONTH(course.date) = :month', { month });
+        query.andWhere('MONTH(courses.date) = :month', { month });
       }
       if (type) {
-        query.andWhere('course.courseType LIKE :type', { type: `%${type}%` });
+        query.andWhere('courses.courseType LIKE :type', { type: `%${type}%` });
       }
 
-      query.orderBy('course.date', 'ASC');
+      query.orderBy('courses.date', 'ASC');
 
       [data, count] = await query.getManyAndCount();
     } catch (error) {
@@ -177,10 +173,10 @@ export class CourseService {
     const { userCedula, page = 1, limit = 10 } = searchDTO;
 
     const query = this.courseRepository
-      .createQueryBuilder('course')
-      .innerJoin('course.enrollments', 'enrollment')
+      .createQueryBuilder('courses')
+      .innerJoin('courses.enrollments', 'enrollment')
       .where('enrollment.userCedula = :userCedula', { userCedula })
-      .andWhere('course.date >= CURRENT_DATE')
+      .andWhere('courses.date >= CURRENT_DATE')
       .andWhere('enrollment.status = :status', { status: 'Activo' })
       .skip((page - 1) * limit)
       .take(limit);
