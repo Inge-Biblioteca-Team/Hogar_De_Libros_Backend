@@ -30,6 +30,7 @@ import { Enrollment } from './enrollment/enrollment.entity';
 import { Course } from './course/course.entity';
 import { events } from './events/events.entity';
 import { EventsModule } from './events/events.module';
+import { Programs } from './programs/programs.entity';
 
 dotenv.config();
 
@@ -42,7 +43,7 @@ dotenv.config();
       username: "root",
       password: "root",
       database: "hogar_de_libros",
-      entities: [Book, Computer, BookLoan, ComputerLoan, User, BooksChildren, LocalArtist, Furniture,WorkStation,Enrollment,Course, events],
+      entities: [Book, Computer, BookLoan, ComputerLoan, User, BooksChildren, LocalArtist, Furniture,WorkStation,Enrollment,Course, events,Programs],
       synchronize: true,
     }),
     BooksModule,

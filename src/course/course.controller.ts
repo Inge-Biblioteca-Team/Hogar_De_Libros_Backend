@@ -53,7 +53,7 @@ export class CourseController {
        throw new BadRequestException('Uno o más campos son requeridos y no pueden ser nulos.');
      }
 
-     // Manejo de errores por conflictos, como duplicación de cursos
+     // Manejo de errores  duplicación de cursos
      if (error.code === 'ER_DUP_ENTRY') {
        throw new ConflictException('Ya existe un curso con este nombre o identificador.');
      }
@@ -96,18 +96,19 @@ export class CourseController {
   async findAllCourses(@Query() query: GetCoursesDto): Promise<{ data: Course[], count: number }> {
     try {
       const { page, limit } = query;
-      const courses = await this.courseService.findAllCourses(page, limit);
+      const course = await this.courseService.findAllCourses(page, limit);
       
-      if (!courses.data || courses.data.length === 0) {
+     
+      if (!course.data || course.data.length === 0) {
         throw new NotFoundException('No se encontraron cursos.');
       }
-      
-      return courses;
+      return course;
+     
     } catch (error) {
       if (error.name === 'QueryFailedError') {
         throw new BadRequestException('Error al procesar la solicitud.');
       }
-      throw new BadRequestException('Ocurrió un error al intentar obtener los cursos.');
+      
     }
   }
 
