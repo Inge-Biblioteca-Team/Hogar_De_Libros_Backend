@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -23,7 +24,7 @@ export class events {
   @ApiProperty({ description: 'Categoría del evento' })
   Category: string;
 
-  @Column()
+  @Column({type: 'date'})
   @ApiProperty({ description: 'Fecha del evento' })
   Date: Date;
 

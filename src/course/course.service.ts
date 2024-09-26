@@ -1,5 +1,9 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, InternalServerErrorException, NotFoundException,  } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Course } from './course.entity';
@@ -22,39 +26,41 @@ export class CourseService {
     return savedCourse;
   }
 
-  async findAllCourses(page: number, limit: number): Promise<{ data: Course[], count: number }> {
+  async findAllCourses(
+    page: number,
+    limit: number,
+  ): Promise<{ data: Course[]; count: number }> {
     const [courses, count] = await this.courseRepository.findAndCount({
       skip: (page - 1) * limit,
       take: limit,
     });
-  
-    
+
     if (!courses || courses.length === 0) {
       throw new NotFoundException('No se encontraron cursos.');
     }
-  
+
     return { data: courses, count };
   }
 
-  async updateCourseById(courseId: number, updateCourseDto: Partial<CreateCourseDto>): Promise<Course> {
-   
+  async updateCourseById(
+    courseId: number,
+    updateCourseDto: Partial<CreateCourseDto>,
+  ): Promise<Course> {
     const course = await this.courseRepository.findOne({ where: { courseId } });
-    
+
     if (!course) {
       throw new NotFoundException(`Course with ID ${courseId} not found.`);
     }
-  
-   
+
     Object.assign(course, updateCourseDto);
-  
 
     return await this.courseRepository.save(course);
   }
-  
+
   async disableCourse(courseId: number): Promise<Course> {
     // Buscar el curso por su ID
     const course = await this.courseRepository.findOne({ where: { courseId } });
-    
+
     if (!course) {
       throw new NotFoundException(`Course with ID ${courseId} not found.`);
     }
@@ -67,42 +73,47 @@ export class CourseService {
   }
 
   async getActiveCourseById(courseId: number): Promise<Course> {
-    const course = await this.courseRepository.findOne({ 
-      where: { courseId, Status: true },  // Solo cursos activos
+    const course = await this.courseRepository.findOne({
+      where: { courseId, Status: true }, // Solo cursos activos
     });
 
     if (!course) {
-      throw new NotFoundException(`Active course with ID ${courseId} not found.`);
+      throw new NotFoundException(
+        `Active course with ID ${courseId} not found.`,
+      );
     }
 
     return course;
   }
 
-  
   async getNextCourses(
     SearchDTO: SearchDTO,
   ): Promise<{ data: NexCorusesDTO[]; count: number }> {
-    const { page = 1, limit = 15 } = SearchDTO;
+    const { month, type } = SearchDTO;
     const query = this.courseRepository.createQueryBuilder('course');
 
     let data: Course[];
     let count: number;
 
     const currentDate = new Date();
-    const currentTime = currentDate.toTimeString().split(' ')[0];
+    const threeMonthsLater = new Date();
+    threeMonthsLater.setMonth(currentDate.getMonth() + 3);
 
     try {
       query
         .where('course.date > :currentDate', { currentDate })
-        .orWhere('course.date = :currentDate', { currentDate })
-        .andWhere('course.CourseTime > :currentTime', { currentTime });
+        .andWhere('course.date <= :threeMonthsLater', { threeMonthsLater });
+
+      if (month) {
+        query.andWhere('MONTH(course.date) = :month', { month });
+      }
+      if (type) {
+        query.andWhere('course.courseType LIKE :type', { type: `%${type}%` });
+      }
 
       query.orderBy('course.date', 'ASC');
 
-      [data, count] = await query
-        .skip((page - 1) * limit)
-        .take(limit)
-        .getManyAndCount();
+      [data, count] = await query.getManyAndCount();
     } catch (error) {
       throw new InternalServerErrorException('Error al cargar los cursos');
     }
@@ -127,7 +138,7 @@ export class CourseService {
           EndDate: course.endDate,
           objetiveAge: course.targetAge,
           status: 'Pendiente',
-          duration: course.duration
+          duration: course.duration,
         };
       }),
     );
@@ -144,6 +155,8 @@ export class CourseService {
       .createQueryBuilder('course')
       .innerJoin('course.enrollments', 'enrollment')
       .where('enrollment.userCedula = :userCedula', { userCedula })
+      .andWhere('course.date >= CURRENT_DATE')
+      .andWhere('enrollment.status = :status', { status: 'Activo' })
       .skip((page - 1) * limit)
       .take(limit);
 
@@ -178,12 +191,11 @@ export class CourseService {
           EndDate: course.endDate,
           objetiveAge: course.targetAge,
           status: 'Pendiente',
-          duration: course.duration
+          duration: course.duration,
         };
       }),
     );
 
     return { data: result, count };
   }
-  
 }
