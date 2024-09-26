@@ -28,9 +28,7 @@ import { NexEventsDTO } from './DTO/NextEvents';
 export class EventsController {
   constructor(private eventsService: EventsService) {}
 
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'creator')
+
   @Post()
   @UseInterceptors(
     FileInterceptor('image', {

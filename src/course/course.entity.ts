@@ -2,9 +2,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Enrollment } from 'src/enrollment/enrollment.entity';
 import { Programs } from 'src/programs/programs.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne } from 'typeorm';
-
-
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity(({ name: 'courses' }) )
 export class Course {
@@ -61,14 +59,11 @@ export class Course {
   @Column({ type: 'date' })
   endDate: Date;  
 
-  @ApiProperty({ description: 'Id Programa' })
-  @Column()
-  programProgramsId: number;
-
   @OneToMany(() => Enrollment, (enrollment) => enrollment.course)
   enrollments: Enrollment[];
   
   @ManyToOne(() => Programs, (program) => program.courses)
+  @JoinColumn({ name: 'programProgramsId' })
   program: Programs;
   
 }

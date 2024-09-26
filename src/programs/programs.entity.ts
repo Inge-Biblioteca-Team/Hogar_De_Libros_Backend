@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { Course } from 'src/course/course.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';

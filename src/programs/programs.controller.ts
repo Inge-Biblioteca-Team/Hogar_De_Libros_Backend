@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Controller, Post, Body, BadRequestException, Get, ParseIntPipe, Param, NotFoundException, Patch } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 import { CreateProgramDto } from './dto/create-program.dto';
