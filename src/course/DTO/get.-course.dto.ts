@@ -1,12 +1,8 @@
-<<<<<<< Updated upstream
 /* eslint-disable prettier/prettier */
-import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsOptional, Min } from 'class-validator';
-=======
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
->>>>>>> Stashed changes
-import { Type } from 'class-transformer';
+
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { IsOptional, IsInt, Min } from "class-validator";
 
 export class GetCoursesDto {
   
