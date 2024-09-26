@@ -11,6 +11,7 @@ import { CreateCourseDto } from './DTO/create-course.dto';
 import { NexCorusesDTO } from './DTO/NexCoursesDTO';
 import { SearchDTO } from './DTO/SearchDTO';
 import { EnrollmentService } from 'src/enrollment/enrollment.service';
+import { Programs } from 'src/programs/programs.entity';
 
 @Injectable()
 export class CourseService {
@@ -18,18 +19,42 @@ export class CourseService {
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
     private readonly enrollmentService: EnrollmentService,
+    @InjectRepository(Programs)
+    private readonly programRepository:Repository<Programs>
   ) {}
 
   async createCourse(createCourseDto: CreateCourseDto): Promise<Course> {
-    const course = this.courseRepository.create(createCourseDto);
-    const savedCourse = await this.courseRepository.save(course);
-    return savedCourse;
+    try {
+      // Verificamos si el programa está activo
+      const program = await this.programRepository.findOne({
+        where: { programsId: createCourseDto.programProgramsId, status:true },
+      });
+  
+      if (!program) {
+        throw new Error('El programa asociado está inactivo o no existe.');
+      }
+  
+      // Creamos el curso si el programa está activo
+      const course = this.courseRepository.create(createCourseDto);
+      const savedCourse = await this.courseRepository.save(course);
+      return savedCourse;
+    } catch (error) {
+      console.error('Error al crear el curso:', error);
+      throw new Error(
+        error.message || 'Error al crear el curso. Por favor, inténtelo nuevamente.',
+      );
+    }
   }
+<<<<<<< Updated upstream
 
   async findAllCourses(
     page: number,
     limit: number,
   ): Promise<{ data: Course[]; count: number }> {
+=======
+  
+  async findAllCourses(page: number, limit: number): Promise<{ data: Course[], count: number }> {
+>>>>>>> Stashed changes
     const [courses, count] = await this.courseRepository.findAndCount({
       skip: (page - 1) * limit,
       take: limit,

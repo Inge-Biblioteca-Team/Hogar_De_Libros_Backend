@@ -39,29 +39,28 @@ export class CourseController {
  })
 
  async createCourse(
-   @Body() createCourseDto: CreateCourseDto,
- ): Promise<Course> {
-   try {
-    
-     const course = await this.courseService.createCourse(createCourseDto);
-     
-     return course;
-    
-   } catch (error) {
-     
-     if (error.code === 'ER_BAD_NULL_ERROR') {
-       throw new BadRequestException('Uno o más campos son requeridos y no pueden ser nulos.');
-     }
+  @Body() createCourseDto: CreateCourseDto,
+): Promise<Course> {
+  try {
+    const course = await this.courseService.createCourse(createCourseDto);
+    return course;
+  } catch (error) {
+    // Manejo de errores de campos nulos
+    if (error.code === 'ER_BAD_NULL_ERROR') {
+      throw new BadRequestException('Uno o más campos son requeridos y no pueden ser nulos.');
+    }
 
-     // Manejo de errores  duplicación de cursos
-     if (error.code === 'ER_DUP_ENTRY') {
-       throw new ConflictException('Ya existe un curso con este nombre o identificador.');
-     }
+    // Manejo de errores por duplicación de curso
+    if (error.code === 'ER_DUP_ENTRY') {
+      throw new ConflictException('Ya existe un curso con este nombre o identificador.');
+    }
 
-   
-   }
-
- }
+    // Cualquier otro error
+    throw new BadRequestException(
+      error.message || 'Error inesperado al crear el curso.',
+    );
+  }
+}
 
  @Get()
   @ApiResponse({
