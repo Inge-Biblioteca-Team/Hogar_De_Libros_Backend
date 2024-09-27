@@ -8,7 +8,6 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -109,13 +108,8 @@ export class EnrollmentController {
   async cancelEnrollment(
     @Query('courseId') courseId: number,
     @Query('userCedula') userCedula: string,
-    @Query('enrollmentNumber') enrollmentNumber: number,
   ): Promise<{ message: string }> {
-    return this.enrollmentService.cancelEnrollment(
-      courseId,
-      userCedula,
-      enrollmentNumber,
-    );
+    return this.enrollmentService.cancelEnrollment(courseId, userCedula);
   }
 
   @Get()

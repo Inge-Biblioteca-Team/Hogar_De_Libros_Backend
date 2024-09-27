@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Body,
   Controller,
@@ -14,21 +15,19 @@ import { EventsService } from './events.service';
 import { CreateEventsDTO } from './DTO/create-events.dto';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationEventsDTO } from './DTO/pagination-events.dto';
-import { events } from './events.entity';
 import { UpdateEventsDTO } from './DTO/update-events.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
+import { SeachDTO } from './DTO/SeachDTO';
+import { NexEventsDTO } from './DTO/NextEvents';
 @ApiTags('events')
 @Controller('events')
 export class EventsController {
   constructor(private eventsService: EventsService) {}
 
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'creator')
   @Post()
   @UseInterceptors(
     FileInterceptor('image', {
@@ -137,7 +136,7 @@ export class EventsController {
     return this.eventsService.updateFinalizedStatus(id);
   }
 
-   @ApiBearerAuth('access-token')
+  @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin', 'creator')
   @Patch('finalized-status')
@@ -151,5 +150,12 @@ export class EventsController {
   })
   updatePendientStatus(@Query('id') id: number) {
     return this.eventsService.updatePendientStatus(id);
+  }
+
+  @Get('NextEvents')
+  getNextEvents(
+    @Query() SearchParams: SeachDTO,
+  ): Promise<{ data: NexEventsDTO[]; count: number }> {
+    return this.eventsService.getNextEventsSchedule(SearchParams);
   }
 }

@@ -1,9 +1,9 @@
 /* eslint-disable prettier/prettier */
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { IsInt, IsOptional, Min, IsString } from 'class-validator';
 
-export class SearchDTO {
+export class SeachDTO {
   @ApiPropertyOptional({ description: 'Número de página', default: 1 })
   @IsInt()
   @IsOptional()
@@ -24,16 +24,10 @@ export class SearchDTO {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({ description: 'Cedula Del Usuario' })
-  userCedula?: string;
-
-  @IsString()
-  @IsOptional()
-  @ApiPropertyOptional({ description: 'Nombre y Tipo de Curso' })
-  type?: string;
+  category: string;
 
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({ description: 'Mes del curso' })
   month?: string;
-
 }

@@ -136,11 +136,9 @@ export class EnrollmentService {
   async cancelEnrollment(
     CourseID: number,
     UserCedula: string,
-    EnrollmentNumber: number,
   ): Promise<{ message: string }> {
     const enrollment = await this.enrollmentRepository.findOne({
       where: {
-        enrollmentId: EnrollmentNumber,
         user: { cedula: UserCedula },
         course: { courseId: CourseID },
       },
