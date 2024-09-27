@@ -58,7 +58,7 @@ dotenv.config();
         events,
         Programs,
       ],
-      synchronize: false,
+      synchronize: true,
     }),
     BooksModule,
     ComputersModule,

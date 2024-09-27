@@ -48,6 +48,7 @@ export class EventsService {
       Limit = 10,
       Status,
       Title,
+      category,
       TargetAudience,
       StartDate,
       EndDate,
@@ -68,6 +69,13 @@ export class EventsService {
         { Title: `%${normalizedTitle}%` },
       );
     }
+
+    if (category) {
+      query.andWhere('events.Category Like :category', {
+        category: `%${category}%`,
+      });
+    }
+
     if (TargetAudience) {
       query.andWhere('events.TargetAudience = :TargetAudience', {
         TargetAudience,
