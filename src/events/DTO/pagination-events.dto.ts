@@ -38,6 +38,11 @@ export class PaginationEventsDTO {
   @IsOptional()
   TargetAudience: string;
 
+  @ApiPropertyOptional({ description: 'Category del evento' })
+  @IsString()
+  @IsOptional()
+  category: string;
+
   @ApiPropertyOptional({
     description: 'Fecha de inicio de rango de busqueda (YYYY-MM-DD)',
   })

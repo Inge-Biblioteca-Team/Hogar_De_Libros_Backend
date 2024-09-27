@@ -1,11 +1,24 @@
 /* eslint-disable prettier/prettier */
-import { BadRequestException, Body, Controller, HttpException, HttpStatus, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { EnrollmentService } from 'src/enrollment/enrollment.service';
 import { Enrollment } from 'src/enrollment/enrollment.entity';
 import { CourseService } from 'src/course/course.service';
 import { UserService } from 'src/user/user.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateEnrollmentDto } from './DTO/create-enrollment.dto';
+import { PaginationEnrollmentListDto } from './DTO/pagination-enrollmentList.dto';
 
 @ApiTags('Enrollments')
 @Controller('enrollments')
@@ -26,7 +39,8 @@ export class EnrollmentController {
   })
   @ApiResponse({
     status: 400,
-    description: 'El curso no tiene cupos disponibles o la información proporcionada es incorrecta.',
+    description:
+      'El curso no tiene cupos disponibles o la información proporcionada es incorrecta.',
   })
   @ApiResponse({
     status: 404,
@@ -42,8 +56,11 @@ export class EnrollmentController {
   ): Promise<Enrollment> {
     try {
       // Verificar si el usuario ya está matriculado en el curso
-      const existingEnrollment = await this.enrollmentService.findEnrollment(createEnrollmentDto.userCedula, courseId);
-  
+      const existingEnrollment = await this.enrollmentService.findEnrollment(
+        createEnrollmentDto.userCedula,
+        courseId,
+      );
+
       if (existingEnrollment) {
         // Enviar una excepción si el usuario ya está matriculado en este curso
         throw new HttpException(
@@ -54,10 +71,13 @@ export class EnrollmentController {
           HttpStatus.CONFLICT,
         );
       }
-  
+
       // Matricular al usuario en el curso
-      const enrollment = await this.enrollmentService.enrollUser(createEnrollmentDto, courseId);
-  
+      const enrollment = await this.enrollmentService.enrollUser(
+        createEnrollmentDto,
+        courseId,
+      );
+
       return enrollment;
     } catch (error) {
       // Manejo de errores para curso no encontrado
@@ -70,7 +90,7 @@ export class EnrollmentController {
           HttpStatus.NOT_FOUND,
         );
       }
-  
+
       // Manejo de errores para curso sin cupos o información incorrecta
       if (error instanceof BadRequestException) {
         throw new HttpException(
@@ -81,16 +101,23 @@ export class EnrollmentController {
           HttpStatus.BAD_REQUEST,
         );
       }
-  
-      
     }
   }
-  
+
   @Patch('/cancel')
   async cancelEnrollment(
     @Query('courseId') courseId: number,
     @Query('userCedula') userCedula: string,
   ): Promise<{ message: string }> {
     return this.enrollmentService.cancelEnrollment(courseId, userCedula);
+  }
+
+  @Get()
+  async getEnrollmentsListByIdCourse(
+    @Query() paginationEnrollmentListDTO: PaginationEnrollmentListDto,
+  ) {
+    return this.enrollmentService.getEnrollmentsListByIdCourse(
+      paginationEnrollmentListDTO,
+    );
   }
 }

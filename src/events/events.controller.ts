@@ -28,7 +28,6 @@ import { NexEventsDTO } from './DTO/NextEvents';
 export class EventsController {
   constructor(private eventsService: EventsService) {}
 
-
   @Post()
   @UseInterceptors(
     FileInterceptor('image', {
@@ -135,6 +134,22 @@ export class EventsController {
   })
   updateFinalizedStatus(@Query('id') id: number) {
     return this.eventsService.updateFinalizedStatus(id);
+  }
+
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'creator')
+  @Patch('finalized-status')
+  @ApiResponse({
+    status: 200,
+    description: 'Se cambio el estado a en ejecucion',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Un error a ocurrido en el servidor',
+  })
+  updatePendientStatus(@Query('id') id: number) {
+    return this.eventsService.updatePendientStatus(id);
   }
 
   @Get('NextEvents')
