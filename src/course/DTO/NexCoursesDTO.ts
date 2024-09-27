@@ -7,6 +7,8 @@ export class NexCorusesDTO {
 
   @ApiProperty({ description: 'Nombre del curso' })
   courseType: string;
+  @ApiProperty({ description: 'Nombre del curso' })
+  courseName: string;
 
   @ApiProperty({ description: 'Imagen del curso' })
   image?: string;
@@ -40,6 +42,4 @@ export class NexCorusesDTO {
 
   @ApiProperty({ description: 'Edad Objetivo' })
   duration: string;
-
-
 }
