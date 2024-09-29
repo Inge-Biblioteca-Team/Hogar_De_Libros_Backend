@@ -154,23 +154,16 @@ export class ProgramsService {
   }
 
   async getCoursesByProgram(id: number): Promise<Course[]> {
-    try {
-      const program = await this.programsRepository
-        .createQueryBuilder('program')
-        .leftJoinAndSelect('program.courses', 'course')
-        .where('program.programsId = :id', { id })
-        .andWhere('course.Status = :status', { status: 1 })
-        .getOne();
+    const program = await this.programsRepository
+      .createQueryBuilder('program')
+      .leftJoinAndSelect('program.courses', 'course')
+      .where('program.programsId = :id', { id })
+      .andWhere('course.Status = :status', { status: 1 })
+      .getOne();
 
-      if (!program) {
-        throw new NotFoundException(`No existe un programa con el ID ${id}.`);
-      }
-
-      return program.courses;
-    } catch (error) {
-      throw new BadRequestException(
-        'Error al obtener los cursos del programa.',
-      );
+    if (!program) {
+      throw new NotFoundException(`No existen cursos para el programa.`);
     }
+    return program.courses;
   }
 }
