@@ -2,6 +2,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Enrollment } from 'src/enrollment/enrollment.entity';
 import { Programs } from 'src/programs/programs.entity';
+import { RoomReservation } from 'src/room-reservation/entities/room-reservation.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne } from 'typeorm';
 
 @Entity(({ name: 'courses' }) )
@@ -68,5 +69,8 @@ export class Course {
   
   @ManyToOne(() => Programs, (program) => program.courses, { nullable: true })
   program: Programs;
+
+  @OneToMany(() => RoomReservation, roomReservation => roomReservation.course)
+  roomReservations: RoomReservation[];  
   
 }

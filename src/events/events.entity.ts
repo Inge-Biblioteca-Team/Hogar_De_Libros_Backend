@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { RoomReservation } from 'src/room-reservation/entities/room-reservation.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'events' })
 export class events {
@@ -47,4 +48,7 @@ export class events {
   @Column()
   @ApiProperty({ description: 'Persona encargada del evento' })
   InchargePerson: string;
+
+  @OneToMany(() => RoomReservation, roomReservation => roomReservation.events)
+  roomReservations: RoomReservation[]; 
 }

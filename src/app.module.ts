@@ -31,6 +31,10 @@ import { Course } from './course/course.entity';
 import { events } from './events/events.entity';
 import { EventsModule } from './events/events.module';
 import { Programs } from './programs/programs.entity';
+import { RoomsModule } from './rooms/rooms.module';
+import { RoomReservationModule } from './room-reservation/room-reservation.module';
+import { Rooms } from './rooms/entities/room.entity';
+import { RoomReservation } from './room-reservation/entities/room-reservation.entity';
 
 dotenv.config();
 
@@ -39,7 +43,7 @@ dotenv.config();
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
-      port: 3308,
+      port: 3306,
       username: 'root',
       password: 'root',
       database: 'hogar_de_libros',
@@ -57,6 +61,8 @@ dotenv.config();
         Course,
         events,
         Programs,
+        Rooms,
+        RoomReservation
       ],
       synchronize: true,
     }),
@@ -74,6 +80,8 @@ dotenv.config();
     EnrollmentModule,
     ProgramsModule,
     EventsModule,
+    RoomsModule,
+    RoomReservationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
