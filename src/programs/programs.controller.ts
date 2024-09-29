@@ -19,6 +19,7 @@ import { UpdateProgramsDto } from './DTO/update-course.dto';
 import { SearchPDTO } from './DTO/SearchPDTO';
 import { ProgramDTO } from './DTO/GetPDTO';
 import { ProgramsNames } from './DTO/ProgramNames';
+import { Course } from 'src/course/course.entity';
 
 @ApiTags('Programs')
 @Controller('programs')
@@ -43,7 +44,7 @@ export class ProgramsController {
       throw new BadRequestException('Programa inactivo');
     }
   }
-  
+
   @Get(':id')
   @ApiResponse({
     status: 201,
@@ -136,5 +137,17 @@ export class ProgramsController {
       }
       throw new BadRequestException('Error al deshabilitar el programa.');
     }
+  }
+
+  @Get(':id/courses')
+  async getCoursesByProgram(@Param('id') id: number): Promise<Course[]> {
+    const courses = await this.programService.getCoursesByProgram(id);
+
+    if (!courses || courses.length === 0) {
+      throw new NotFoundException(
+        `No existen cursos relacionados al programa.`,
+      );
+    }
+    return courses;
   }
 }

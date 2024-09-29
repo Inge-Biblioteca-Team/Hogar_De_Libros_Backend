@@ -13,6 +13,7 @@ import { SearchDTO } from './DTO/SearchDTO';
 import { EnrollmentService } from 'src/enrollment/enrollment.service';
 import { Programs } from 'src/programs/programs.entity';
 import { GetCoursesDto } from './DTO/get.-course.dto';
+import { CoursesDTO } from './DTO/CoursesDTO';
 
 @Injectable()
 export class CourseService {
@@ -50,17 +51,75 @@ export class CourseService {
 
   async findAllCourses(
     filter: GetCoursesDto,
-  ): Promise<{ data: Course[]; count: number }> {
-    const { page = 1, limit = 10 } = filter;
-    const query = this.courseRepository.createQueryBuilder('courses');
+  ): Promise<{ data: CoursesDTO[]; count: number }> {
+    const { page = 1, limit = 10, courseName, status } = filter;
+    const query = this.courseRepository
+      .createQueryBuilder('courses')
+      .leftJoinAndSelect('courses.program', 'program');
+
+    if (courseName) {
+      query.andWhere('courses.courseName LIKE :courseName', {
+        courseName: `%${courseName}%`,
+      });
+    }
+    if (status) {
+      query.andWhere('courses.Status = :status', {
+        status: status,
+      });
+    }
     query.skip((page - 1) * limit).take(limit);
 
     const [courses, count] = await query.getManyAndCount();
+
     if (!courses || courses.length === 0) {
       throw new NotFoundException('No se encontraron cursos.');
     }
 
-    return { data: courses, count };
+    const result = await Promise.all(
+      courses.map(async (course) => {
+        const enrollmentCount =
+          await this.enrollmentService.countActiveEnrollmentsByCourse(
+            course.courseId,
+          );
+
+        const now = new Date();
+        const courseStartDate = new Date(course.date);
+        const endDate = new Date(course.endDate);
+
+        let status: string;
+        if (!course.Status) {
+          status = 'Cancelado';
+        } else if (endDate && now > endDate) {
+          status = 'Cerrado';
+        } else if (courseStartDate > now) {
+          status = 'Pendiente';
+        } else {
+          status = 'En Curso';
+        }
+
+        return {
+          courseId: course.courseId,
+          image: course.image,
+          courseType: course.courseType,
+          courseName: course.courseName,
+          instructor: course.instructor,
+          availableQuota: course.capacity - enrollmentCount,
+          capacity: course.capacity,
+          location: course.location,
+          date: course.date,
+          endDate: course.endDate,
+          Status: course.Status,
+          duration: course.duration,
+          courseTime: course.courseTime,
+          targetAge: course.targetAge,
+          currentStatus: status,
+          programName: course.program ? course.program.programName : null,
+          programProgramsId: course.program ? course.program.programsId : null,
+        };
+      }),
+    );
+
+    return { data: result, count };
   }
 
   async updateCourseById(
@@ -131,6 +190,7 @@ export class CourseService {
       if (type) {
         query.andWhere('courses.courseType LIKE :type', { type: `%${type}%` });
       }
+      query.andWhere('courses.Status = 1');
 
       query.orderBy('courses.date', 'ASC');
 
@@ -159,7 +219,6 @@ export class CourseService {
           CourseTime: course.courseTime,
           EndDate: course.endDate,
           objetiveAge: course.targetAge,
-          status: 'Pendiente',
           duration: course.duration,
         };
       }),
@@ -177,6 +236,7 @@ export class CourseService {
       .createQueryBuilder('courses')
       .innerJoin('courses.enrollments', 'enrollment')
       .where('enrollment.userCedula = :userCedula', { userCedula })
+      .andWhere('courses.Status = 1')
       .andWhere('courses.date >= CURRENT_DATE')
       .andWhere('enrollment.status = :status', { status: 'Activo' })
       .skip((page - 1) * limit)
@@ -184,6 +244,7 @@ export class CourseService {
 
     let data: Course[];
     let count: number;
+    query.andWhere('courses.Status = 1');
 
     try {
       [data, count] = await query
@@ -213,7 +274,6 @@ export class CourseService {
           CourseTime: course.courseTime,
           EndDate: course.endDate,
           objetiveAge: course.targetAge,
-          status: 'Pendiente',
           duration: course.duration,
         };
       }),

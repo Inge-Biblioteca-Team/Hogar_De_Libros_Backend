@@ -12,6 +12,7 @@ import { UpdateProgramsDto } from './DTO/update-course.dto';
 import { SearchPDTO } from './DTO/SearchPDTO';
 import { ProgramDTO } from './DTO/GetPDTO';
 import { ProgramsNames } from './DTO/ProgramNames';
+import { Course } from 'src/course/course.entity';
 
 @Injectable()
 export class ProgramsService {
@@ -150,5 +151,19 @@ export class ProgramsService {
     });
 
     return result;
+  }
+
+  async getCoursesByProgram(id: number): Promise<Course[]> {
+    const program = await this.programsRepository
+      .createQueryBuilder('program')
+      .leftJoinAndSelect('program.courses', 'course')
+      .where('program.programsId = :id', { id })
+      .andWhere('course.Status = :status', { status: 1 })
+      .getOne();
+
+    if (!program) {
+      throw new NotFoundException(`No existen cursos para el programa.`);
+    }
+    return program.courses;
   }
 }
