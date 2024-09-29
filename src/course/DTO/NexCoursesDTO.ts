@@ -38,8 +38,5 @@ export class NexCorusesDTO {
   objetiveAge: number;
 
   @ApiProperty({ description: 'Edad Objetivo' })
-  status: string;
-
-  @ApiProperty({ description: 'Edad Objetivo' })
   duration: string;
 }

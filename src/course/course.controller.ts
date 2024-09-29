@@ -19,6 +19,7 @@ import { ApiBody, ApiResponse, ApiTags, PartialType } from '@nestjs/swagger';
 import { GetCoursesDto } from './DTO/get.-course.dto';
 import { NexCorusesDTO } from './DTO/NexCoursesDTO';
 import { SearchDTO } from './DTO/SearchDTO';
+import { CoursesDTO } from './DTO/CoursesDTO';
 
 @ApiTags('Courses')
 @Controller('courses')
@@ -79,18 +80,23 @@ export class CourseController {
   @Get()
   async findAllCourses(
     @Query() query: GetCoursesDto,
-  ): Promise<{ data: Course[]; count: number }> {
+  ): Promise<{ data: CoursesDTO[]; count: number }> {
     try {
-      const course = await this.courseService.findAllCourses(query);
-
-      if (!course.data || course.data.length === 0) {
+      const courses = await this.courseService.findAllCourses(query);
+  
+      // Si no se encontraron cursos, lanzar excepción NotFoundException
+      if (!courses.data || courses.data.length === 0) {
         throw new NotFoundException('No se encontraron cursos.');
       }
-      return course;
+  
+      return courses; // Retornar los cursos encontrados
     } catch (error) {
       if (error.name === 'QueryFailedError') {
+        // Manejo de error específico para problemas en la consulta
         throw new BadRequestException('Error al procesar la solicitud.');
       }
+      // Re-lanzar el error si no es un QueryFailedError
+      throw error; // Permitir que otros tipos de errores sean manejados por el middleware de errores global
     }
   }
 
