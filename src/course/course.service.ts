@@ -52,10 +52,21 @@ export class CourseService {
   async findAllCourses(
     filter: GetCoursesDto,
   ): Promise<{ data: CoursesDTO[]; count: number }> {
-    const { page = 1, limit = 10 } = filter;
+    const { page = 1, limit = 10, courseName, status } = filter;
     const query = this.courseRepository
       .createQueryBuilder('courses')
       .leftJoinAndSelect('courses.program', 'program');
+
+    if (courseName) {
+      query.andWhere('courses.courseName LIKE :courseName', {
+        courseName: `%${courseName}%`,
+      });
+    }
+    if (status) {
+      query.andWhere('courses.Status = :status', {
+        status: status,
+      });
+    }
     query.skip((page - 1) * limit).take(limit);
 
     const [courses, count] = await query.getManyAndCount();
@@ -96,11 +107,12 @@ export class CourseService {
           capacity: course.capacity,
           location: course.location,
           date: course.date,
-          endDate: endDate,
-          Status: status,
+          endDate: course.endDate,
+          Status: course.Status,
           duration: course.duration,
           courseTime: course.courseTime,
           targetAge: course.targetAge,
+          currentStatus: status,
           programName: course.program ? course.program.programName : null,
           programProgramsId: course.program ? course.program.programsId : null,
         };

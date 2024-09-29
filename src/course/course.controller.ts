@@ -83,20 +83,15 @@ export class CourseController {
   ): Promise<{ data: CoursesDTO[]; count: number }> {
     try {
       const courses = await this.courseService.findAllCourses(query);
-  
-      // Si no se encontraron cursos, lanzar excepción NotFoundException
       if (!courses.data || courses.data.length === 0) {
         throw new NotFoundException('No se encontraron cursos.');
       }
-  
-      return courses; // Retornar los cursos encontrados
+      return courses;
     } catch (error) {
       if (error.name === 'QueryFailedError') {
-        // Manejo de error específico para problemas en la consulta
         throw new BadRequestException('Error al procesar la solicitud.');
       }
-      // Re-lanzar el error si no es un QueryFailedError
-      throw error; // Permitir que otros tipos de errores sean manejados por el middleware de errores global
+      throw error;
     }
   }
 

@@ -12,6 +12,7 @@ import { UpdateProgramsDto } from './DTO/update-course.dto';
 import { SearchPDTO } from './DTO/SearchPDTO';
 import { ProgramDTO } from './DTO/GetPDTO';
 import { ProgramsNames } from './DTO/ProgramNames';
+import { Course } from 'src/course/course.entity';
 
 @Injectable()
 export class ProgramsService {
@@ -150,5 +151,26 @@ export class ProgramsService {
     });
 
     return result;
+  }
+
+  async getCoursesByProgram(id: number): Promise<Course[]> {
+    try {
+      const program = await this.programsRepository
+        .createQueryBuilder('program')
+        .leftJoinAndSelect('program.courses', 'course')
+        .where('program.programsId = :id', { id })
+        .andWhere('course.Status = :status', { status: 1 })
+        .getOne();
+
+      if (!program) {
+        throw new NotFoundException(`No existe un programa con el ID ${id}.`);
+      }
+
+      return program.courses;
+    } catch (error) {
+      throw new BadRequestException(
+        'Error al obtener los cursos del programa.',
+      );
+    }
   }
 }

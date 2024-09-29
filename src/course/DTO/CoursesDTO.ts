@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 
-import { IsDate, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsDate, IsNumber, IsString } from 'class-validator';
 
 export class CoursesDTO {
   @IsNumber()
@@ -21,8 +21,10 @@ export class CoursesDTO {
   targetAge: number;
   @IsNumber()
   capacity: number;
+  @IsBoolean()
+  Status: boolean;
   @IsString()
-  Status: string;
+  currentStatus: string;
   @IsString()
   image: string;
   @IsString()
