@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Course } from 'src/course/course.entity';
 import { events } from 'src/events/events.entity';
 import { User } from 'src/user/user.entity';

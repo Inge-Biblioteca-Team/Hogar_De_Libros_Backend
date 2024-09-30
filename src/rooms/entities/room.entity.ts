@@ -1,7 +1,8 @@
+/* eslint-disable prettier/prettier */
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
-@Entity(({ name: 'Rooms' }) )
+@Entity(({ name: 'rooms' }) )
 export class Rooms {
 
     @PrimaryGeneratedColumn()
