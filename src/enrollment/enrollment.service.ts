@@ -111,8 +111,6 @@ export class EnrollmentService {
       console.log('Matrícula creada con éxito:', savedEnrollment);
 
       // Actualizar la capacidad del curso
-      course.capacity -= 1;
-      await this.courseRepository.save(course);
 
       return savedEnrollment;
     } catch (error) {
