@@ -62,7 +62,7 @@ export class CreateCourseDto {
   @IsNotEmpty()
   endDate: Date;
 
-  @ApiProperty({ description: 'Id Programa' })
+  @ApiProperty({ description: 'Id Programa', default: null })
   @IsNumber()
   @IsOptional()
   programProgramsId: number;

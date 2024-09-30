@@ -61,13 +61,13 @@ export class Course {
   endDate: Date;  
 
   @ApiProperty({ description: 'Id Programa', nullable: true  })
-  @Column({ nullable: true })
+  @Column({ nullable: true, default:null })
   programProgramsId: number;
 
   @OneToMany(() => Enrollment, (enrollment) => enrollment.course)
   enrollments: Enrollment[];
   
-  @ManyToOne(() => Programs, (program) => program.courses, { nullable: true })
+  @ManyToOne(() => Programs, (program) => program.courses, { nullable: true})
   program: Programs;
 
   @OneToMany(() => RoomReservation, roomReservation => roomReservation.course)

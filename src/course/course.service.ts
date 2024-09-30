@@ -27,21 +27,10 @@ export class CourseService {
 
   async createCourse(createCourseDto: CreateCourseDto): Promise<Course> {
     try {
-      // Verificamos si el programa está activo
-      const program = await this.programRepository.findOne({
-        where: { programsId: createCourseDto.programProgramsId, status: true },
-      });
-
-      if (!program) {
-        throw new Error('El programa asociado está inactivo o no existe.');
-      }
-
-      // Creamos el curso si el programa está activo
       const course = this.courseRepository.create(createCourseDto);
       const savedCourse = await this.courseRepository.save(course);
       return savedCourse;
     } catch (error) {
-      console.error('Error al crear el curso:', error);
       throw new Error(
         error.message ||
           'Error al crear el curso. Por favor, inténtelo nuevamente.',
