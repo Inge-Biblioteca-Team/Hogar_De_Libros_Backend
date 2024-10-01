@@ -76,6 +76,6 @@ export class Course {
   program: Programs;
 
   @OneToMany(() => RoomReservation, roomReservation => roomReservation.course)
-  roomReservations: RoomReservation[];  
+  roomReservations: RoomReservation[]; 
   
 }

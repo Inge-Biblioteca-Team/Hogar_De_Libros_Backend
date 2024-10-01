@@ -30,13 +30,13 @@ export class Rooms {
   observations: string;
 
   @Column({ type: 'simple-array', nullable: true })
-  images: string[]; 
+  image?: string[]; 
+  @Column()
+  @ApiProperty()
+  location: string;
 
-  @Column({ default: 'Disponible' })
-  @ApiProperty({
-    description: '3 Estados Disponible, Mantenimiento, Inhabilitada',
-    example: 'Mantenimiento',
-  })
+  @Column({ type: 'char', length: 1, default: 'D' })
+  @ApiProperty()
   status: string;
 
   @OneToMany(() => RoomReservation, (roomReservation) => roomReservation.rooms)

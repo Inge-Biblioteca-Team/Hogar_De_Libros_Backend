@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, Min } from 'class-validator';
+import { IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class getRoomDto {
     
@@ -14,5 +14,19 @@ export class getRoomDto {
     @IsNumber()
     @Min(1)
     limit?: number = 10;
- 
+    
+    @ApiProperty({ description: 'Room status (D,M o C)',required: false})
+    @IsOptional()
+    @IsString()
+    status?: string;
+
+    @ApiProperty({ description: 'Room number',required: false})
+    @IsOptional()
+    @IsString()
+    roomNumber?: string;
+
+    @ApiProperty({ description: 'Room name', required: false})
+    @IsOptional()
+    @IsString()
+    name?: string;
 }

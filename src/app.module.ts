@@ -62,7 +62,7 @@ dotenv.config();
         events,
         Programs,
         Rooms,
-        RoomReservation
+        RoomReservation,
       ],
       synchronize: true,
     }),
