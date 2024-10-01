@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+import { ApiProperty } from '@nestjs/swagger';
 import { Course } from 'src/course/course.entity';
 import { events } from 'src/events/events.entity';
 import { Rooms } from 'src/rooms/entities/room.entity';
@@ -17,9 +18,15 @@ export class RoomReservation {
   rommReservationId: number;
 
   @Column({})
+  @ApiProperty({description:"Nombre de la institucion"})
   name: string;
 
   @Column({ type: 'date' })
+  @ApiProperty({description:"Fecha de emision"})
+  reservationDate: Date;
+
+  @Column({ type: 'date' })
+  @ApiProperty({description:"Fecha Reservada"})
   date: Date;
 
   @Column({ type: 'time' })
@@ -52,3 +59,5 @@ export class RoomReservation {
   @JoinColumn({ name: 'roomId', referencedColumnName: 'roomId' })
   rooms: Rooms;
 }
+
+//estado por job
