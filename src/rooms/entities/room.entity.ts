@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { RoomReservation } from 'src/room-reservation/entities/room-reservation.entity';
 
-@Entity({ name: 'room' })
+@Entity({ name: 'rooms' })
 export class Rooms {
   @PrimaryGeneratedColumn()
   @ApiProperty()
@@ -14,11 +14,11 @@ export class Rooms {
   roomNumber: string;
 
   @Column({ nullable: true })
-  @ApiProperty()
+  @ApiProperty({ description: 'nombre de la sala' })
   name: string;
 
   @Column('float')
-  @ApiProperty()
+  @ApiProperty({ description: 'M²' })
   area: number;
 
   @Column()
@@ -29,10 +29,8 @@ export class Rooms {
   @ApiProperty()
   observations: string;
 
-  @Column('simple-array', { nullable: true })
-  @ApiProperty()
-  image?: string[];
-
+  @Column({ type: 'simple-array', nullable: true })
+  image?: string[]; 
   @Column()
   @ApiProperty()
   location: string;

@@ -1,39 +1,57 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { Course } from 'src/course/course.entity';
-import { User } from 'src/user/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
-
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 
 @Entity()
 export class Enrollment {
- 
   @PrimaryGeneratedColumn()
-  enrollmentId: number; 
+  enrollmentId: number;
 
-  @ApiProperty({ description: 'UserCedula ' ,nullable: true})
+  @ApiProperty({ description: 'UserCedula '})
   @Column()
-	userCedula?: string;
- 
+  userCedula?: string;
+
   @ApiProperty()
   @Column()
-  enrollmentDate: Date; 
+  enrollmentDate: Date = new Date();
 
   @ApiProperty({ description: 'CourseId ' })
   @Column()
-	courseId: number;
+  courseId: number;
+
+  @ApiProperty({ description: 'Nombre de quien matricula' })
+  @Column()
+  UserName: string;
+
+  @ApiProperty({ description: 'Direccion del matriculado ' })
+  @Column()
+  direction: string;
+
+  @ApiProperty({ description: 'Telefono' })
+  @Column()
+  phone: string;
+
+  @ApiProperty({ description: 'EmergenciPhone  ' })
+  @Column()
+  ePhone: string;
+
+  @ApiProperty({ description: 'Email' })
+  @Column()
+  email: string;
 
   @ApiProperty({ description: 'Estado De la matricula ' })
-  @Column()
-  status: string = 'Activo';
- 
-    // Relación muchos a uno con Course
-    @ManyToOne(() => Course, (course) => course.enrollments)
-    @JoinColumn({ name: 'courseId' })  
-    course: Course;
-    
-   // Relación muchos a uno con User
-   @ManyToOne(() => User, (user) => user.enrollments, { nullable: true })
-   @JoinColumn({ name: 'userCedula' })
-   user: User;
+  @Column({ default: 'Activa' })
+  status: string;
+
+  @ManyToOne(() => Course, (course) => course.enrollments)
+  @JoinColumn({ name: 'courseId' })
+  course: Course;
+
 }

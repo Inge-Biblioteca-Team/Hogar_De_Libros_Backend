@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
@@ -8,7 +9,7 @@ export class PaginationEnrollmentListDto {
   @IsOptional()
   @Min(1)
   @Type(() => Number)
-  Page?: number;
+  page?: number;
 
   @ApiPropertyOptional({
     description: 'Cantidad de eventos por página',
@@ -18,7 +19,7 @@ export class PaginationEnrollmentListDto {
   @IsOptional()
   @Min(1)
   @Type(() => Number)
-  Limit?: number;
+  limit?: number;
 
   @ApiPropertyOptional({ description: 'CourseId ' })
   @IsInt()

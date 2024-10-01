@@ -2,7 +2,6 @@
 import {
   Injectable,
   NotFoundException,
-  BadRequestException,
   ForbiddenException,
   InternalServerErrorException,
   ConflictException,
@@ -14,6 +13,7 @@ import { Course } from '../course/course.entity';
 import { User } from 'src/user/user.entity';
 import { CreateEnrollmentDto } from './DTO/create-enrollment.dto';
 import { PaginationEnrollmentListDto } from './DTO/pagination-enrollmentList.dto';
+import { GetEnrollmentsDTO } from './DTO/GetDTO';
 
 @Injectable()
 export class EnrollmentService {
@@ -26,101 +26,56 @@ export class EnrollmentService {
     private readonly userRepository: Repository<User>,
   ) {}
 
+  //Post
   async enrollUser(
-    createEnrollmentDto: CreateEnrollmentDto,
+    Data: CreateEnrollmentDto,
     courseId: number,
-  ): Promise<Enrollment> {
-    const { userCedula } = createEnrollmentDto;
-
-    // Buscar el curso por ID
-    const course = await this.courseRepository.findOne({ where: { courseId } });
-    if (!course) {
-      throw new NotFoundException(`Curso con ID ${courseId} no encontrado`);
-    }
-
-    // Verificar capacidad del curso
-    if (course.capacity <= 0) {
-      throw new BadRequestException('No hay cupos disponibles para este curso');
-    }
-
-    // Buscar si el usuario ya está matriculado en el curso
-    const existingEnrollment = await this.enrollmentRepository.findOne({
-      where: {
-        userCedula: userCedula,
-        courseId: course.courseId,
-      },
-    });
-    if (existingEnrollment) {
-      throw new ConflictException(
-        'El usuario ya está matriculado en este curso',
-      );
-    }
-
-    let user;
-
-    // Manejo de errores en la creación del usuario
+  ): Promise<{ message: string }> {
     try {
-      // Buscar al usuario por cédula, crear uno temporal si no existe
-      user = await this.userRepository.findOne({
-        where: { cedula: userCedula },
+      const course = await this.courseRepository.findOne({
+        where: { courseId },
       });
-      if (!user) {
-        console.log(
-          `Usuario con cédula ${userCedula} no existe. Creando usuario temporal...`,
-        );
 
-        const tempUser = this.userRepository.create({
-          cedula: userCedula,
-          email: `${userCedula}@temporal.com`,
-          name: 'Usuario',
-          lastName: 'Temporal',
-          phoneNumber: '00000000',
-          province: 'Desconocido',
-          district: 'Desconocido',
-          gender: 'Desconocido',
-          address: 'Desconocido',
-          birthDate: new Date('2000-01-01'), // Fecha genérica
-          password: 'temporal123', // Contraseña genérica
-          acceptTermsAndConditions: false,
-          status: true,
+      const activeEnrollmentsCount =
+        await this.countActiveEnrollmentsByCourse(courseId);
+      if (activeEnrollmentsCount >= course.capacity) {
+        throw new ConflictException(
+          'El curso ya ha alcanzado su capacidad máxima',
+        );
+      }
+
+      if (Data.userCedula) {
+        const existingEnrollment = await this.enrollmentRepository.findOne({
+          where: {
+            course: { courseId },
+            userCedula: Data.userCedula,
+          },
         });
 
-        // Guardar el usuario temporal
-        user = await this.userRepository.save(tempUser);
-        console.log('Usuario temporal creado con éxito:', user);
-      } else {
-        console.log('Usuario encontrado:', user);
+        if (existingEnrollment) {
+          throw new ConflictException(
+            'El usuario ya está inscrito en este curso',
+          );
+        }
       }
-    } catch (error) {
-      console.error('Error al crear o guardar el usuario temporal:', error);
-      throw new InternalServerErrorException(
-        'No se pudo crear o guardar el usuario temporal',
-      );
-    }
 
-    // Manejo de errores en la creación de la matrícula
-    try {
-      // Crear y guardar la matrícula
       const enrollment = this.enrollmentRepository.create({
-        userCedula: user.cedula,
-        courseId: course.courseId,
-        enrollmentDate: new Date().toISOString(),
+        ...Data,
+        courseId: courseId,
       });
 
-      const savedEnrollment = await this.enrollmentRepository.save(enrollment);
-      console.log('Matrícula creada con éxito:', savedEnrollment);
+      await this.enrollmentRepository.save(enrollment);
 
-      // Actualizar la capacidad del curso
-      course.capacity -= 1;
-      await this.courseRepository.save(course);
-
-      return savedEnrollment;
+      return { message: 'Matrícula creada con éxito' };
     } catch (error) {
-      console.error('Error al guardar la matrícula:', error);
-      throw new InternalServerErrorException('No se pudo guardar la matrícula');
+      throw new InternalServerErrorException(
+        error.message ||
+          'Error al crear la matrícula. Por favor, inténtelo nuevamente.',
+      );
     }
   }
 
+  //Funcion de Apoyo
   async findEnrollment(
     userCedula: string,
     courseId: number,
@@ -132,16 +87,18 @@ export class EnrollmentService {
       },
     });
   }
+
+  //Patch Cancel
   async cancelEnrollment(
     CourseID: number,
     UserCedula: string,
   ): Promise<{ message: string }> {
     const enrollment = await this.enrollmentRepository.findOne({
       where: {
-        user: { cedula: UserCedula },
         course: { courseId: CourseID },
+        userCedula: UserCedula,
       },
-      relations: ['user', 'course'],
+      relations: ['course'],
     });
 
     if (!enrollment) {
@@ -175,9 +132,10 @@ export class EnrollmentService {
     }
   }
 
+  //Funcion de Apoyo(Revisa cuantas matriculas tiene un curso y retorna el numero)
   async countActiveEnrollmentsByCourse(
     courseId: number,
-    status: string = 'Activo',
+    status: string = 'Activa',
   ): Promise<number> {
     const result = await this.enrollmentRepository
       .createQueryBuilder('enrollment')
@@ -189,29 +147,31 @@ export class EnrollmentService {
     return result.enrollmentCount ? parseInt(result.enrollmentCount, 10) : 0;
   }
 
+  //Matricula por curso paginada de 5 fijo
   async getEnrollmentsListByIdCourse(
     paginationEnrollmentListDTO: PaginationEnrollmentListDto,
-  ): Promise<{ data: any[]; count: number }> {
-    const { Page = 1, Limit = 10, courseId } = paginationEnrollmentListDTO;
-    {
-    }
+  ): Promise<{ data: GetEnrollmentsDTO[]; count: number }> {
+    const { courseId, page = 1 } = paginationEnrollmentListDTO;
+    const limit = 5;
     const [result, total] = await this.enrollmentRepository
       .createQueryBuilder('enrollment')
-      .leftJoinAndSelect('enrollment.user', 'user')
       .where('enrollment.courseId = :courseId', { courseId })
-      .skip((Page - 1) * Limit)
-      .take(Limit)
+      .skip((page - 1) * limit)
+      .take(limit)
       .getManyAndCount();
 
-      return{data: result.map(enrollment =>({
-        userCedula: enrollment.user.cedula,
-        userName: enrollment.user.name,
-        UserLastName: enrollment.user.lastName,
-        userEmail: enrollment.user.email,
-        userPhoneNumber: enrollment.user.phoneNumber,
+    return {
+      data: result.map((enrollment) => ({
+        enrollmentId: enrollment.enrollmentId,
+        userCedula: enrollment.userCedula,
         enrollmentDate: enrollment.enrollmentDate,
-        enrollmentId: enrollment.enrollmentId
+        UserName: enrollment.UserName,
+        direction: enrollment.direction,
+        phone: enrollment.phone,
+        ePhone: enrollment.ePhone,
+        email: enrollment.email,
       })),
-    count: total}
+      count: total,
+    };
   }
 }

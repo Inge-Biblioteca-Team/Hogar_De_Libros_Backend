@@ -39,4 +39,7 @@ export class NexCorusesDTO {
 
   @ApiProperty({ description: 'Edad Objetivo' })
   duration: string;
+
+  @ApiProperty({description:"Materiales del curso"})
+  materials:string;
 }

@@ -1,9 +1,17 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { CreateRoomReservationDto } from './dto/create-room-reservation.dto';
 import { UpdateRoomReservationDto } from './dto/update-room-reservation.dto';
 
 @Injectable()
 export class RoomReservationService {
+
+
+  //Validaciones, No se permite un dia ocupado ni una hora ocupada.
+  //Existencia de Sala,Evento,Curso y Usuario
+
+
+
   create(createRoomReservationDto: CreateRoomReservationDto) {
     return 'This action adds a new roomReservation';
   }

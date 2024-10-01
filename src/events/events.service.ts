@@ -4,6 +4,7 @@ import {
   Body,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { events } from './events.entity';
@@ -169,6 +170,25 @@ export class EventsService {
         return { message: 'Error en el servidor, no se pudo crear el evento' };
       }
       return { message: 'Hubo un error al actualizar el estado del evento' };
+    }
+  }
+
+  async cancelEvent(id: number): Promise<{ message: string }> {
+    try {
+      const findEvent = await this.EventsRepository.findOne({
+        where: { EventId: id },
+      });
+
+      if (!findEvent) {
+        throw new NotFoundException('El evento no existe');
+      }
+      await this.EventsRepository.update(id, { Status: 'C' });
+      return { message: 'Se cancelo el evento exitosamente' };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        error.message ||
+          'Error al cancelar el evento.',
+      );
     }
   }
 

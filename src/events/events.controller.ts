@@ -136,20 +136,9 @@ export class EventsController {
     return this.eventsService.updateFinalizedStatus(id);
   }
 
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'creator')
-  @Patch('finalized-status')
-  @ApiResponse({
-    status: 200,
-    description: 'Se cambio el estado a en ejecucion',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Un error a ocurrido en el servidor',
-  })
-  updatePendientStatus(@Query('id') id: number) {
-    return this.eventsService.updatePendientStatus(id);
+  @Patch('CancelEvent')
+  updatePendientStatus(@Query('id') id: number): Promise<{ message: string }> {
+    return this.eventsService.cancelEvent(id);
   }
 
   @Get('NextEvents')
