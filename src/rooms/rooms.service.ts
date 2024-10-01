@@ -25,13 +25,9 @@ export class RoomsService {
         message: 'Se creó la sala correctamente',
       };
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        return { message: 'Error en la petición de la sala, no se pudo crear' };
-      }
-      if (error instanceof InternalServerErrorException) {
-        return { message: 'Error en el servidor, no se pudo crear la sala' };
-      }
-      return { message: 'Hubo un error al crear la sala' };
+      throw new InternalServerErrorException(
+        error.message || 'Error al crear la sala',
+      );
     }
   }
 
@@ -41,10 +37,12 @@ export class RoomsService {
     const { page = 1, limit = 10, name, roomNumber, status } = filter;
     const query = this.roomRepository.createQueryBuilder('room');
     if (name) {
-      query.andWhere('room.name LIKE  :name', { name:`%${name}%`  });
+      query.andWhere('room.name LIKE  :name', { name: `%${name}%` });
     }
     if (roomNumber) {
-      query.andWhere('room.roomNumber LIKE  :roomNumber', { roomNumber: `%${roomNumber}%`  });
+      query.andWhere('room.roomNumber LIKE  :roomNumber', {
+        roomNumber: `%${roomNumber}%`,
+      });
     }
     if (status) {
       query.andWhere('room.status = :status', { status });
@@ -61,7 +59,7 @@ export class RoomsService {
   }
 
   findOne(id: number) {
-    const room = this.roomRepository.findOne({where: {roomId: id}});
+    const room = this.roomRepository.findOne({ where: { roomId: id } });
     if (!room) {
       throw new NotFoundException('No se encontró la sala.');
     }
@@ -81,27 +79,10 @@ export class RoomsService {
         message: 'Se actualizó la sala correctamente',
       };
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        return {
-          message: 'Error en la petición de la sala, no se pudo actualizar',
-        };
-      }
-      if (error instanceof InternalServerErrorException) {
-        return {
-          message: 'Error en el servidor, no se pudo actualizar la sala',
-        };
-      }
-      if (error instanceof NotFoundException) {
-        return {
-          message: 'No se encontró la sala.',
-        };
-      }
-      return { message: 'Hubo un error al actualizar la sala' };
+      throw new InternalServerErrorException(
+        error.message || 'Error al modificar la sala',
+      );
     }
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} room`;
   }
 
   async updateStatusMaintenance(id: number) {
@@ -118,24 +99,9 @@ export class RoomsService {
           'Se actualizó el estado de la sala a en mantenimiento correctamente',
       };
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        return {
-          message:
-            'Error en la petición de la sala, no se pudo actualizar su estado',
-        };
-      }
-      if (error instanceof InternalServerErrorException) {
-        return {
-          message:
-            'Error en el servidor, no se pudo actualizar el estado de la sala',
-        };
-      }
-      if (error instanceof NotFoundException) {
-        return {
-          message: 'No se encontró la sala.',
-        };
-      }
-      return { message: 'Hubo un error al actualizar el estado de la sala' };
+      throw new InternalServerErrorException(
+        error.message || 'Error al actualizar el estado de la sala',
+      );
     }
   }
 
@@ -152,24 +118,9 @@ export class RoomsService {
         message: 'Se actualizó el estado de la sala a clausurada correctamente',
       };
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        return {
-          message: 'No se encontró la sala.',
-        };
-      }
-      if (error instanceof BadRequestException) {
-        return {
-          message:
-            'Error en la petición de la sala, no se pudo actualizar su estado',
-        };
-      }
-      if (error instanceof InternalServerErrorException) {
-        return {
-          message:
-            'Error en el servidor, no se pudo actualizar el estado de la sala',
-        };
-      }
-      return { message: 'Hubo un error al actualizar el estado de la sala' };
+      throw new InternalServerErrorException(
+        error.message || 'Error al actualizar el estado de la sala',
+      );
     }
   }
 
@@ -186,24 +137,9 @@ export class RoomsService {
         message: 'Se actualizó el estado de la sala a disponible correctamente',
       };
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        return {
-          message:
-            'Error en la petición de la sala, no se pudo actualizar su estado',
-        };
-      }
-      if (error instanceof InternalServerErrorException) {
-        return {
-          message:
-            'Error en el servidor, no se pudo actualizar el estado de la sala',
-        };
-      }
-      if (error instanceof NotFoundException) {
-        return {
-          message: 'No se encontró la sala.',
-        };
-      }
-      return { message: 'Hubo un error al actualizar el estado de la sala' };
+      throw new InternalServerErrorException(
+        error.message || 'Error al actualizar el estado de la sala',
+      );
     }
   }
 }

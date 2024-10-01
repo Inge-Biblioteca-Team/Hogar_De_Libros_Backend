@@ -49,6 +49,6 @@ export class events {
   @ApiProperty({ description: 'Persona encargada del evento' })
   InchargePerson: string;
 
-  /*@OneToMany(() => RoomReservation, roomReservation => roomReservation.events)
-  roomReservations: RoomReservation[]; */
+  @OneToMany(() => RoomReservation, roomReservation => roomReservation.events)
+  roomReservations: RoomReservation[]; 
 }

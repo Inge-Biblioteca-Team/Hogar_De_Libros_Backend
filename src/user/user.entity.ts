@@ -82,7 +82,7 @@ export class User {
   @OneToMany(() => Enrollment, (enrollment) => enrollment.user)
   enrollments: Enrollment[];
   
-  /*@OneToMany(() => RoomReservation, roomReservation => roomReservation.user)
-  roomReservations: RoomReservation[]; */
+  @OneToMany(() => RoomReservation, roomReservation => roomReservation.user)
+  roomReservations: RoomReservation[]; 
   
   }

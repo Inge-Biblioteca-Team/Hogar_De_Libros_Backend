@@ -70,7 +70,7 @@ export class Course {
   @ManyToOne(() => Programs, (program) => program.courses, { nullable: true })
   program: Programs;
 
-  /*@OneToMany(() => RoomReservation, roomReservation => roomReservation.course)
-  roomReservations: RoomReservation[];  */
+  @OneToMany(() => RoomReservation, roomReservation => roomReservation.course)
+  roomReservations: RoomReservation[]; 
   
 }

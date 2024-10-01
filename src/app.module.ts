@@ -64,7 +64,7 @@ dotenv.config();
         Rooms,
         RoomReservation
       ],
-      synchronize: true,
+      synchronize: false,
     }),
     BooksModule,
     ComputersModule,

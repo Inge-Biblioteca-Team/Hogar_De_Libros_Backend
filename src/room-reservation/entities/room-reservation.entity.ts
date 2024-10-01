@@ -26,13 +26,13 @@ export class RoomReservation {
   @Column({ nullable: true })
   images: string ; 
 
-  /*@ManyToOne(() => events, events => events.roomReservations, { nullable: true })
+  @ManyToOne(() => events, events => events.roomReservations, { nullable: true })
   events: events;
 
   @ManyToOne(() => Course, course => course.roomReservations, { nullable: true })
   course: Course;  
   @ManyToOne(() => User, user => user.roomReservations, { nullable: false })
-  user: User;  */
+  user: User;
 
 }
 
