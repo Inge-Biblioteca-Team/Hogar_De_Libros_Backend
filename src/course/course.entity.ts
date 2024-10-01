@@ -51,6 +51,10 @@ export class Course {
   @ApiProperty({ description: 'Imagen Curso' })
   @Column()
   image: string;
+  
+  @ApiProperty({description:"Materiales del curso"})
+  @Column()
+  materials:string;
 
   @ApiProperty({ description: 'Duración del curso (por ejemplo, 2 horas)' })
   @Column()
@@ -58,7 +62,8 @@ export class Course {
 
   @ApiProperty({ description: 'Fecha final del curso' })
   @Column({ type: 'date' })
-  endDate: Date;  
+  endDate: Date; 
+  
 
   @ApiProperty({ description: 'Id Programa', nullable: true  })
   @Column({ nullable: true, default:null })

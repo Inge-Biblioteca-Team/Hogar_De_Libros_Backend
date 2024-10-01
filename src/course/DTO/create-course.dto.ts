@@ -67,4 +67,8 @@ export class CreateCourseDto {
   @IsOptional()
   programProgramsId: number;
   
+  @ApiProperty({description: "materiales necesarios", example:"Lapiz"})
+  @IsString()
+  @IsOptional()
+  materials:string;
 }

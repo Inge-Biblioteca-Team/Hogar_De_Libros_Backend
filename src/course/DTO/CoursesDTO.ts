@@ -35,4 +35,6 @@ export class CoursesDTO {
   programName: string;
   @IsString()
   programProgramsId: number;
+  @IsString()
+  materials: string;
 }

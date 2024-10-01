@@ -25,6 +25,7 @@ export class CourseService {
     private readonly programRepository: Repository<Programs>,
   ) {}
 
+  //Post
   async createCourse(createCourseDto: CreateCourseDto): Promise<Course> {
     try {
       const course = this.courseRepository.create(createCourseDto);
@@ -33,18 +34,20 @@ export class CourseService {
     } catch (error) {
       throw new Error(
         error.message ||
-          'Error al crear el curso. Por favor, inténtelo nuevamente.',
+        'Error al crear el curso. Por favor, inténtelo nuevamente.',
       );
     }
   }
 
+  //Get
   async findAllCourses(
     filter: GetCoursesDto,
   ): Promise<{ data: CoursesDTO[]; count: number }> {
     const { page = 1, limit = 10, courseName, status } = filter;
     const query = this.courseRepository
       .createQueryBuilder('courses')
-      .leftJoinAndSelect('courses.program', 'program');
+      .leftJoinAndSelect('courses.program', 'program')
+      .orderBy('courses.date', 'DESC');
 
     if (courseName) {
       query.andWhere('courses.courseName LIKE :courseName', {
@@ -104,6 +107,7 @@ export class CourseService {
           currentStatus: status,
           programName: course.program ? course.program.programName : null,
           programProgramsId: course.program ? course.program.programsId : null,
+          materials: course.materials
         };
       }),
     );
@@ -111,6 +115,7 @@ export class CourseService {
     return { data: result, count };
   }
 
+  //patch
   async updateCourseById(
     courseId: number,
     updateCourseDto: Partial<CreateCourseDto>,
@@ -155,6 +160,7 @@ export class CourseService {
     return course;
   }
 
+  //Get a los siguientes cursos (3 proximos meses y activos)
   async getNextCourses(
     SearchDTO: SearchDTO,
   ): Promise<{ data: NexCorusesDTO[]; count: number }> {
@@ -209,6 +215,7 @@ export class CourseService {
           EndDate: course.endDate,
           objetiveAge: course.targetAge,
           duration: course.duration,
+          materials: course.materials
         };
       }),
     );
@@ -216,6 +223,7 @@ export class CourseService {
     return { data: result, count };
   }
 
+  //Get a los cursos de un usuario solamente activos y proximos
   async getCoursesByUserCedula(
     searchDTO: SearchDTO,
   ): Promise<{ data: NexCorusesDTO[]; count: number }> {
@@ -227,7 +235,7 @@ export class CourseService {
       .where('enrollment.userCedula = :userCedula', { userCedula })
       .andWhere('courses.Status = 1')
       .andWhere('courses.date >= CURRENT_DATE')
-      .andWhere('enrollment.status = :status', { status: 'Activo' })
+      .andWhere('enrollment.status = :status', { status: 'Activa' })
       .skip((page - 1) * limit)
       .take(limit);
 
@@ -264,6 +272,7 @@ export class CourseService {
           EndDate: course.endDate,
           objetiveAge: course.targetAge,
           duration: course.duration,
+          materials: course.materials
         };
       }),
     );

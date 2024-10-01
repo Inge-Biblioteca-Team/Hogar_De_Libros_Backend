@@ -4,15 +4,13 @@ import { BookLoan } from 'src/book-loan/book-loan.enity';
 import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { Role } from './loan-policy';
-import { Enrollment } from 'src/enrollment/enrollment.entity';
 import { RoomReservation } from 'src/room-reservation/entities/room-reservation.entity';
 
-@Entity({ name: 'users' }) 
+@Entity({ name: 'users' })
 export class User {
-
   @ApiProperty()
   @PrimaryColumn()
-  cedula:string;
+  cedula: string;
 
   @ApiProperty({ description: 'Correo electrónico del usuario' })
   @Column({ unique: true })
@@ -55,7 +53,7 @@ export class User {
   password: string;
 
   @ApiProperty({ description: 'Fecha de registro del usuario' })
-  @Column({ type: 'date'})
+  @Column({ type: 'date' })
   registerDate: Date = new Date();
 
   @ApiProperty({ description: 'Aceptación de términos y condiciones' })
@@ -63,26 +61,22 @@ export class User {
   acceptTermsAndConditions: boolean;
 
   @Column()
-  status:boolean;
+  status: boolean;
 
   @Column({
     type: 'enum',
     enum: Role,
-    default: Role.Viewer
+    default: Role.Viewer,
   })
   role: Role;
 
   // Relaciones
-  @OneToMany(() => BookLoan, bookLoan => bookLoan.user)
+  @OneToMany(() => BookLoan, (bookLoan) => bookLoan.user)
   bookLoans: BookLoan[];
 
   @OneToMany(() => ComputerLoan, (computerLoan) => computerLoan.user)
   computerLoan: ComputerLoan[];
 
-  @OneToMany(() => Enrollment, (enrollment) => enrollment.user)
-  enrollments: Enrollment[];
-  
-  @OneToMany(() => RoomReservation, roomReservation => roomReservation.user)
-  roomReservations: RoomReservation[]; 
-  
-  }
+  @OneToMany(() => RoomReservation, (roomReservation) => roomReservation.user)
+  roomReservations: RoomReservation[];
+}
