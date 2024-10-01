@@ -1,9 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseInterceptors,
+  UploadedFile,
+  Put,
+} from '@nestjs/common';
 import { RoomsService } from './rooms.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { getRoomDto } from './dto/get-pagination.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 @ApiTags('rooms')
 @Controller('rooms')
@@ -11,7 +25,25 @@ export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}
 
   @Post()
-  create(@Body() createRoomDto: CreateRoomDto) {
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: '../assets/events',
+        filename: (req, file, cb) => {
+          cb(null, file.originalname);
+        },
+      }),
+    }),
+  )
+  async create(
+    @Body() createRoomDto: CreateRoomDto,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<{ message: string; roomID?: number }> {
+    if (file) {
+      const baseUrl = 'http://localhost:3000';
+      const filePath = `${baseUrl}/assets/events/${file.filename}`;
+      createRoomDto.image = filePath;
+    }
     return this.roomsService.create(createRoomDto);
   }
 
@@ -20,27 +52,61 @@ export class RoomsController {
   @ApiQuery({ name: 'limit', required: false, example: 10 })
   @ApiResponse({
     status: 200,
-    description: 'Retrieved all rooms with pagination'})
+    description: 'Retrieved all rooms with pagination',
+  })
   async findAllRooms(
     @Query() filter: getRoomDto,
   ): Promise<{ data: CreateRoomDto[]; count: number }> {
     return this.roomsService.findAllRooms(filter);
-  
-}
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.roomsService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRoomDto: UpdateRoomDto) {
+  @Put(':id')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: '../assets/events',
+        filename: (req, file, cb) => {
+          cb(null, file.originalname);
+        },
+      }),
+    }),
+  )
+  async update(
+    @Param('id') id: string,
+    @Body() updateRoomDto: UpdateRoomDto,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<{ message: string }> {
+    if (file) {
+      const baseUrl = 'http://localhost:3000';
+      const filePath = `${baseUrl}/assets/events/${file.filename}`;
+      updateRoomDto.image = filePath;
+    }
     return this.roomsService.update(+id, updateRoomDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.roomsService.remove(+id);
+  @Patch('maintenance/:id')
+  async updateStatusMaintenance(
+    @Param('id') id: string,
+  ): Promise<{ message: string }> {
+    return this.roomsService.updateStatusMaintenance(+id);
   }
 
+  @Patch('closed/:id')
+  async updateStatusClosed(
+    @Param('id') id: string,
+  ): Promise<{ message: string }> {
+    return this.roomsService.updateStatusClosed(+id);
+  }
+
+  @Patch('available/:id')
+  async updateStatusAvailable(
+    @Param('id') id: string,
+  ): Promise<{ message: string }> {
+    return this.roomsService.updateStatusAvailable(+id);
+  }
 }

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,39 +18,192 @@ export class RoomsService {
     private roomRepository: Repository<Rooms>,
   ) {}
 
-  create(createRoomDto: CreateRoomDto) {
-    return 'This action adds a new room';
+  async create(createRoomDto: CreateRoomDto) {
+    try {
+      await this.roomRepository.save(createRoomDto);
+      return {
+        message: 'Se creó la sala correctamente',
+      };
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        return { message: 'Error en la petición de la sala, no se pudo crear' };
+      }
+      if (error instanceof InternalServerErrorException) {
+        return { message: 'Error en el servidor, no se pudo crear la sala' };
+      }
+      return { message: 'Hubo un error al crear la sala' };
+    }
   }
 
   async findAllRooms(
     filter: getRoomDto,
   ): Promise<{ data: CreateRoomDto[]; count: number }> {
-    const { page = 1, limit = 10 } = filter;
+    const { page = 1, limit = 10, name, roomNumber, status } = filter;
     const query = this.roomRepository.createQueryBuilder('room');
-  
-
+    if (name) {
+      query.andWhere('room.name LIKE  :name', { name:`%${name}%`  });
+    }
+    if (roomNumber) {
+      query.andWhere('room.roomNumber LIKE  :roomNumber', { roomNumber: `%${roomNumber}%`  });
+    }
+    if (status) {
+      query.andWhere('room.status = :status', { status });
+    }
     query.skip((page - 1) * limit).take(limit);
-  
-    
+
     const [rooms, count] = await query.getManyAndCount();
-  
-    
+
     if (!rooms || rooms.length === 0) {
       throw new NotFoundException('No se encontraron salas.');
     }
-  
+
     return { data: rooms, count };
   }
-  
+
   findOne(id: number) {
-    return `This action returns a #${id} room`;
+    const room = this.roomRepository.findOne({where: {roomId: id}});
+    if (!room) {
+      throw new NotFoundException('No se encontró la sala.');
+    }
+    return room;
   }
 
-  update(id: number, updateRoomDto: UpdateRoomDto) {
-    return `This action updates a #${id} room`;
+  async update(id: number, updateRoomDto: UpdateRoomDto) {
+    try {
+      const findroom = await this.roomRepository.findOne({
+        where: { roomId: id },
+      });
+      if (!findroom) {
+        throw new NotFoundException('No se encontró la sala.');
+      }
+      await this.roomRepository.update(id, updateRoomDto);
+      return {
+        message: 'Se actualizó la sala correctamente',
+      };
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        return {
+          message: 'Error en la petición de la sala, no se pudo actualizar',
+        };
+      }
+      if (error instanceof InternalServerErrorException) {
+        return {
+          message: 'Error en el servidor, no se pudo actualizar la sala',
+        };
+      }
+      if (error instanceof NotFoundException) {
+        return {
+          message: 'No se encontró la sala.',
+        };
+      }
+      return { message: 'Hubo un error al actualizar la sala' };
+    }
   }
 
   remove(id: number) {
     return `This action removes a #${id} room`;
+  }
+
+  async updateStatusMaintenance(id: number) {
+    try {
+      const findroom = await this.roomRepository.findOne({
+        where: { roomId: id },
+      });
+      if (!findroom) {
+        throw new NotFoundException('No se encontró la sala.');
+      }
+      await this.roomRepository.update(id, { status: 'M' });
+      return {
+        message:
+          'Se actualizó el estado de la sala a en mantenimiento correctamente',
+      };
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        return {
+          message:
+            'Error en la petición de la sala, no se pudo actualizar su estado',
+        };
+      }
+      if (error instanceof InternalServerErrorException) {
+        return {
+          message:
+            'Error en el servidor, no se pudo actualizar el estado de la sala',
+        };
+      }
+      if (error instanceof NotFoundException) {
+        return {
+          message: 'No se encontró la sala.',
+        };
+      }
+      return { message: 'Hubo un error al actualizar el estado de la sala' };
+    }
+  }
+
+  async updateStatusClosed(id: number) {
+    try {
+      const findroom = await this.roomRepository.findOne({
+        where: { roomId: id },
+      });
+      if (!findroom) {
+        throw new NotFoundException('No se encontró la sala.');
+      }
+      await this.roomRepository.update(id, { status: 'C' });
+      return {
+        message: 'Se actualizó el estado de la sala a clausurada correctamente',
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return {
+          message: 'No se encontró la sala.',
+        };
+      }
+      if (error instanceof BadRequestException) {
+        return {
+          message:
+            'Error en la petición de la sala, no se pudo actualizar su estado',
+        };
+      }
+      if (error instanceof InternalServerErrorException) {
+        return {
+          message:
+            'Error en el servidor, no se pudo actualizar el estado de la sala',
+        };
+      }
+      return { message: 'Hubo un error al actualizar el estado de la sala' };
+    }
+  }
+
+  async updateStatusAvailable(id: number) {
+    try {
+      const findroom = await this.roomRepository.findOne({
+        where: { roomId: id },
+      });
+      if (!findroom) {
+        throw new NotFoundException('No se encontró la sala.');
+      }
+      await this.roomRepository.update(id, { status: 'D' });
+      return {
+        message: 'Se actualizó el estado de la sala a disponible correctamente',
+      };
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        return {
+          message:
+            'Error en la petición de la sala, no se pudo actualizar su estado',
+        };
+      }
+      if (error instanceof InternalServerErrorException) {
+        return {
+          message:
+            'Error en el servidor, no se pudo actualizar el estado de la sala',
+        };
+      }
+      if (error instanceof NotFoundException) {
+        return {
+          message: 'No se encontró la sala.',
+        };
+      }
+      return { message: 'Hubo un error al actualizar el estado de la sala' };
+    }
   }
 }
