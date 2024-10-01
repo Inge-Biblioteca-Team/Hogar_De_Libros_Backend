@@ -1,7 +1,8 @@
 import { Course } from 'src/course/course.entity';
 import { events } from 'src/events/events.entity';
+import { Rooms } from 'src/rooms/entities/room.entity';
 import { User } from 'src/user/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity('room_reservations')
 export class RoomReservation {
@@ -12,27 +13,33 @@ export class RoomReservation {
   name: string;
 
   @Column({ type: 'date' })
-  date: Date;  
+  date: Date;
 
   @Column({ type: 'time' })
-  startTime: string;  
+  startTime: string;
 
   @Column({ type: 'time' })
-  endTime: string;  
+  endTime: string;
 
   @Column({ type: 'text', nullable: true })
-  observations: string ;  
+  observations: string;
 
   @Column({ nullable: true })
-  images: string ; 
+  images: string;
 
-  @ManyToOne(() => events, events => events.roomReservations, { nullable: true })
+  @ManyToOne(() => events, (events) => events.roomReservations, {
+    nullable: true,
+  })
   events: events;
 
-  @ManyToOne(() => Course, course => course.roomReservations, { nullable: true })
-  course: Course;  
-  @ManyToOne(() => User, user => user.roomReservations, { nullable: false })
+  @ManyToOne(() => Course, (course) => course.roomReservations, {
+    nullable: true,
+  })
+  course: Course;
+  @ManyToOne(() => User, (user) => user.roomReservations, { nullable: false })
   user: User;
 
+  @ManyToOne(() => Rooms, (rooms) => rooms.roomReservations)
+  @JoinColumn({ name: 'roomId', referencedColumnName: 'roomId' })
+  rooms: Rooms;
 }
-

@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 
 export class CreateRoomDto {
   @IsString()
@@ -29,10 +35,10 @@ export class CreateRoomDto {
   })
   observations: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({ example: 'URL de la imagen de la sala' })
-  image?: string;
+  @IsArray()
+  @ArrayNotEmpty()
+  @ApiProperty({ example: ['URL de la imagen de la sala'] })
+  image?: string[];
 
   @IsString()
   @IsNotEmpty()

@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -51,18 +50,11 @@ export class RoomsService {
 
     const [rooms, count] = await query.getManyAndCount();
 
-    if (!rooms || rooms.length === 0) {
-      throw new NotFoundException('No se encontraron salas.');
-    }
-
     return { data: rooms, count };
   }
 
   findOne(id: number) {
     const room = this.roomRepository.findOne({ where: { roomId: id } });
-    if (!room) {
-      throw new NotFoundException('No se encontró la sala.');
-    }
     return room;
   }
 

@@ -8,7 +8,6 @@ import {
   Query,
   UseInterceptors,
   UploadedFile,
-  Put,
 } from '@nestjs/common';
 import { RoomsService } from './rooms.service';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -27,7 +26,7 @@ export class RoomsController {
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
-        destination: '../assets/events',
+        destination: '../assets/Rooms',
         filename: (req, file, cb) => {
           cb(null, file.originalname);
         },
@@ -40,8 +39,8 @@ export class RoomsController {
   ): Promise<{ message: string; roomID?: number }> {
     if (file) {
       const baseUrl = 'http://localhost:3000';
-      const filePath = `${baseUrl}/assets/events/${file.filename}`;
-      createRoomDto.image = filePath;
+      const filePath = `${baseUrl}/assets/Rooms/${file.filename}`;
+      createRoomDto.image = [filePath];
     }
     return this.roomsService.create(createRoomDto);
   }
@@ -64,11 +63,11 @@ export class RoomsController {
     return this.roomsService.findOne(+id);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
-        destination: '../assets/events',
+        destination: '../assets/Rooms',
         filename: (req, file, cb) => {
           cb(null, file.originalname);
         },
@@ -82,8 +81,8 @@ export class RoomsController {
   ): Promise<{ message: string }> {
     if (file) {
       const baseUrl = 'http://localhost:3000';
-      const filePath = `${baseUrl}/assets/events/${file.filename}`;
-      updateRoomDto.image = filePath;
+      const filePath = `${baseUrl}/assets/Rooms/${file.filename}`;
+      updateRoomDto.image = [filePath];
     }
     return this.roomsService.update(+id, updateRoomDto);
   }

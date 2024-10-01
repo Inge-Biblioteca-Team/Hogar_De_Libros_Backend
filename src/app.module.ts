@@ -62,9 +62,9 @@ dotenv.config();
         events,
         Programs,
         Rooms,
-        RoomReservation
+        RoomReservation,
       ],
-      synchronize: false,
+      synchronize: true,
     }),
     BooksModule,
     ComputersModule,
