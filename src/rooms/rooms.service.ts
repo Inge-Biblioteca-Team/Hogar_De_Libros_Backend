@@ -134,4 +134,12 @@ export class RoomsService {
       );
     }
   }
+
+  async findAllRoomsTable(): Promise<{ data: CreateRoomDto[] }> {
+    const rooms = await this.roomRepository.find({
+      select: ['roomId', 'name', 'roomNumber'],
+    });
+
+    return { data: rooms };
+  }
 }
