@@ -17,6 +17,7 @@ import { getRoomDto } from './dto/get-pagination.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 
+
 @ApiTags('rooms')
 @Controller('rooms')
 export class RoomsController {
@@ -56,6 +57,12 @@ export class RoomsController {
     @Query() filter: getRoomDto,
   ): Promise<{ data: CreateRoomDto[]; count: number }> {
     return this.roomsService.findAllRooms(filter);
+  }
+
+  @Get('table')
+  async findAllRoomsTable(): Promise<{ data: CreateRoomDto[]}> {
+    return this.roomsService.findAllRoomsTable();
+
   }
 
   @Get(':id')
@@ -107,4 +114,6 @@ export class RoomsController {
   ): Promise<{ message: string }> {
     return this.roomsService.updateStatusAvailable(+id);
   }
+
+  
 }
