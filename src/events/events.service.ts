@@ -186,8 +186,7 @@ export class EventsService {
       return { message: 'Se cancelo el evento exitosamente' };
     } catch (error) {
       throw new InternalServerErrorException(
-        error.message ||
-          'Error al cancelar el evento.',
+        error.message || 'Error al cancelar el evento.',
       );
     }
   }
@@ -247,5 +246,14 @@ export class EventsService {
     );
 
     return { data: result, count };
+  }
+
+  async EventList(): Promise< CreateEventsDTO[] > {
+    const event = await this.EventsRepository.find({
+      select: ['EventId', 'Title'],
+      where: { Status: 'P' },
+    });
+
+    return event;
   }
 }

@@ -279,4 +279,15 @@ export class CourseService {
 
     return { data: result, count };
   }
-}
+
+  async CourseList(): Promise<CreateCourseDto[]> {
+    const course = await this.courseRepository.find({
+      select: ['courseId', 'courseName'],
+      where: { Status: true },
+    });
+
+    return  course
+  }
+
+  }
+

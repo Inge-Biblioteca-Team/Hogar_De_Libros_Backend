@@ -192,4 +192,9 @@ export class CourseController {
   ): Promise<{ data: NexCorusesDTO[]; count: number }> {
     return this.courseService.getCoursesByUserCedula(searchDTO);
   }
+
+  @Get('CourseList')
+  async CourseList(): Promise<CreateCourseDto[]> {
+    return this.courseService.CourseList();
+  }
 }
