@@ -45,8 +45,8 @@ export class Course {
   capacity: number;
 
   @ApiProperty({ description: 'Estado actual del curso' })
-  @Column()
-  Status: boolean = true;
+  @Column({ default: true })
+  Status: boolean ;
 
   @ApiProperty({ description: 'Imagen Curso' })
   @Column()

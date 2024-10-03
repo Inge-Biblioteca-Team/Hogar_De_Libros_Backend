@@ -147,4 +147,9 @@ export class EventsController {
   ): Promise<{ data: NexEventsDTO[]; count: number }> {
     return this.eventsService.getNextEventsSchedule(SearchParams);
   }
+
+  @Get('EventList')
+  async EventList(): Promise< CreateEventsDTO[] > {
+    return this.eventsService.EventList();
+  }
 }

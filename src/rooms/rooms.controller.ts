@@ -60,7 +60,7 @@ export class RoomsController {
   }
 
   @Get('table')
-  async findAllRoomsTable(): Promise<{ data: CreateRoomDto[]}> {
+  async findAllRoomsTable(): Promise<CreateRoomDto[]> {
     return this.roomsService.findAllRoomsTable();
 
   }
