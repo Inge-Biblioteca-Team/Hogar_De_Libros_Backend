@@ -18,37 +18,47 @@ export class RoomReservation {
   rommReservationId: number;
 
   @Column({})
-  @ApiProperty({description:"Nombre de la institucion"})
+  @ApiProperty({ description: 'Nombre de la institucion' })
   name: string;
 
-  @Column({ type: 'date' })
-  @ApiProperty({description:"Fecha de emision"})
+  @Column({ type: 'datetime' })
+  @ApiProperty({ description: 'Fecha de emision' })
   reservationDate: Date;
 
   @Column({ type: 'date' })
-  @ApiProperty({description:"Fecha Reservada"})
+  @ApiProperty({ description: 'Fecha Reservada' })
   date: Date;
 
-  @Column({ type: 'time' })
-  startTime: string;
-
-  @Column({ type: 'time' })
-  endTime: string;
+  @Column({ type: 'simple-array' })
+  selectedHours: number[];
 
   @Column({ type: 'text', nullable: true })
   observations: string;
 
+  @Column()
+  personNumber: string;
+
+  @Column()
+  reason: string;
+
+  @Column({ default: '' })
+  @ApiProperty()
+  finishObservation: string;
+
+  @Column({ default: 'Pendiente' })
+  @ApiProperty()
+  reserveStatus: string;
+
   @ManyToOne(() => events, (events) => events.roomReservations, {
     nullable: true,
   })
-  @JoinColumn({name:"EventId", referencedColumnName:"EventId"})
+  @JoinColumn({ name: 'EventId', referencedColumnName: 'EventId' })
   events: events;
 
   @ManyToOne(() => Course, (course) => course.roomReservations, {
     nullable: true,
   })
   @JoinColumn({ name: 'courseId', referencedColumnName: 'courseId' })
-
   course: Course;
 
   @ManyToOne(() => User, (user) => user.roomReservations, { nullable: false })
