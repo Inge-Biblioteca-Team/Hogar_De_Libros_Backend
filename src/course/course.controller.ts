@@ -194,7 +194,7 @@ export class CourseController {
   }
 
   @Get('CourseList')
-  async CourseList(): Promise<CreateCourseDto[]> {
-    return this.courseService.CourseList();
+  async CourseList(@Query('fecha') fecha:Date ): Promise<CreateCourseDto[]> {
+    return this.courseService.CourseList(fecha);
   }
 }

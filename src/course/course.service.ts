@@ -34,7 +34,7 @@ export class CourseService {
     } catch (error) {
       throw new Error(
         error.message ||
-        'Error al crear el curso. Por favor, inténtelo nuevamente.',
+          'Error al crear el curso. Por favor, inténtelo nuevamente.',
       );
     }
   }
@@ -107,7 +107,7 @@ export class CourseService {
           currentStatus: status,
           programName: course.program ? course.program.programName : null,
           programProgramsId: course.program ? course.program.programsId : null,
-          materials: course.materials
+          materials: course.materials,
         };
       }),
     );
@@ -215,7 +215,7 @@ export class CourseService {
           EndDate: course.endDate,
           objetiveAge: course.targetAge,
           duration: course.duration,
-          materials: course.materials
+          materials: course.materials,
         };
       }),
     );
@@ -272,7 +272,7 @@ export class CourseService {
           EndDate: course.endDate,
           objetiveAge: course.targetAge,
           duration: course.duration,
-          materials: course.materials
+          materials: course.materials,
         };
       }),
     );
@@ -280,14 +280,12 @@ export class CourseService {
     return { data: result, count };
   }
 
-  async CourseList(): Promise<CreateCourseDto[]> {
+  async CourseList(fecha: Date): Promise<CreateCourseDto[]> {
     const course = await this.courseRepository.find({
       select: ['courseId', 'courseName'],
-      where: { Status: true },
+      where: { Status: true, date: fecha },
     });
 
-    return  course
+    return course;
   }
-
-  }
-
+}
