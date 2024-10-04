@@ -149,7 +149,7 @@ export class EventsController {
   }
 
   @Get('EventList')
-  async EventList(): Promise< CreateEventsDTO[] > {
-    return this.eventsService.EventList();
+  async EventList(@Query('date') date: Date): Promise< CreateEventsDTO[] > {
+    return this.eventsService.EventList(date);
   }
 }
