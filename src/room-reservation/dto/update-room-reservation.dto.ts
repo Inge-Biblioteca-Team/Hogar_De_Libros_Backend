@@ -1,4 +1,5 @@
+/* eslint-disable prettier/prettier */
 import { PartialType } from '@nestjs/swagger';
-import { CreateRoomReservationDto } from './create-room-reservation.dto';
+import { RoomReservation } from '../entities/room-reservation.entity';
 
-export class UpdateRoomReservationDto extends PartialType(CreateRoomReservationDto) {}
+export class UpdateRoomReservationDto extends PartialType(RoomReservation) {}
