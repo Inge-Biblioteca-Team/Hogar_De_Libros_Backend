@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Injectable,
   InternalServerErrorException,
@@ -135,12 +136,15 @@ export class RoomsService {
     }
   }
 
-  async findAllRoomsTable(): Promise<{ data: CreateRoomDto[] }> {
+  async findAllRoomsTable(): Promise<CreateRoomDto[]> {
     const rooms = await this.roomRepository.find({
       select: ['roomId', 'name', 'roomNumber'],
+      where: { status: 'D' },
     });
-    const sortedRooms = rooms.sort((a, b) => parseInt(a.roomNumber) - parseInt(b.roomNumber));
+    const sortedRooms = rooms.sort(
+      (a, b) => parseInt(a.roomNumber) - parseInt(b.roomNumber),
+    );
 
-    return { data: sortedRooms };
+    return sortedRooms;
   }
 }

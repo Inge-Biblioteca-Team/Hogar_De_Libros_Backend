@@ -1,6 +1,9 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
   IsDate,
   IsNotEmpty,
   IsNumber,
@@ -10,24 +13,21 @@ import {
 
 export class CreateRoomReservationDto {
   @ApiProperty({ description: 'Nombre de la institución' })
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   name: string;
 
   @ApiProperty({ description: 'Fecha de emisión' })
-  @IsDate()
   @IsNotEmpty()
+  @IsDate()
   date: Date;
 
-  @ApiProperty({ description: 'Hora de inicio' })
-  @IsString()
+  @ApiProperty({ description: 'Array con las horas de reserva 8-17' })
+  @ArrayMinSize(1)
+  @ArrayMaxSize(10)
   @IsNotEmpty()
-  startTime: string;
-
-  @ApiProperty({ description: 'Hora de finalización' })
-  @IsString()
-  @IsNotEmpty()
-  endTime: string;
+  @IsArray()
+  selectedHours: number[];
 
   @ApiProperty({ description: 'Observaciones adicionales' })
   @IsString()
@@ -35,22 +35,26 @@ export class CreateRoomReservationDto {
   observations: string;
 
   @ApiProperty({ description: 'ID del evento asociado' })
-  @IsNumber()
   @IsOptional()
-  EventId: number;
+  @IsNumber()
+  EventId?: number;
 
   @ApiProperty({ description: 'ID del curso asociado' })
-  @IsString()
   @IsOptional()
-  courseId: number;
+  @IsNumber()
+  courseId?: number;
 
   @ApiProperty({ description: 'Cédula del usuario' })
   @IsString()
   @IsNotEmpty()
-  userCedula: number;
+  userCedula: string;
 
   @ApiProperty({ description: 'ID de la sala' })
-  @IsString()
   @IsNotEmpty()
+  @IsNumber()
   roomId: number;
+
+  @IsOptional()
+  @IsDate()
+  reservationDate: Date;
 }

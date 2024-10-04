@@ -1,5 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -10,13 +15,10 @@ export class AuthService {
   constructor(
     private usersService: UserService,
     private jwtService: JwtService,
-    private readonly mailService: MailService
+    private readonly mailService: MailService,
   ) {}
 
-  async signIn(
-    email: string,
-    pass: string,
-  ): Promise<{ access_token: string }> {
+  async signIn(email: string, pass: string): Promise<{ access_token: string }> {
     const user = await this.usersService.findOne(email);
     const isMatch = await bcrypt.compare(pass, user.password);
     if (!isMatch) {
@@ -28,7 +30,6 @@ export class AuthService {
     };
   }
 
-  
   async login(email: string, password: string): Promise<{ token: string }> {
     const user = await this.usersService.findOne(email);
 
@@ -45,25 +46,25 @@ export class AuthService {
     return { token };
   }
 
-
-  async sendPasswordReset(email: string, cedula:string): Promise<void> {
+  async sendPasswordReset(email: string, cedula: string): Promise<void> {
     const user = await this.usersService.findUser(email, cedula);
 
     if (!user) {
       throw new HttpException('No registrado.', HttpStatus.BAD_REQUEST);
     }
 
-    const token = this.jwtService.sign({ id: user.cedula }, { expiresIn: '1h' });
+    const token = this.jwtService.sign(
+      { id: user.cedula },
+      { expiresIn: '1h' },
+    );
     const resetLink = `http://localhost:5173/reset-password?token=${token}`;
-   
 
     await this.mailService.sendPasswordReset(
-      user.email, 
+      user.email,
       `
       <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
       <a href="${resetLink}"> recuperar contraseña </a>`,
       'Restablecer tu contraseña',
     );
   }
-   
 }
