@@ -37,12 +37,16 @@ export class RoomReservationService {
       .leftJoinAndSelect('room_reservations.user', 'user')
       .leftJoinAndSelect('room_reservations.rooms', 'rooms')
       .leftJoinAndSelect('room_reservations.events', 'events')
-      .leftJoinAndSelect('room_reservations.course', 'course');
+      .leftJoinAndSelect('room_reservations.course', 'course')
+      .orderBy('room_reservations.date','ASC' )
 
     if (reserveStatus) {
       query.andWhere('room_reservations.reserveStatus = :status', {
         status: reserveStatus,
       });
+    }
+    if(reserveStatus == "Finalizado"){
+      query.orderBy('room_reservations.date','DESC' )
     }
     if (roomId) {
       query.andWhere('room_reservations.roomId = :roomId', {
@@ -281,7 +285,9 @@ export class RoomReservationService {
       .leftJoinAndSelect('room_reservations.course', 'course')
       .andWhere('room_reservations.reserveStatus <> :status', {
         status: 'Finalizado',
-      });
+      })
+      .orderBy('room_reservations.date','ASC' )
+    
 
     if (userCedula) {
       query.andWhere('room_reservations.userCedula = :userCedula', {
