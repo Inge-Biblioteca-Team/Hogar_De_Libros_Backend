@@ -5,6 +5,7 @@ import {
   IsArray,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
 } from 'class-validator';
 
@@ -29,12 +30,12 @@ export class CreateRoomDto {
   @ApiProperty({ example: 50 })
   capacity: number;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
   @ApiProperty({
     example: 'Una sala grande con proyector para dar conferencias',
   })
-  observations: string;
+  observations?: string;
 
   @IsArray()
   @ArrayNotEmpty()

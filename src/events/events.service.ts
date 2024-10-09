@@ -248,7 +248,7 @@ export class EventsService {
     return { data: result, count };
   }
 
-  async EventList(date: Date): Promise< CreateEventsDTO[] > {
+  async EventList(date: Date): Promise<CreateEventsDTO[]> {
     const event = await this.EventsRepository.find({
       select: ['EventId', 'Title'],
       where: { Status: 'P', Date: date },

@@ -28,7 +28,13 @@ export class CourseService {
   //Post
   async createCourse(createCourseDto: CreateCourseDto): Promise<Course> {
     try {
-      const course = this.courseRepository.create(createCourseDto);
+      const course = this.courseRepository.create({
+        ...createCourseDto,
+        programProgramsId:
+          createCourseDto.programProgramsId == 0
+            ? null
+            : createCourseDto.programProgramsId,
+      });
       const savedCourse = await this.courseRepository.save(course);
       return savedCourse;
     } catch (error) {
@@ -124,6 +130,9 @@ export class CourseService {
 
     if (!course) {
       throw new NotFoundException(`Course with ID ${courseId} not found.`);
+    }
+    if (updateCourseDto.programProgramsId === 0) {
+      updateCourseDto.programProgramsId = null;
     }
 
     Object.assign(course, updateCourseDto);
