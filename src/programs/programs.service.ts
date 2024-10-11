@@ -25,7 +25,9 @@ export class ProgramsService {
     SearchDTO: SearchPDTO,
   ): Promise<{ data: ProgramDTO[]; count: number }> {
     const { page = 1, limit = 5, programName, status } = SearchDTO;
-    const query = this.programsRepository.createQueryBuilder('programs');
+    const query = this.programsRepository
+      .createQueryBuilder('programs')
+      .orderBy('programsId', 'DESC');
 
     if (programName) {
       query.andWhere('programs.programName LIKE :programName', {
@@ -100,7 +102,6 @@ export class ProgramsService {
         throw new NotFoundException(`El programa con ID ${id} no existe.`);
       }
 
-      // Actualizamos solo los campos que vengan en el DTO
       Object.assign(program, updateProgramDto);
 
       return await this.programsRepository.save(program);
@@ -162,7 +163,7 @@ export class ProgramsService {
       .getOne();
 
     if (!program) {
-      throw new NotFoundException(`No existen cursos para el programa.`);
+      throw new NotFoundException(`No existen actividades relacionadas al programa.`);
     }
     return program.courses;
   }
