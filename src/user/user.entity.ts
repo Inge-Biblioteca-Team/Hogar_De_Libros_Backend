@@ -2,9 +2,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BookLoan } from 'src/book-loan/book-loan.enity';
 import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+} from 'typeorm';
 import { Role } from './loan-policy';
 import { RoomReservation } from 'src/room-reservation/entities/room-reservation.entity';
+import { FriendsLibrary } from 'src/friends-library/friend-library.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -63,6 +71,9 @@ export class User {
   @Column()
   status: boolean;
 
+  @Column({ default: false })
+  IsFriend: boolean;
+
   @Column({
     type: 'enum',
     enum: Role,
@@ -79,4 +90,8 @@ export class User {
 
   @OneToMany(() => RoomReservation, (roomReservation) => roomReservation.user)
   roomReservations: RoomReservation[];
+
+  @OneToOne(() => FriendsLibrary, { nullable: true })
+  @JoinColumn() // Se utiliza para crear la clave foránea en la tabla de usuarios
+  friendsLibrary: FriendsLibrary | null;
 }
