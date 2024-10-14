@@ -28,7 +28,6 @@ import { EnrollmentModule } from './enrollment/enrollment.module';
 import { ProgramsModule } from './programs/programs.module';
 import { Enrollment } from './enrollment/enrollment.entity';
 import { Course } from './course/course.entity';
-import { events } from './events/events.entity';
 import { EventsModule } from './events/events.module';
 import { Programs } from './programs/programs.entity';
 import { RoomsModule } from './rooms/rooms.module';
@@ -37,6 +36,7 @@ import { Rooms } from './rooms/entities/room.entity';
 import { RoomReservation } from './room-reservation/entities/room-reservation.entity';
 import { AdvicesModule } from './advices/advices.module';
 import { Advice } from './advices/entities/advice.entity';
+import { events } from './events/events.entity';
 
 dotenv.config();
 
@@ -65,7 +65,7 @@ dotenv.config();
         Programs,
         Rooms,
         RoomReservation,
-        Advice
+        Advice,
       ],
       synchronize: true,
     }),

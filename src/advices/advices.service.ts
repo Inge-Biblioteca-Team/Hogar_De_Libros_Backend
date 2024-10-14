@@ -19,7 +19,6 @@ export class AdvicesService  {
   ) {}
 
   async createNewAdvice(Dto: CreateAdviceDto): Promise<{ message: string }> {
-    console.log('DTO recibido para crear aviso:', Dto);
     try {
       const Advice = this.adviceRepository.create(Dto);
       await this.adviceRepository.save(Advice);

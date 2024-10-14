@@ -10,8 +10,8 @@ import { AdviceJobs } from './AdviceJobs.Service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Advice]), ScheduleModule.forRoot()],
-  controllers: [AdvicesController],
   providers: [AdvicesService, AdviceJobs],
-  exports: [AdvicesService]
+  controllers: [AdvicesController],
+  exports: [AdvicesService],
 })
 export class AdvicesModule {}
