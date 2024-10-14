@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { RoomReservationService } from './room-reservation.service';
 import { RoomReservationController } from './room-reservation.controller';

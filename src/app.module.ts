@@ -28,13 +28,15 @@ import { EnrollmentModule } from './enrollment/enrollment.module';
 import { ProgramsModule } from './programs/programs.module';
 import { Enrollment } from './enrollment/enrollment.entity';
 import { Course } from './course/course.entity';
-import { events } from './events/events.entity';
 import { EventsModule } from './events/events.module';
 import { Programs } from './programs/programs.entity';
 import { RoomsModule } from './rooms/rooms.module';
 import { RoomReservationModule } from './room-reservation/room-reservation.module';
 import { Rooms } from './rooms/entities/room.entity';
 import { RoomReservation } from './room-reservation/entities/room-reservation.entity';
+import { AdvicesModule } from './advices/advices.module';
+import { Advice } from './advices/entities/advice.entity';
+import { events } from './events/events.entity';
 import { FriendsLibraryModule } from './friends-library/friends-library.module';
 import { FriendsLibrary } from './friends-library/friend-library.entity';
 
@@ -44,11 +46,11 @@ dotenv.config();
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'hogar_de_libros',
+      host: process.env.DB_HOST,
+      port: +process.env.DB_PORT,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
       entities: [
         Book,
         Computer,
@@ -65,6 +67,7 @@ dotenv.config();
         Programs,
         Rooms,
         RoomReservation,
+        Advice,
         FriendsLibrary
       ],
       synchronize: true,
@@ -85,6 +88,7 @@ dotenv.config();
     EventsModule,
     RoomsModule,
     RoomReservationModule,
+    AdvicesModule,
     FriendsLibraryModule,
   ],
   controllers: [AppController],
