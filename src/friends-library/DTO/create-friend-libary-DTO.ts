@@ -1,30 +1,41 @@
-import { IsArray, IsOptional, IsString, ArrayNotEmpty, IsNotEmpty } from 'class-validator';
-import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateOrUpdateFriendLibraryDTO {
-  @ApiProperty({ example: '1234567890' })
+export class CreateFriendDTO {
+  @ApiProperty({ description: 'Cédula del usuario', example: '123456789' })
   @IsString()
   @IsNotEmpty()
-  cedula: string; // Para buscar al usuario
-
-  @ApiProperty({ example: ['tecnico', 'lector'] })
-  @IsArray()
-  @IsNotEmpty()
-  @ArrayNotEmpty()
-  @IsString({ each: true }) // Validamos que cada elemento sea string
-  principalCategory: string[]; // Categorías principales
-
-  @ApiProperty({ example: ['cuenta ', 'cuentos'] })
-  @IsArray()
-  @IsNotEmpty()
-  @ArrayNotEmpty()
-  @IsString({ each: true }) // Validamos que cada subcategoría sea string
-  subCategory: string[]; // Subcategorías
-
-  @ApiProperty({ example: ['URL1 ', 'URL2'] })
   @IsOptional()
-  @IsArray()
-  @Type(() => String) // Aceptamos un array que puede contener strings (para textos o nombres de archivos)
-  document?: (string | Express.Multer.File)[]; // Puede ser un array de strings o archivos
+  cedula: string;
+
+  @ApiProperty({ description: 'Categoría principal', example: 'Voluntariado' })
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  principalCategory: string;
+
+  @ApiProperty({ description: 'Subcategoría', example: 'Donación' })
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  subCategory: string;
+
+  @ApiProperty({
+    description: 'Documentos',
+    example: ['documento1', 'documento2'],
+  })
+  @IsOptional()
+  document?: string[];
+
+  @ApiProperty({ description: 'Imágenes', example: ['imagen1', 'imagen2'] })
+  @IsOptional()
+  image: string[];
+
+  @ApiProperty({
+    description: 'Fecha de recoleccion del donativo',
+    example: '2024-10-15',
+  })
+  @IsOptional()
+  @IsDate()
+  DateRecolatedDonation?: Date;
 }
