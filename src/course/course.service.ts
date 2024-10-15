@@ -11,9 +11,10 @@ import { CreateCourseDto } from './DTO/create-course.dto';
 import { NexCorusesDTO } from './DTO/NexCoursesDTO';
 import { SearchDTO } from './DTO/SearchDTO';
 import { EnrollmentService } from 'src/enrollment/enrollment.service';
-import { Programs } from 'src/programs/programs.entity';
 import { GetCoursesDto } from './DTO/get.-course.dto';
 import { CoursesDTO } from './DTO/CoursesDTO';
+import { CreateAdviceDto } from 'src/advices/dto/create-advice.dto';
+import { AdvicesService } from 'src/advices/advices.service';
 
 @Injectable()
 export class CourseService {
@@ -21,8 +22,7 @@ export class CourseService {
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
     private readonly enrollmentService: EnrollmentService,
-    @InjectRepository(Programs)
-    private readonly programRepository: Repository<Programs>,
+    private adviceService: AdvicesService,
   ) {}
 
   //Post
@@ -36,6 +36,16 @@ export class CourseService {
             : createCourseDto.programProgramsId,
       });
       const savedCourse = await this.courseRepository.save(course);
+
+      const adviceData: CreateAdviceDto = {
+        reason: `Proximo curso: ${savedCourse.courseName}`,
+        date: savedCourse.date,
+        image: savedCourse.image,
+        extraInfo: `:Realizado en ${savedCourse.location}`,
+        category: 'Curso',
+      };
+
+      await this.adviceService.createNewAdvice(adviceData);
       return savedCourse;
     } catch (error) {
       throw new Error(

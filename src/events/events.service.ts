@@ -14,18 +14,33 @@ import { PaginationEventsDTO } from './DTO/pagination-events.dto';
 import { UpdateEventsDTO } from './DTO/update-events.dto';
 import { SeachDTO } from './DTO/SeachDTO';
 import { NexEventsDTO } from './DTO/NextEvents';
+import { AdvicesService } from 'src/advices/advices.service';
+import { CreateAdviceDto } from 'src/advices/dto/create-advice.dto';
 
 @Injectable()
 export class EventsService {
   constructor(
     @InjectRepository(events) private EventsRepository: Repository<events>,
+    private adviceService: AdvicesService,
   ) {}
 
   async createEvent(
     createEventsDTO: CreateEventsDTO,
   ): Promise<{ message: string; eventId?: number }> {
     try {
-      const event = await this.EventsRepository.save(createEventsDTO);
+      const event = this.EventsRepository.create(createEventsDTO);
+      await this.EventsRepository.save(event);
+
+      const adviceData: CreateAdviceDto = {
+        reason: `Próximo evento: ${event.Title}`,
+        date: event.Date,
+        image: event.Image,
+        extraInfo: event.Details,
+        category: 'Evento',
+      };
+
+      await this.adviceService.createNewAdvice(adviceData);
+
       return {
         message:
           'Se creó el evento con id: ' + event.EventId + ' correctamente',

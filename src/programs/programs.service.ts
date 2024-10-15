@@ -13,6 +13,7 @@ import { SearchPDTO } from './DTO/SearchPDTO';
 import { ProgramDTO } from './DTO/GetPDTO';
 import { ProgramsNames } from './DTO/ProgramNames';
 import { Course } from 'src/course/course.entity';
+import { activities } from './DTO/Programs-Activities.dto';
 
 @Injectable()
 export class ProgramsService {
@@ -163,8 +164,55 @@ export class ProgramsService {
       .getOne();
 
     if (!program) {
-      throw new NotFoundException(`No existen actividades relacionadas al programa.`);
+      throw new NotFoundException(
+        `No existen actividades relacionadas al programa.`,
+      );
     }
     return program.courses;
+  }
+
+  async getActivities(
+    filters: SearchPDTO,
+  ): Promise<{ data: activities[]; count: number }> {
+    const { page = 1, limit = 5, programName, month } = filters;
+
+    const currentDate = new Date();
+    const threeMonthsLater = new Date();
+    threeMonthsLater.setMonth(currentDate.getMonth() + 3);
+
+    const query = this.programsRepository
+      .createQueryBuilder('program')
+      .leftJoinAndSelect('program.courses', 'course')
+      .where('course.date > :currentDate', { currentDate })
+      .andWhere('course.date <= :threeMonthsLater', { threeMonthsLater })
+      .andWhere('course.Status = :status', { status: 1 })
+      .orderBy('course.date', 'ASC');
+
+    if (programName) {
+      query.andWhere('program.programName LIKE :programName', {
+        programName: `%${programName}%`,
+      });
+    }
+    if (month) {
+      query.andWhere('MONTH(course.date) = :month', { month });
+    }
+
+    query.skip((page - 1) * limit).take(limit);
+
+    const [programData, count] = await query.getManyAndCount();
+
+    const activities: activities[] = programData.flatMap((program) =>
+      program.courses.map((course) => ({
+        activitieID: 'C' + course.courseId,
+        programName: program.programName,
+        activitieName: course.courseName,
+        description: course.courseType,
+        activitiDate: course.date,
+        image: course.image,
+        activityType: 'Curso',
+      })),
+    );
+
+    return { data: activities, count };
   }
 }

@@ -24,10 +24,16 @@ export class SearchPDTO {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({ description: 'Cedula Del Usuario' })
-  programName: string;
+  programName?: string;
 
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({ description: 'Estado Del Curso' })
-  status: string;
+  status?: string;
+
+  @ApiPropertyOptional({ description: 'Mes del curso' })
+  @IsInt()
+  @IsOptional()
+  @Type(() => Number)
+  month?: string;
 }
