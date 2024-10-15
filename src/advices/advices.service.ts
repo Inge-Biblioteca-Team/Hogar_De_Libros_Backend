@@ -12,7 +12,7 @@ import { UpdateAdviceDto } from './dto/update-advice.dto';
 import { Paginacion_AdviceDTO } from './dto/Paginacion-Advice.dto';
 
 @Injectable()
-export class AdvicesService  {
+export class AdvicesService {
   constructor(
     @InjectRepository(Advice)
     private adviceRepository: Repository<Advice>,
@@ -83,9 +83,13 @@ export class AdvicesService  {
     try {
       const { page = 1, limit = 5, reason, category, date } = params;
       const skip = (page - 1) * limit;
-      const queryBuilder = this.adviceRepository.createQueryBuilder('advice');
+      const queryBuilder = this.adviceRepository
+        .createQueryBuilder('advice')
+        .orderBy('advice.date', 'DESC');
       if (reason) {
-        queryBuilder.andWhere('advice.reason = :reason', { reason });
+        queryBuilder.andWhere('advice.reason LIKE :reason', {
+          reason: `%${reason}%`,
+        });
       }
 
       if (category) {
@@ -111,7 +115,8 @@ export class AdvicesService  {
 
   async updateExpiredAdvice() {
     const currentDate = new Date();
-    await this.adviceRepository.createQueryBuilder()
+    await this.adviceRepository
+      .createQueryBuilder()
       .update(Advice)
       .set({ status: false })
       .where('date < :currentDate', { currentDate })
@@ -119,7 +124,8 @@ export class AdvicesService  {
   }
 
   async deleteExpiredAdvice() {
-    await this.adviceRepository.createQueryBuilder()
+    await this.adviceRepository
+      .createQueryBuilder()
       .delete()
       .from(Advice)
       .where('status = :status', { status: false })

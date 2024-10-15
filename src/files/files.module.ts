@@ -1,22 +1,10 @@
 /* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { FilesController } from './files.controller';
-import { MulterModule } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { FilesService } from './file.service';
 
 @Module({
-  imports: [
-    MulterModule.register({
-      storage: diskStorage({
-        destination: './assets',
-        filename: (req, file, callback) => {
-          const fileName = `${Date.now()}${extname(file.originalname)}`;
-          callback(null, fileName);
-        },
-      }),
-    }),
-  ],
   controllers: [FilesController],
+  providers: [FilesService],
 })
 export class FilesModule {}
