@@ -20,19 +20,25 @@ import { SearchPDTO } from './DTO/SearchPDTO';
 import { ProgramDTO } from './DTO/GetPDTO';
 import { ProgramsNames } from './DTO/ProgramNames';
 import { Course } from 'src/course/course.entity';
+import { activities } from './DTO/Programs-Activities.dto';
 
 @ApiTags('Programs')
 @Controller('programs')
 export class ProgramsController {
   constructor(private readonly programService: ProgramsService) {}
-
+  
+  @Get('Activities')
+  async getActivities(
+    @Query() filters:SearchPDTO
+  ): Promise<{data:activities[], count:number}> {
+    return this.programService.getActivities(filters);
+  }
   @Get('All')
   async getAllPrograms(
     @Query() searchDTO: SearchPDTO,
   ): Promise<{ data: ProgramDTO[]; count: number }> {
     return this.programService.getAllsPrograms(searchDTO);
   }
-
   @Get('Actived')
   async getActivedProgram(): Promise<ProgramsNames[]> {
     try {
@@ -150,4 +156,5 @@ export class ProgramsController {
     }
     return courses;
   }
+
 }
