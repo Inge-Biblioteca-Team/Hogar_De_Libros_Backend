@@ -18,14 +18,10 @@ export class NotesService {
 
   //Pendientes aparecen en las notificaciones sutiles
   async getPendingNotes(): Promise<{ data: Note[]; count: number }> {
-    const currentDate = new Date();
-    const formattedDate = currentDate.toISOString().split('T')[0];
-
     const query = this.notyRepository
       .createQueryBuilder('notes')
       .andWhere('notes.isRead = :isRead', { isRead: 0 })
       .andWhere('notes.trash = :trash', { trash: 0 })
-      .andWhere('notes.date >= :date', { date: formattedDate })
       .orderBy('notes.date', 'ASC');
 
     const [data, count] = await query.getManyAndCount();
@@ -37,6 +33,7 @@ export class NotesService {
   async getReadNotes(): Promise<{ data: Note[]; count: number }> {
     const query = this.notyRepository
       .createQueryBuilder('notes')
+      .andWhere('notes.isRead = :isRead', { isRead: 1 })
       .andWhere('notes.trash = :trash', { trash: 0 })
       .orderBy('notes.date', 'ASC');
 
@@ -59,25 +56,15 @@ export class NotesService {
   }
 
   //Cuando se abra se marca y deja de ser parte de las no leidas
-  async markAsRead(notificationId: number): Promise<void> {
-    await this.notyRepository
-      .createQueryBuilder()
-      .update('notes')
-      .set({ isRead: 1 })
-      .where('id_Note = :id', { id: notificationId })
-      .execute();
-  }
-
-  //Para mover a papelera y establecer un dia de borrado para luego un job si supera los 30 se borra total
-  async moveToTras(notificationId: number): Promise<void> {
-    const currentDate = new Date().toISOString().split('T')[0];
+  async markAsRead(notificationId: number): Promise<{ message: string }> {
     try {
       await this.notyRepository
         .createQueryBuilder()
         .update('notes')
-        .set({ trash: 1, deletedAt: currentDate })
-        .where('id_Note = :id', { id: notificationId })
+        .set({ isRead: true })
+        .where('id_Note = :id_Note', { id_Note: notificationId })
         .execute();
+      return { message: 'Exito' };
     } catch (error) {
       throw new InternalServerErrorException(
         'Error al mover la notificación a la papelera',
@@ -85,15 +72,36 @@ export class NotesService {
     }
   }
 
-  async moveMultipleToTrash(notificationIds: number[]): Promise<void> {
+  //Para mover a papelera y establecer un dia de borrado para luego un job si supera los 30 se borra total
+  async moveToTras(notificationId: number): Promise<{ message: string }> {
     const currentDate = new Date().toISOString().split('T')[0];
     try {
       await this.notyRepository
         .createQueryBuilder()
         .update('notes')
-        .set({ trash: 1, deletedAt: currentDate })
+        .set({ trash: true, deletedAt: currentDate })
+        .where('id_Note = :id', { id: notificationId })
+        .execute();
+      return { message: 'Exito' };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error al mover la notificación a la papelera',
+      );
+    }
+  }
+
+  async moveMultipleToTrash(
+    notificationIds: number[],
+  ): Promise<{ message: string }> {
+    const currentDate = new Date().toISOString().split('T')[0];
+    try {
+      await this.notyRepository
+        .createQueryBuilder()
+        .update('notes')
+        .set({ trash: true, deletedAt: currentDate })
         .whereInIds(notificationIds)
         .execute();
+      return { message: 'Exito' };
     } catch (error) {
       throw new InternalServerErrorException(
         'Error al mover las notificaciones a la papelera',
@@ -101,14 +109,15 @@ export class NotesService {
     }
   }
   //Recuperar de la papelera
-  async recoverFromTras(notificationId: number): Promise<void> {
+  async recoverFromTras(notificationId: number): Promise<{ message: string }> {
     try {
       await this.notyRepository
         .createQueryBuilder()
         .update('notes')
-        .set({ trash: 0, deletedAt: null })
+        .set({ trash: false, deletedAt: null })
         .where('id_Note = :id', { id: notificationId })
         .execute();
+        return { message: 'Exito' };
     } catch (error) {
       throw new InternalServerErrorException(
         'Error al mover la notificación a la papelera',
@@ -116,14 +125,17 @@ export class NotesService {
     }
   }
 
-  async recoveryMultiplefromTrash(notificationIds: number[]): Promise<void> {
+  async recoveryMultiplefromTrash(
+    notificationIds: number[],
+  ): Promise<{ message: string }> {
     try {
       await this.notyRepository
         .createQueryBuilder()
         .update('notes')
-        .set({ trash: 1, deletedAt: null })
+        .set({ trash: false, deletedAt: null })
         .whereInIds(notificationIds)
         .execute();
+        return { message: 'Exito' };
     } catch (error) {
       throw new InternalServerErrorException(
         'Error al mover las notificaciones a la papelera',
@@ -132,7 +144,7 @@ export class NotesService {
   }
 
   //Borrados individual y nulo
-  async deleteFromTrash(notificationId: number): Promise<void> {
+  async deleteFromTrash(notificationId: number): Promise<{message:string}> {
     try {
       const result = await this.notyRepository
         .createQueryBuilder()
@@ -147,6 +159,7 @@ export class NotesService {
           'La notificación no está en la papelera o no existe',
         );
       }
+      return { message: 'Exito' };
     } catch (error) {
       throw new InternalServerErrorException(
         'Error al eliminar la notificación de la papelera',
@@ -154,7 +167,7 @@ export class NotesService {
     }
   }
 
-  async deleteMultipleFromTrash(notificationIds: number[]): Promise<void> {
+  async deleteMultipleFromTrash(notificationIds: number[]): Promise<{message:string}> {
     try {
       const result = await this.notyRepository
         .createQueryBuilder()
@@ -169,6 +182,7 @@ export class NotesService {
           'No se encontraron notificaciones en la papelera para eliminar',
         );
       }
+      return { message: 'Exito' };
     } catch (error) {
       throw new InternalServerErrorException(
         'Error al eliminar las notificaciones de la papelera',
@@ -197,8 +211,9 @@ export class NotesService {
   }
 
   //Crear Notificacion
-  async createNote(createNoteDto: CreateNoteDto): Promise<Note> {
+  async createNote(createNoteDto: CreateNoteDto): Promise<{ message: string }> {
     const newNote = this.notyRepository.create(createNoteDto);
-    return await this.notyRepository.save(newNote);
+    await this.notyRepository.save(newNote);
+    return { message: 'Exito' };
   }
 }

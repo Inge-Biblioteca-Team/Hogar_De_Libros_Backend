@@ -7,7 +7,7 @@ export class Note {
   id_Note: number;
 
   @Column({ type: 'date' })
-  date: Date;
+  date: Date = new Date();
 
   @Column({ type: 'date', nullable: true, default: null })
   deletedAt: Date;

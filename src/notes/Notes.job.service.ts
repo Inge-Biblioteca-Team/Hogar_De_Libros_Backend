@@ -13,7 +13,7 @@ export class NotesJobs implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    const deleteNotyJob = new CronJob('00 23 * * *', async () => {
+    const deleteNotyJob = new CronJob('0 0 */3 * *', async () => {
       await this.notyService.deleteExpiredNotifications();
     });
 

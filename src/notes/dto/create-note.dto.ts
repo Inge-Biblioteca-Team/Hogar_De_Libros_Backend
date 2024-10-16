@@ -1,10 +1,10 @@
 /* eslint-disable prettier/prettier */
 
-import { IsOptional } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 export class CreateNoteDto {
-  @IsOptional()
-  date: Date = new Date();
-
+  @ApiProperty({ description: 'Mensaje', default: 'Test' })
   message: string;
+
+  @ApiProperty({ description: 'categoria', default: 'test' })
   type: string;
 }

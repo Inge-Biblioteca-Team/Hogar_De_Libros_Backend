@@ -1,8 +1,17 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { Note } from './entities/note.entity';
 import { ApiTags } from '@nestjs/swagger';
+import { CreateNoteDto } from './dto/create-note.dto';
 
 @ApiTags('Notify')
 @Controller('notes')
@@ -25,42 +34,57 @@ export class NotesController {
   }
 
   @Patch(':id/read')
-  async markAsRead(@Param('id') notificationId: number): Promise<void> {
+  async markAsRead(
+    @Param('id') notificationId: number,
+  ): Promise<{ message: string }> {
     return await this.notyService.markAsRead(notificationId);
   }
 
   @Patch(':id/trash')
-  async moveToTrash(@Param('id') notificationId: number): Promise<void> {
+  async moveToTrash(
+    @Param('id') notificationId: number,
+  ): Promise<{ message: string }> {
     return await this.notyService.moveToTras(notificationId);
   }
 
   @Patch('trash/multiple')
   async moveMultipleToTrash(
     @Body('ids') notificationIds: number[],
-  ): Promise<void> {
+  ): Promise<{ message: string }> {
     return await this.notyService.moveMultipleToTrash(notificationIds);
   }
 
   @Delete(':id/trash')
-  async deleteFromTrash(@Param('id') notificationId: number): Promise<void> {
+  async deleteFromTrash(
+    @Param('id') notificationId: number,
+  ): Promise<{ message: string }> {
     return await this.notyService.deleteFromTrash(notificationId);
   }
 
   @Delete('trash/multiple')
   async deleteMultipleFromTrash(
     @Body('ids') notificationIds: number[],
-  ): Promise<void> {
+  ): Promise<{ message: string }> {
     return await this.notyService.deleteMultipleFromTrash(notificationIds);
   }
   @Patch(':id/recover')
-  async recoverFromTrash(@Param('id') notificationId: number): Promise<void> {
+  async recoverFromTrash(
+    @Param('id') notificationId: number,
+  ): Promise<{ message: string }> {
     return await this.notyService.recoverFromTras(notificationId);
   }
 
   @Patch('trash/recover/multiple')
   async recoverMultipleFromTrash(
     @Body('ids') notificationIds: number[],
-  ): Promise<void> {
+  ): Promise<{ message: string }> {
     return await this.notyService.recoveryMultiplefromTrash(notificationIds);
+  }
+
+  @Post()
+  async createNote(
+    @Body() createNoteDto: CreateNoteDto,
+  ): Promise<{ message: string }> {
+    return await this.notyService.createNote(createNoteDto);
   }
 }
