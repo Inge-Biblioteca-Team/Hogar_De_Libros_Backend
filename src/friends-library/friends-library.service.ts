@@ -20,21 +20,30 @@ export class FriendsLibraryService {
 
   async CreateFriend(
     dto: CreateFriendDTO,
-    documents: Express.Multer.File[], // Recibimos los archivos
+    documents: Express.Multer.File[],
+    images: Express.Multer.File[],
   ): Promise<{ message: string }> {
     try {
-      const user = await this.UserRepository.findOne({
-        where: { cedula: dto.cedula },
+      let user = await this.UserRepository.findOne({
+        where: { cedula: dto.UserCedula },
       });
+
       if (!user) {
-        throw new NotFoundException('Usuario no encontrado');
+        user = null;
       }
+
       const newFriend = this.FriendRepositoy.create({
         user,
-        PrincipalCategory: dto.principalCategory,
-        SubCategory: dto.subCategory,
-        Document: dto.document,
-        Image: dto.image,
+        UserCedula: dto.UserCedula,
+        UserName: dto.UserName,
+        UserLastName: dto.UserLastName,
+        UserGender: dto.UserGender,
+        UserAge: dto.UserAge,
+        UserAddress: dto.UserAddress,
+        UserPhone: dto.UserPhone,
+        UserEmail: dto.UserEmail,
+        PrincipalCategory: dto.PrincipalCategory,
+        SubCategory: dto.SubCategory,
         DateRecolatedDonation: dto.DateRecolatedDonation,
       });
 
@@ -42,12 +51,18 @@ export class FriendsLibraryService {
         newFriend.Document = documents.map((file) => file.filename);
       }
 
+      if (images && images.length > 0) {
+        newFriend.Image = images.map((file) => file.filename);
+      }
+
       await this.FriendRepositoy.save(newFriend);
-      return { message: 'Se ha enviado la solicitud correctamente' };
+
+      return { message: 'Solicitud de amigo enviada correctamente.' };
     } catch (error) {
       throw new InternalServerErrorException({
         message:
-          error.message || 'Error al solicitar ser amigo de la biblioteca',
+          error.message ||
+          'Error al crear la solicitud de amigo en la biblioteca',
         error: error.stack,
       });
     }
@@ -63,20 +78,27 @@ export class FriendsLibraryService {
   async aproveFriendLibrary(FriendID: number) {
     try {
       const FriendRequest = await this.FriendRepositoy.findOne({
-        where: { friendId: FriendID },
+        where: { FriendId: FriendID },
         relations: ['user'],
       });
+
       if (!FriendRequest) {
         throw new NotFoundException('Solicitud no encontrada');
       }
-      FriendRequest.status = 'A';
-      FriendRequest.user.IsFriend = true;
+
+      FriendRequest.Status = 'A';
+
+      if (FriendRequest.user) {
+        FriendRequest.user.IsFriend = true;
+        await this.UserRepository.save(FriendRequest.user);
+      }
+
       await this.FriendRepositoy.save(FriendRequest);
-      await this.UserRepository.save(FriendRequest.user);
+
       return { message: 'La solicitud ha sido aprobada' };
     } catch (error) {
       throw new InternalServerErrorException({
-        message: error.message || 'Error al aprobar solicitud de amistad',
+        message: error.message || 'Error al aprobar la solicitud de amistad',
         error: error.stack,
       });
     }
