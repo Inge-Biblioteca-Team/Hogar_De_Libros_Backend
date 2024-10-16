@@ -3,3 +3,5 @@ dist
 .env
 assets
 dev
+/src/uploads/*
+!/src/uploads/.gitkeep
