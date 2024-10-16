@@ -39,6 +39,8 @@ import { Advice } from './advices/entities/advice.entity';
 import { events } from './events/events.entity';
 import { FriendsLibraryModule } from './friends-library/friends-library.module';
 import { FriendsLibrary } from './friends-library/friend-library.entity';
+import { NotesModule } from './notes/notes.module';
+import { Note } from './notes/entities/note.entity';
 
 dotenv.config();
 
@@ -68,7 +70,8 @@ dotenv.config();
         Rooms,
         RoomReservation,
         Advice,
-        FriendsLibrary
+        FriendsLibrary,
+        Note
       ],
       synchronize: true,
     }),
@@ -90,6 +93,7 @@ dotenv.config();
     RoomReservationModule,
     AdvicesModule,
     FriendsLibraryModule,
+    NotesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
