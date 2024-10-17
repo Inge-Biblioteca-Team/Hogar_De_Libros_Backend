@@ -1,23 +1,63 @@
-import { User } from "src/user/user.entity";
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { User } from 'src/user/user.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({ name: 'friend_library' })
 export class FriendsLibrary {
   @PrimaryGeneratedColumn()
-  friendId: number; // Cambiado a camelCase para seguir las convenciones
+  FriendId: number;
+
+  @Column()
+  UserName: string;
+
+  @Column()
+  UserLastName: string;
+
+  @Column()
+  UserCedula: string;
+
+  @Column()
+  UserGender: string;
+
+  @Column()
+  UserAge: number;
+
+  @Column()
+  UserAddress: string;
+
+  @Column()
+  UserPhone: string;
+
+  @Column()
+  UserEmail: string;
 
   @Column({ default: 'P' })
-  status: string;
+  Status: string;
 
-  @Column({ type: 'simple-array' })
-  PrincipalCategory: string[]; // Usa "PrincipalCategory" porque TypeORM es case-sensitive
+  @Column()
+  PrincipalCategory: string;
 
-  @Column({ type: 'simple-array' })
-  SubCategory: string[]; // Asegúrate de que el nombre de la propiedad sea exacto
+  @Column()
+  SubCategory: string;
 
   @Column({ type: 'simple-array', nullable: true })
   Document?: string[];
 
-  @OneToOne(() => User, (user) => user.friendsLibrary)
+  @Column({ type: 'simple-array', nullable: true })
+  Image?: string[];
+
+  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+  DateGenerated: Date;
+
+  @Column({ nullable: true })
+  DateRecolatedDonation?: Date;
+
+  @ManyToOne(() => User, (user) => user.friendsLibrary, { nullable: true })
+  @JoinColumn({ name: 'User_Cedula', referencedColumnName: 'cedula' })
   user: User;
 }

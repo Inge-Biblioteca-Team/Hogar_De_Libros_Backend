@@ -1,30 +1,85 @@
-import { IsArray, IsOptional, IsString, ArrayNotEmpty, IsNotEmpty } from 'class-validator';
-import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsDate,
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
-export class CreateOrUpdateFriendLibraryDTO {
-  @ApiProperty({ example: '1234567890' })
+export class CreateFriendDTO {
+  @ApiProperty({ description: 'Nombre del amigo', example: 'Juan' })
   @IsString()
   @IsNotEmpty()
-  cedula: string; // Para buscar al usuario
+  UserName: string;
 
-  @ApiProperty({ example: ['tecnico', 'lector'] })
-  @IsArray()
+  @ApiProperty({ description: 'Apellido del amigo', example: 'Perez' })
+  @IsString()
   @IsNotEmpty()
-  @ArrayNotEmpty()
-  @IsString({ each: true }) // Validamos que cada elemento sea string
-  principalCategory: string[]; // Categorías principales
+  UserLastName: string;
 
-  @ApiProperty({ example: ['cuenta ', 'cuentos'] })
-  @IsArray()
+  @ApiProperty({ description: 'Cédula del amigo', example: '123456789' })
+  @IsString()
   @IsNotEmpty()
-  @ArrayNotEmpty()
-  @IsString({ each: true }) // Validamos que cada subcategoría sea string
-  subCategory: string[]; // Subcategorías
+  UserCedula: string;
 
-  @ApiProperty({ example: ['URL1 ', 'URL2'] })
+  @ApiProperty({ description: 'Género del amigo', example: 'Masculino' })
+  @IsString()
+  @IsNotEmpty()
+  UserGender: string;
+
+  @ApiProperty({ description: 'Edad del amigo', example: 25 })
+  @IsNotEmpty()
+  @IsNumber()
+  UserAge: number;
+
+  @ApiProperty({ description: 'Dirección del amigo', example: 'Calle 123' })
+  @IsString()
+  @IsNotEmpty()
+  UserAddress: string;
+
+  @ApiProperty({ description: 'Teléfono del amigo', example: '123456789' })
+  @IsString()
+  @IsNotEmpty()
+  UserPhone: string;
+
+  @ApiProperty({
+    description: 'Correo del amigo',
+    example: 'juanPerez@gmail.com',
+  })
+  @IsEmail()
+  @IsNotEmpty()
+  UserEmail: string;
+
+  @ApiProperty({ description: 'Categoría principal', example: 'Voluntariado' })
+  @IsString()
+  @IsNotEmpty()
   @IsOptional()
-  @IsArray()
-  @Type(() => String) // Aceptamos un array que puede contener strings (para textos o nombres de archivos)
-  document?: (string | Express.Multer.File)[]; // Puede ser un array de strings o archivos
+  PrincipalCategory: string;
+
+  @ApiProperty({ description: 'Subcategoría', example: 'Donación' })
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  SubCategory: string;
+
+  @ApiProperty({
+    description: 'Documentos',
+    example: ['documento1', 'documento2'],
+  })
+  @IsOptional()
+  Document?: string[];
+
+  @ApiProperty({ description: 'Imágenes', example: ['imagen1', 'imagen2'] })
+  @IsOptional()
+  Image: string[];
+
+  @ApiProperty({
+    description: 'Fecha de recoleccion del donativo',
+    example: '2024-10-15',
+  })
+  @IsOptional()
+  @IsDate()
+  DateRecolatedDonation?: Date;
 }

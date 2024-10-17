@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FriendsLibrary } from './friend-library.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/user/user.entity';
-import { CreateOrUpdateFriendLibraryDTO } from './DTO/create-friend-libary-DTO';
+import { CreateFriendDTO } from './DTO/create-friend-libary-DTO';
 
 @Injectable()
 export class FriendsLibraryService {
@@ -18,72 +18,55 @@ export class FriendsLibraryService {
     @InjectRepository(User) private UserRepository: Repository<User>,
   ) {}
 
-  async createOrUpdateFriendLibrary(
-    dto: CreateOrUpdateFriendLibraryDTO,
-    documents: Express.Multer.File[], // Recibimos los archivos
-  ): Promise<{ message: string }> { // Se retorna un mensaje descriptivo
+  async CreateFriend(
+    dto: CreateFriendDTO,
+    documents: Express.Multer.File[],
+    images: Express.Multer.File[],
+  ): Promise<{ message: string }> {
     try {
-      const { cedula, principalCategory, subCategory } = dto;
+      let user = await this.UserRepository.findOne({
+        where: { cedula: dto.UserCedula },
+      });
 
-      const user = await this.UserRepository.findOne({ where: { cedula } });
       if (!user) {
-        throw new NotFoundException(`Usuario con cédula ${cedula} no encontrado`);
+        user = null;
       }
 
-      let friendsLibrary = await this.FriendRepositoy.findOne({ where: { user } });
+      const newFriend = this.FriendRepositoy.create({
+        user,
+        UserCedula: dto.UserCedula,
+        UserName: dto.UserName,
+        UserLastName: dto.UserLastName,
+        UserGender: dto.UserGender,
+        UserAge: dto.UserAge,
+        UserAddress: dto.UserAddress,
+        UserPhone: dto.UserPhone,
+        UserEmail: dto.UserEmail,
+        PrincipalCategory: dto.PrincipalCategory,
+        SubCategory: dto.SubCategory,
+        DateRecolatedDonation: dto.DateRecolatedDonation,
+      });
 
-      if (!friendsLibrary) {
-        
-        friendsLibrary = this.FriendRepositoy.create({
-          user,
-          PrincipalCategory: principalCategory,
-          SubCategory: subCategory,
-        });
-
-        await this.FriendRepositoy.save(friendsLibrary);
-
-        return { message: 'Solicitud de amigo creada correctamente' }; 
-      } else {
-      
-        friendsLibrary.PrincipalCategory = this.addUniqueData(
-          friendsLibrary.PrincipalCategory,
-          principalCategory,
-        );
-
-        friendsLibrary.SubCategory = this.addUniqueData(
-          friendsLibrary.SubCategory,
-          subCategory,
-        );
-
-        if (documents && documents.length > 0) {
-          const documentPaths = documents.map((file) => file.path);
-          
-          friendsLibrary.Document = this.addUniqueData(friendsLibrary.Document || [], documentPaths);
-        }
-
-        await this.FriendRepositoy.save(friendsLibrary);
-
-        return { message: 'Solicitud de amigo actualizada correctamente' };  
+      if (documents && documents.length > 0) {
+        newFriend.Document = documents.map((file) => file.filename);
       }
+
+      if (images && images.length > 0) {
+        newFriend.Image = images.map((file) => file.filename);
+      }
+
+      await this.FriendRepositoy.save(newFriend);
+
+      return { message: 'Solicitud de amigo enviada correctamente.' };
     } catch (error) {
       throw new InternalServerErrorException({
-        message: error.message || 'Error al crear o actualizar la biblioteca de amigos',
-        error: error.stack, 
+        message:
+          error.message ||
+          'Error al crear la solicitud de amigo en la biblioteca',
+        error: error.stack,
       });
     }
   }
-
-  private addUniqueData(existingData: string[], newData: string[]): string[] {
-    const dataSet = new Set(existingData);
-    newData.forEach((data) => {
-      if (!dataSet.has(data)) {
-        dataSet.add(data);
-      }
-    });
-    return Array.from(dataSet);
-  }
-
-
 
   // provicional, no es la task es solo para ver la data del create
   async getAllFriendsLibrary() {
@@ -92,44 +75,32 @@ export class FriendsLibraryService {
     });
   }
 
-  async aproveFriendLibrary(cedula: string) {
+  async aproveFriendLibrary(FriendID: number) {
     try {
-      // 1. Buscar el usuario por cédula y cargar la relación con friendsLibrary
-      const user = await this.UserRepository.findOne({
-        where: { cedula },
-        relations: ['friendsLibrary'], // Asegúrate de cargar la relación con friendsLibrary
+      const FriendRequest = await this.FriendRepositoy.findOne({
+        where: { FriendId: FriendID },
+        relations: ['user'],
       });
-  
-      if (!user) {
-        throw new NotFoundException('Usuario no encontrado');
+
+      if (!FriendRequest) {
+        throw new NotFoundException('Solicitud no encontrada');
       }
-  
-      // 2. Validar que el usuario tenga una biblioteca de amigos asociada
-      if (!user.friendsLibrary) {
-        throw new NotFoundException('No se encontró la biblioteca de amigos para este usuario');
+
+      FriendRequest.Status = 'A';
+
+      if (FriendRequest.user) {
+        FriendRequest.user.IsFriend = true;
+        await this.UserRepository.save(FriendRequest.user);
       }
-  
-      // 3. Aprobar al usuario como amigo en la biblioteca
-      user.friendsLibrary.status = 'A'; // Cambia el estado de la biblioteca a 'A' (aprobado)
-      user.IsFriend = true; // Marcar al usuario como amigo
-  
-      // 4. Guardar los cambios en la biblioteca de amigos primero
-      await this.FriendRepositoy.save(user.friendsLibrary);
-  
-      // 5. Guardar los cambios en el usuario
-      await this.UserRepository.save(user); // Guardar cambios del usuario
-  
-      // 6. Retornar un mensaje de éxito
-      return { message: 'Usuario aprobado como amigo de la biblioteca' };
-  
+
+      await this.FriendRepositoy.save(FriendRequest);
+
+      return { message: 'La solicitud ha sido aprobada' };
     } catch (error) {
-      // Capturar cualquier error y lanzar una excepción con un mensaje personalizado
       throw new InternalServerErrorException({
-        message: error.message || 'Error al aprobar al usuario como amigo de la biblioteca',
-        error: error.stack, // Incluye el stack del error en los logs para más detalles
+        message: error.message || 'Error al aprobar la solicitud de amistad',
+        error: error.stack,
       });
     }
   }
-  
-  
 }

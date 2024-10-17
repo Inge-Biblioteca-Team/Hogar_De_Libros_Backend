@@ -6,6 +6,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryColumn,
@@ -91,7 +92,6 @@ export class User {
   @OneToMany(() => RoomReservation, (roomReservation) => roomReservation.user)
   roomReservations: RoomReservation[];
 
-  @OneToOne(() => FriendsLibrary, { nullable: true })
-  @JoinColumn() // Se utiliza para crear la clave foránea en la tabla de usuarios
-  friendsLibrary: FriendsLibrary | null;
+  @OneToMany(() => FriendsLibrary, (friendsLibrary) => friendsLibrary.user)
+  friendsLibrary: FriendsLibrary[];
 }

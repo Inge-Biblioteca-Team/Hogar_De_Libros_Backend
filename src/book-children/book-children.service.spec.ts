@@ -166,14 +166,16 @@ describe('BookChildrenService', () => {
     expect(result.count).toBe(2);
   
     
-    expect(queryBuilder.andWhere).toHaveBeenNthCalledWith(1, 'book.Title Like :Title', { Title: 'Sample Book' });
-    expect(queryBuilder.andWhere).toHaveBeenNthCalledWith(2, 'book.ISBN Like :ISBN', { ISBN: '1234567890' });
-    expect(queryBuilder.andWhere).toHaveBeenNthCalledWith(3, 'book.Author LIKE :Author', { Author: 'Author Sample' });
-    expect(queryBuilder.andWhere).toHaveBeenNthCalledWith(4, 'book.SignatureCode LIKE :SignatureCode', { SignatureCode: 'CODE123' });
-    expect(queryBuilder.andWhere).toHaveBeenNthCalledWith(5, 'book.Status = :Status', { Status: 1 });
-    expect(queryBuilder.andWhere).toHaveBeenNthCalledWith(6, 'book.ShelfCategory LIKE :ShelfCategory', { ShelfCategory: 'Sample Category' });
-    expect(queryBuilder.andWhere).toHaveBeenNthCalledWith(7, 'book.PublishedYear = :PublishedYear', { PublishedYear: 2022 });
-    expect(queryBuilder.andWhere).toHaveBeenNthCalledWith(8, 'book.Editorial LIKE :Editorial', { Editorial: 'Sample Editorial' });
+expect(queryBuilder.andWhere).toHaveBeenNthCalledWith(1, 'book.Title Like :Title', { Title: '%Sample Book%' });
+expect(queryBuilder.andWhere).toHaveBeenNthCalledWith(2, 'book.ISBN Like :ISBN', { ISBN: '%1234567890%' });
+expect(queryBuilder.andWhere).toHaveBeenNthCalledWith(3, 'book.Author LIKE :Author', { Author: '%Author Sample%' });
+expect(queryBuilder.andWhere).toHaveBeenNthCalledWith(4, 'book.SignatureCode LIKE :SignatureCode', { SignatureCode: '%CODE123%' });
+expect(queryBuilder.andWhere).toHaveBeenNthCalledWith(5, 'book.Status = :Status', { Status: 1 });
+expect(queryBuilder.andWhere).toHaveBeenNthCalledWith(6, 'book.ShelfCategory LIKE :ShelfCategory', { ShelfCategory: '%Sample Category%' });
+expect(queryBuilder.andWhere).toHaveBeenNthCalledWith(7, 'book.PublishedYear = :PublishedYear', { PublishedYear: 2022 });
+expect(queryBuilder.andWhere).toHaveBeenNthCalledWith(8, 'book.Editorial LIKE :Editorial', { Editorial: 'Sample Editorial' });
+
+
   });
   
   

@@ -12,21 +12,34 @@ import {
 import { FriendsLibraryService } from './friends-library.service';
 
 import { ApiTags } from '@nestjs/swagger';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { CreateOrUpdateFriendLibraryDTO } from './DTO/create-friend-libary-DTO';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { CreateFriendDTO } from './DTO/create-friend-libary-DTO';
 
 @ApiTags('friends-library')
 @Controller('friends-library')
 export class FriendsLibraryController {
   constructor(private friendService: FriendsLibraryService) {}
 
-  @Post('create-or-update')
-  @UseInterceptors(FilesInterceptor('document', 10)) // 'Document' es la clave usada en Postman para los archivos
-  async createOrUpdateFriendLibrary(
-    @Body() createFriendLibraryDto: CreateOrUpdateFriendLibraryDTO,
-    @UploadedFiles() documents: Express.Multer.File[], // Manejar múltiples archivos
+  @Post()
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'document', maxCount: 10 },
+      { name: 'image', maxCount: 10 },
+    ]),
+  )
+  async CreateFriend(
+    @Body() createFriendLibraryDto: CreateFriendDTO,
+    @UploadedFiles()
+    files?: { document?: Express.Multer.File[]; image?: Express.Multer.File[] },
   ) {
-    return this.friendService.createOrUpdateFriendLibrary(createFriendLibraryDto, documents);
+    const documents = files?.document || [];
+    const images = files?.image || [];
+
+    return this.friendService.CreateFriend(
+      createFriendLibraryDto,
+      documents,
+      images,
+    );
   }
 
   @Get()
@@ -34,8 +47,8 @@ export class FriendsLibraryController {
     return this.friendService.getAllFriendsLibrary();
   }
 
-  @Patch('aproveFriendLibrary/:cedula')
-  async aproveFriendLibrary(@Query('cedula') cedula: string) {
-    return this.friendService.aproveFriendLibrary(cedula);
+  @Patch('aproveFriendLibrary/:FriendID')
+  async aproveFriendLibrary(@Query('FriendID') FriendID: number) {
+    return this.friendService.aproveFriendLibrary(FriendID);
   }
 }
