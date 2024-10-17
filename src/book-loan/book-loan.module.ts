@@ -6,13 +6,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BookLoan } from './book-loan.enity';
 import { UserModule } from 'src/user/user.module';
 import { BooksModule } from 'src/books/books.module';
+import { NotesModule } from 'src/notes/notes.module';
 
 
 @Module({
   imports:[
     UserModule,
     BooksModule,
-    TypeOrmModule.forFeature([BookLoan])],
+    TypeOrmModule.forFeature([BookLoan]), NotesModule],
   controllers: [BookLoanController],
   providers: [BookLoanService],
   exports:[TypeOrmModule]

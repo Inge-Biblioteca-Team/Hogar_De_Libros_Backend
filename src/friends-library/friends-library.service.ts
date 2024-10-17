@@ -9,6 +9,8 @@ import { FriendsLibrary } from './friend-library.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/user/user.entity';
 import { CreateFriendDTO } from './DTO/create-friend-libary-DTO';
+import { NotesService } from 'src/notes/notes.service';
+import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
 
 @Injectable()
 export class FriendsLibraryService {
@@ -16,6 +18,8 @@ export class FriendsLibraryService {
     @InjectRepository(FriendsLibrary)
     private FriendRepositoy: Repository<FriendsLibrary>,
     @InjectRepository(User) private UserRepository: Repository<User>,
+
+    private noteService: NotesService,
   ) {}
 
   async CreateFriend(
@@ -64,6 +68,13 @@ export class FriendsLibraryService {
           Document: documentPaths,
         });
       }
+
+      const createNoteDto: CreateNoteDto = {
+        message: `Nueva solicitud de actividad de amigo de la biblioteca generada por ${newFriend.UserFullName}.`,
+        type: 'Solicitud de amigo de la biblioteca',
+      };
+
+      await this.noteService.createNote(createNoteDto);
       await this.FriendRepositoy.save(newFriend);
       return { message: 'Solicitud de amigo enviada correctamente.' };
     } catch (error) {
