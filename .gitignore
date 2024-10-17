@@ -3,4 +3,5 @@ dist
 .env
 assets
 dev
-uploads
+/uploads/*
+!/uploads
