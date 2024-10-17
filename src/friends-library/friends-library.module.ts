@@ -11,9 +11,8 @@ import { diskStorage } from 'multer';
   imports: [TypeOrmModule.forFeature([FriendsLibrary, User]),
   MulterModule.register({
     storage: diskStorage({
-      destination: './src/uploads', // Carpeta donde se guardarán los archivos
+      destination: './uploads',
       filename: (req, file, cb) => {
-        // Mantener el nombre original del archivo
         cb(null, file.originalname);
       },
     }),

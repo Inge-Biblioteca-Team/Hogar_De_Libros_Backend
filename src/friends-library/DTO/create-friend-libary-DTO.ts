@@ -3,36 +3,30 @@ import {
   IsDate,
   IsEmail,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
 
 export class CreateFriendDTO {
-  @ApiProperty({ description: 'Nombre del amigo', example: 'Juan' })
+  @ApiProperty({ description: 'Nombre del amigo', example: 'Juan Perez Gomez' })
   @IsString()
   @IsNotEmpty()
-  UserName: string;
-
-  @ApiProperty({ description: 'Apellido del amigo', example: 'Perez' })
-  @IsString()
-  @IsNotEmpty()
-  UserLastName: string;
+  UserFullName: string;
 
   @ApiProperty({ description: 'Cédula del amigo', example: '123456789' })
   @IsString()
   @IsNotEmpty()
   UserCedula: string;
 
-  @ApiProperty({ description: 'Género del amigo', example: 'Masculino' })
+  @ApiProperty({ description: 'Discapacidad', example: 'Cojo' })
   @IsString()
   @IsNotEmpty()
-  UserGender: string;
+  Disability: string;
 
-  @ApiProperty({ description: 'Edad del amigo', example: 25 })
+  @ApiProperty({ description: 'Edad del amigo', example: '2024-10-15' })
   @IsNotEmpty()
-  @IsNumber()
-  UserAge: number;
+  @IsDate()
+  UserBirthDate: Date;
 
   @ApiProperty({ description: 'Dirección del amigo', example: 'Calle 123' })
   @IsString()
@@ -71,10 +65,6 @@ export class CreateFriendDTO {
   @IsOptional()
   Document?: string[];
 
-  @ApiProperty({ description: 'Imágenes', example: ['imagen1', 'imagen2'] })
-  @IsOptional()
-  Image: string[];
-
   @ApiProperty({
     description: 'Fecha de recoleccion del donativo',
     example: '2024-10-15',
@@ -82,4 +72,12 @@ export class CreateFriendDTO {
   @IsOptional()
   @IsDate()
   DateRecolatedDonation?: Date;
+
+  @ApiProperty({
+    description: 'Información extra',
+    example: 'Conocimiento previo',
+  })
+  @IsString()
+  @IsOptional()
+  ExtraInfo?: string;
 }
