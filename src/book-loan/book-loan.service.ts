@@ -16,6 +16,8 @@ import { Book } from 'src/books/book.entity';
 import { GETResponseDTO } from './DTO/GETSResponse';
 import { BookLoanResponseDTO } from './DTO/RequestDTO';
 import { LoanPolicy } from 'src/user/loan-policy';
+import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
+import { NotesService } from 'src/notes/notes.service';
 
 @Injectable()
 export class BookLoanService {
@@ -24,6 +26,8 @@ export class BookLoanService {
     private readonly bookLoanRepository: Repository<BookLoan>,
     @InjectRepository(Book)
     private readonly bookRepository: Repository<Book>,
+
+    private noteService: NotesService,
   ) {}
   async createLoan(
     createBookLoanDto: CreateBookLoanDto,
@@ -41,6 +45,7 @@ export class BookLoanService {
       where: { BookCode: createBookLoanDto.bookBookCode },
     });
 
+    
     if (!book) {
       throw new NotFoundException(
         `El libro con código ${createBookLoanDto.bookBookCode} no fue encontrado`,
@@ -88,6 +93,13 @@ export class BookLoanService {
     const newBookLoan = this.bookLoanRepository.create(createBookLoanDto);
     newBookLoan.Status = 'Pendiente';
     newBookLoan.book = book;
+
+    const createNoteDto: CreateNoteDto = {
+      message: `El libro con código ${book.BookCode} ha sido solicitado por el usuario.`,
+      type: 'Solicitud de libro',
+    };
+
+    await this.noteService.createNote(createNoteDto);
 
     const maxDaysAllowed = loanLimits.days;
     if (maxDaysAllowed !== 'unlimited') {

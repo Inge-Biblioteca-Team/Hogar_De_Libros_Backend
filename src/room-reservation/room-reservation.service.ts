@@ -13,12 +13,16 @@ import { FilterGetDTO } from './dto/FilterGetDTO';
 import { Queque } from './dto/ReservationsQueque';
 import { UpdateRoomReservationDto } from './dto/update-room-reservation.dto';
 import { UserReservationDTO } from './dto/UserReservations';
+import { NotesService } from 'src/notes/notes.service';
+import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
 
 @Injectable()
 export class RoomReservationService {
   constructor(
     @InjectRepository(RoomReservation)
     private readonly reservationRepository: Repository<RoomReservation>,
+
+    private noteService: NotesService,
   ) {}
 
   async getAllReservations(
@@ -38,15 +42,15 @@ export class RoomReservationService {
       .leftJoinAndSelect('room_reservations.rooms', 'rooms')
       .leftJoinAndSelect('room_reservations.events', 'events')
       .leftJoinAndSelect('room_reservations.course', 'course')
-      .orderBy('room_reservations.date','ASC' )
+      .orderBy('room_reservations.date', 'ASC');
 
     if (reserveStatus) {
       query.andWhere('room_reservations.reserveStatus = :status', {
         status: reserveStatus,
       });
     }
-    if(reserveStatus == "Finalizado"){
-      query.orderBy('room_reservations.date','DESC' )
+    if (reserveStatus == 'Finalizado') {
+      query.orderBy('room_reservations.date', 'DESC');
     }
     if (roomId) {
       query.andWhere('room_reservations.roomId = :roomId', {
@@ -153,10 +157,17 @@ export class RoomReservationService {
         rooms: { roomId: newReservation.roomId },
       });
 
+      const createNoteDto: CreateNoteDto = {
+        message: `Nueva solicitud de sala, para el dia ${newReservation.date} ha sido solicitada por el usuario ${newReservation.name}.`,
+        type: 'Solicitud de Sala',
+      };
+      await this.noteService.createNote(createNoteDto);
+
       await this.reservationRepository.save(reservation);
       return {
         message: 'La solicitud se genero correctamente',
       };
+
     } catch (error) {
       throw new InternalServerErrorException(
         error.message || 'Error al procesar la solicitud',
@@ -286,8 +297,7 @@ export class RoomReservationService {
       .andWhere('room_reservations.reserveStatus <> :status', {
         status: 'Finalizado',
       })
-      .orderBy('room_reservations.date','ASC' )
-    
+      .orderBy('room_reservations.date', 'ASC');
 
     if (userCedula) {
       query.andWhere('room_reservations.userCedula = :userCedula', {
