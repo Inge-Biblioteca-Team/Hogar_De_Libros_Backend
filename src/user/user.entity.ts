@@ -5,10 +5,7 @@ import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
 import {
   Column,
   Entity,
-  JoinColumn,
-  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryColumn,
 } from 'typeorm';
 import { Role } from './loan-policy';
@@ -71,9 +68,6 @@ export class User {
 
   @Column()
   status: boolean;
-
-  @Column({ default: false })
-  IsFriend: boolean;
 
   @Column({
     type: 'enum',

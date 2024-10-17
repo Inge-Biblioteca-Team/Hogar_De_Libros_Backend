@@ -12,7 +12,7 @@ import {
 import { FriendsLibraryService } from './friends-library.service';
 
 import { ApiTags } from '@nestjs/swagger';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { CreateFriendDTO } from './DTO/create-friend-libary-DTO';
 
 @ApiTags('friends-library')
@@ -21,25 +21,14 @@ export class FriendsLibraryController {
   constructor(private friendService: FriendsLibraryService) {}
 
   @Post()
-  @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'document', maxCount: 10 },
-      { name: 'image', maxCount: 10 },
-    ]),
-  )
+  @UseInterceptors(AnyFilesInterceptor())
   async CreateFriend(
     @Body() createFriendLibraryDto: CreateFriendDTO,
-    @UploadedFiles()
-    files?: { document?: Express.Multer.File[]; image?: Express.Multer.File[] },
-  ) {
-    const documents = files?.document || [];
-    const images = files?.image || [];
+    @UploadedFiles() files?: Express.Multer.File[],
+  ): Promise<{ message: string }> {
+    const documents = files || [];
 
-    return this.friendService.CreateFriend(
-      createFriendLibraryDto,
-      documents,
-      images,
-    );
+    return this.friendService.CreateFriend(createFriendLibraryDto, documents);
   }
 
   @Get()
@@ -48,7 +37,9 @@ export class FriendsLibraryController {
   }
 
   @Patch('aproveFriendLibrary/:FriendID')
-  async aproveFriendLibrary(@Query('FriendID') FriendID: number) {
+  async aproveFriendLibrary(
+    @Query('FriendID') FriendID: number,
+  ): Promise<{ message: string }> {
     return this.friendService.aproveFriendLibrary(FriendID);
   }
 }

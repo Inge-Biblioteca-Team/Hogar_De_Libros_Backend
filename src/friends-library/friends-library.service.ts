@@ -21,42 +21,50 @@ export class FriendsLibraryService {
   async CreateFriend(
     dto: CreateFriendDTO,
     documents: Express.Multer.File[],
-    images: Express.Multer.File[],
   ): Promise<{ message: string }> {
     try {
-      let user = await this.UserRepository.findOne({
+      const User = await this.UserRepository.findOne({
         where: { cedula: dto.UserCedula },
       });
 
-      if (!user) {
-        user = null;
+      const documentPaths = documents.map(
+        (file) => `/uploads/${file.filename}`,
+      );
+
+      let newFriend: FriendsLibrary;
+      if (User) {
+        newFriend = this.FriendRepositoy.create({
+          UserFullName: `${User.name} ${User.lastName}`,
+          UserCedula: User.cedula,
+          Disability: dto.Disability,
+          UserBirthDate: User.birthDate,
+          UserAddress: User.address,
+          UserPhone: User.phoneNumber,
+          UserEmail: User.email,
+          PrincipalCategory: dto.PrincipalCategory,
+          SubCategory: dto.SubCategory,
+          DateRecolatedDonation: dto.DateRecolatedDonation,
+          ExtraInfo: dto.ExtraInfo,
+          Document: documentPaths,
+          user: User,
+        });
+      } else {
+        newFriend = this.FriendRepositoy.create({
+          UserFullName: dto.UserFullName,
+          UserCedula: dto.UserCedula,
+          Disability: dto.Disability,
+          UserBirthDate: dto.UserBirthDate,
+          UserAddress: dto.UserAddress,
+          UserPhone: dto.UserPhone,
+          UserEmail: dto.UserEmail,
+          PrincipalCategory: dto.PrincipalCategory,
+          SubCategory: dto.SubCategory,
+          DateRecolatedDonation: dto.DateRecolatedDonation,
+          ExtraInfo: dto.ExtraInfo,
+          Document: documentPaths,
+        });
       }
-
-      const newFriend = this.FriendRepositoy.create({
-        user,
-        UserCedula: dto.UserCedula,
-        UserName: dto.UserName,
-        UserLastName: dto.UserLastName,
-        UserGender: dto.UserGender,
-        UserAge: dto.UserAge,
-        UserAddress: dto.UserAddress,
-        UserPhone: dto.UserPhone,
-        UserEmail: dto.UserEmail,
-        PrincipalCategory: dto.PrincipalCategory,
-        SubCategory: dto.SubCategory,
-        DateRecolatedDonation: dto.DateRecolatedDonation,
-      });
-
-      if (documents && documents.length > 0) {
-        newFriend.Document = documents.map((file) => file.filename);
-      }
-
-      if (images && images.length > 0) {
-        newFriend.Image = images.map((file) => file.filename);
-      }
-
       await this.FriendRepositoy.save(newFriend);
-
       return { message: 'Solicitud de amigo enviada correctamente.' };
     } catch (error) {
       throw new InternalServerErrorException({
@@ -75,30 +83,22 @@ export class FriendsLibraryService {
     });
   }
 
-  async aproveFriendLibrary(FriendID: number) {
+  async aproveFriendLibrary(FriendID: number): Promise<{ message: string }> {
     try {
-      const FriendRequest = await this.FriendRepositoy.findOne({
+      const FriendFounded = await this.FriendRepositoy.findOne({
         where: { FriendId: FriendID },
-        relations: ['user'],
       });
-
-      if (!FriendRequest) {
-        throw new NotFoundException('Solicitud no encontrada');
+      if (!FriendFounded) {
+        throw new NotFoundException({
+          message: 'Solicitud de amigo no encontrada',
+        });
       }
-
-      FriendRequest.Status = 'A';
-
-      if (FriendRequest.user) {
-        FriendRequest.user.IsFriend = true;
-        await this.UserRepository.save(FriendRequest.user);
-      }
-
-      await this.FriendRepositoy.save(FriendRequest);
-
-      return { message: 'La solicitud ha sido aprobada' };
+      FriendFounded.Status = 'A';
+      await this.FriendRepositoy.save(FriendFounded);
+      return { message: 'Solicitud de amigo aprobada correctamente' };
     } catch (error) {
       throw new InternalServerErrorException({
-        message: error.message || 'Error al aprobar la solicitud de amistad',
+        message: error.message || 'Error al aprobar la solicitud de amigo',
         error: error.stack,
       });
     }

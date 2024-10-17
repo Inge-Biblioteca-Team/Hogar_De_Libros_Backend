@@ -13,19 +13,16 @@ export class FriendsLibrary {
   FriendId: number;
 
   @Column()
-  UserName: string;
-
-  @Column()
-  UserLastName: string;
+  UserFullName: string;
 
   @Column()
   UserCedula: string;
 
   @Column()
-  UserGender: string;
+  Disability: string;
 
-  @Column()
-  UserAge: number;
+  @Column({ type: 'date' })
+  UserBirthDate: Date;
 
   @Column()
   UserAddress: string;
@@ -45,18 +42,19 @@ export class FriendsLibrary {
   @Column()
   SubCategory: string;
 
-  @Column({ type: 'simple-array', nullable: true })
+  @Column({ type: 'simple-array', nullable: true }) // DOcumento y Imagen mismo campo
   Document?: string[];
 
-  @Column({ type: 'simple-array', nullable: true })
-  Image?: string[];
-
-  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' }) 
   DateGenerated: Date;
 
   @Column({ nullable: true })
   DateRecolatedDonation?: Date;
-
+ 
+  // infor extra de conocimiento previo (HACER)
+  @Column({ nullable: true })
+  ExtraInfo: string;
+  
   @ManyToOne(() => User, (user) => user.friendsLibrary, { nullable: true })
   @JoinColumn({ name: 'User_Cedula', referencedColumnName: 'cedula' })
   user: User;
