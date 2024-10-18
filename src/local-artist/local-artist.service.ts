@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PaginatedQueryDTO } from './DTO/Paginated-Query';
@@ -69,16 +69,19 @@ export class LocalArtistService {
     id: number,
     updateLocalArtistDto: CreateLocalArtistDTO,
   ): Promise<LocalArtist> {
-    await this.localArtistRepository.update(id, updateLocalArtistDto);
-    return this.findOne(id);
+    const artist = await this.findOne(id);  
+    Object.assign(artist, updateLocalArtistDto);  
+    return this.localArtistRepository.save(artist); 
   }
-
   async DownArtist(ArtistID: number): Promise<LocalArtist> {
     const Artist = await this.localArtistRepository.findOne({
       where: { ID: ArtistID },
     });
     if (!Artist) {
       throw new NotFoundException('No existe el artista');
+    }
+    if (!Artist.Actived) {
+      throw new BadRequestException('El artista ya está inactivo');
     }
     Artist.Actived = false;
     return this.localArtistRepository.save(Artist);

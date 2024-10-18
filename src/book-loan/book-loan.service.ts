@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BookLoan } from './book-loan.enity';
+import { BookLoan } from './book-loan.entity';
 import { In, Repository } from 'typeorm';
 import { CreateBookLoanDto } from './DTO/create-book-loan.dto';
 import { FinalizeBookLoanDto } from './DTO/finalize-bookloan.dto';

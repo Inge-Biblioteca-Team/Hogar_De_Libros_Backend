@@ -1,7 +1,10 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { BookLoan } from 'src/book-loan/book-loan.enity';
+import { BookLoan } from 'src/book-loan/book-loan.entity';
 import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
+import { FriendsLibrary } from 'src/friends-library/friend-library.entity';
+import { RoomReservation } from 'src/room-reservation/entities/room-reservation.entity';
+
 import {
   Column,
   Entity,
@@ -9,8 +12,6 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { Role } from './loan-policy';
-import { RoomReservation } from 'src/room-reservation/entities/room-reservation.entity';
-import { FriendsLibrary } from 'src/friends-library/friend-library.entity';
 
 @Entity({ name: 'users' })
 export class User {

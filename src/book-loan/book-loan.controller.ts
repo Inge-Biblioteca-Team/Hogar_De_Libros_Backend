@@ -15,7 +15,7 @@ import {
 import { BookLoanService } from './book-loan.service';
 import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateBookLoanDto } from './DTO/create-book-loan.dto';
-import { BookLoan } from './book-loan.enity';
+import { BookLoan } from './book-loan.entity';
 import { FinalizeBookLoanDto } from './DTO/finalize-bookloan.dto';
 import { updatedBookLoan } from './DTO/update-bookLoan.dto';
 import { GETResponseDTO } from './DTO/GETSResponse';

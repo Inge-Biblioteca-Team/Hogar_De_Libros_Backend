@@ -10,7 +10,7 @@ import { ComputersModule } from './computers/computers.module';
 import { BookLoanModule } from './book-loan/book-loan.module';
 import { UserModule } from './user/user.module';
 import { ComputerLoanModule } from './computer-loan/computer-loan.module';
-import { BookLoan } from './book-loan/book-loan.enity';
+import { BookLoan } from './book-loan/book-loan.entity';
 import { ComputerLoan } from './computer-loan/computer-loan.entity';
 import { User } from './user/user.entity';
 import { BookChildrenModule } from './book-children/book-children.module';
