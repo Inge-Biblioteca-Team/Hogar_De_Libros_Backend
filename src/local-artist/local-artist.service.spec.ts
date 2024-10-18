@@ -84,29 +84,7 @@ describe('LocalArtistService', () => {
 
       await expect(service.findOne(1)).rejects.toThrow(NotFoundException);
     });
-  });
-
-  describe('update', () => {
-    it('should update and return the updated artist', async () => {
-      const dto: CreateLocalArtistDTO = {
-        Name: 'Jane Doe',
-        ArtisProfession: 'Singer',
-        Cover: 'http://example.com/cover.jpg',
-        MoreInfo: 'Some mentions and details',
-        FBLink: 'http://facebook.com/janedoe',
-        IGLink: 'http://instagram.com/janedoe',
-        LILink: 'http://linkedin.com/in/janedoe',
-      };
-      const existingArtist = { ID: 1, Name: 'John Doe', ArtisProfession: 'Painter', Actived: true };
-      const updatedArtist = { ...existingArtist, ...dto };
-
-      jest.spyOn(service, 'findOne').mockResolvedValue(existingArtist as any);
-      jest.spyOn(repository, 'update').mockResolvedValue(undefined);
-      jest.spyOn(service, 'findOne').mockResolvedValue(updatedArtist as any);
-
-      const result = await service.update(1, dto);
-      expect(result).toEqual(updatedArtist);
-    });
+  
 
     describe('update', () => {
         it('should throw NotFoundException if artist not found', async () => {

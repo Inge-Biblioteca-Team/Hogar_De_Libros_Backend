@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { BookLoanController } from './book-loan.controller';
 import { BookLoanService } from './book-loan.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BookLoan } from './book-loan.enity';
+import { BookLoan } from './book-loan.entity';
 import { UserModule } from 'src/user/user.module';
 import { BooksModule } from 'src/books/books.module';
 import { NotesModule } from 'src/notes/notes.module';

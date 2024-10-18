@@ -17,7 +17,9 @@
     "test:local-artist": "jest src/local-artist/local-artist.service.spec.ts",
     "test:furniture": "jest src/furniture/furniture.service.spec.ts",
     "test:book-children": "jest src/book-children/book-children.service.spec.ts",
+    "test:book-books": "jest src/books/books.service.spec.ts",
     "test:rooms": "jest src/rooms/rooms.service.spec.ts",
+    "test:room-reservation": "jest src/room-reservation/room-reservation.service.spec.ts",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -75,20 +77,24 @@
     "typescript": "^5.1.3"
   },
   "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "rootDir": ".",
+  "testRegex": ".*\\.spec\\.ts",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "collectCoverageFrom": [
+    "**/*.(t|j)s"
+  ],
+  "coverageDirectory": "./coverage",
+  "testEnvironment": "node",
+  "moduleNameMapper": {
+    "^src/(.*)$": "<rootDir>/src/$1"  
   }
+}
+
 }

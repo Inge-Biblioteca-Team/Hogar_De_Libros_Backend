@@ -1,9 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { ApiProperty } from '@nestjs/swagger';
-import { Course } from 'src/course/course.entity';
-import { events } from 'src/events/events.entity';
-import { Rooms } from 'src/rooms/entities/room.entity';
-import { User } from 'src/user/user.entity';
+
+
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -11,6 +8,12 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+import { User } from 'src/user/user.entity';
+import { Rooms } from 'src/rooms/entities/room.entity';
+import { Course } from 'src/course/course.entity';
+import { events } from 'src/events/events.entity';
+
 
 @Entity('room_reservations')
 export class RoomReservation {
