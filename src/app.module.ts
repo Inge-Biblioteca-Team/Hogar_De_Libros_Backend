@@ -41,6 +41,7 @@ import { FriendsLibraryModule } from './friends-library/friends-library.module';
 import { FriendsLibrary } from './friends-library/friend-library.entity';
 import { NotesModule } from './notes/notes.module';
 import { Note } from './notes/entities/note.entity';
+import { EventsCronService } from './events-cron/events-cron.service';
 
 dotenv.config();
 
@@ -96,6 +97,6 @@ dotenv.config();
     NotesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EventsCronService],
 })
 export class AppModule {}
