@@ -58,4 +58,5 @@ export class FriendsLibrary {
   @ManyToOne(() => User, (user) => user.friendsLibrary, { nullable: true })
   @JoinColumn({ name: 'User_Cedula', referencedColumnName: 'cedula' })
   user: User;
+  rejectionReason: string;
 }

@@ -8,9 +8,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FriendsLibrary } from './friend-library.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/user/user.entity';
-import { CreateFriendDTO } from './DTO/create-friend-libary-DTO';
+import { CreateFriendDTO } from './DTO/create-friend-library-DTO';
 import { NotesService } from 'src/notes/notes.service';
 import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
+import { GetAllFriendsFilterDTO } from './DTO/get-filter-friendLibrary.Dto';
+import { DenyFriendRequestDTO } from './DTO/deny-friend-library.Dto';
 
 @Injectable()
 export class FriendsLibraryService {
@@ -88,10 +90,39 @@ export class FriendsLibraryService {
   }
 
   // provicional, no es la task es solo para ver la data del create
-  async getAllFriendsLibrary() {
-    return this.FriendRepositoy.find({
-      relations: ['user'],
-    });
+  async getAllFriends(filterDTO: GetAllFriendsFilterDTO) {
+    const { SubCategory, PrincipalCategory, Disability, Status, page = 1, limit = 10 } = filterDTO;
+
+    const query = this.FriendRepositoy.createQueryBuilder('friend');
+
+    if (SubCategory) {
+      query.andWhere('friend.SubCategory = :SubCategory', { SubCategory });
+    }
+
+    if (PrincipalCategory) {
+      query.andWhere('friend.PrincipalCategory = :PrincipalCategory', { PrincipalCategory });
+    }
+
+    if (Disability) {
+      query.andWhere('friend.Disability = :Disability', { Disability });
+    }
+
+    if (Status) {
+      query.andWhere('friend.Status = :Status', { Status });
+    }
+
+    // Aplicar paginación
+    query.skip((page - 1) * limit).take(limit);
+
+    const [friends, total] = await query.getManyAndCount();
+
+    return {
+      data: friends,
+      total,
+      page,
+      limit,
+    };
+    
   }
 
   async aproveFriendLibrary(FriendID: number): Promise<{ message: string }> {
@@ -114,4 +145,22 @@ export class FriendsLibraryService {
       });
     }
   }
+
+
+  //async denyFriendRequest(id: number, denyFriendRequestDTO: DenyFriendRequestDTO): Promise<FriendsLibrary> {
+   // const friend = await this.FriendRepositoy.findOne(FriendId);
+
+   // if (!friend) {
+    //  throw new NotFoundException(`Friend with ID ${id} not found`);
+    //}
+
+    // Cambiar el estado a "R" (Rejected)
+   // friend.Status = 'R';
+   // friend.rejectionReason = denyFriendRequestDTO.reason; 
+
+//    await this.FriendRepositoy.save(friend);
+
+    //return friend;
+//  }
+
 }

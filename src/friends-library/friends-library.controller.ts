@@ -8,12 +8,14 @@ import {
   Query,
   UploadedFiles,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FriendsLibraryService } from './friends-library.service';
 
 import { ApiTags } from '@nestjs/swagger';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
-import { CreateFriendDTO } from './DTO/create-friend-libary-DTO';
+import { CreateFriendDTO } from './DTO/create-friend-library-DTO';
+import { GetAllFriendsFilterDTO } from './DTO/get-filter-friendLibrary.Dto';
 
 @ApiTags('friends-library')
 @Controller('friends-library')
@@ -32,8 +34,8 @@ export class FriendsLibraryController {
   }
 
   @Get()
-  async getAllFriendsLibrary() {
-    return this.friendService.getAllFriendsLibrary();
+  async getAllFriends(@Query(ValidationPipe) filterDTO: GetAllFriendsFilterDTO) {
+    return await this.friendService.getAllFriends(filterDTO);
   }
 
   @Patch('aproveFriendLibrary/:FriendID')
