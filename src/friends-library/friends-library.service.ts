@@ -147,20 +147,27 @@ export class FriendsLibraryService {
   }
 
 
-  //async denyFriendRequest(id: number, denyFriendRequestDTO: DenyFriendRequestDTO): Promise<FriendsLibrary> {
-   // const friend = await this.FriendRepositoy.findOne(FriendId);
+  async denyFriendLibrary(FriendID: number): Promise<{ message: string }> {
+    try {
+      const FriendFounded = await this.FriendRepositoy.findOne({
+        where: { FriendId: FriendID },
+      });
 
-   // if (!friend) {
-    //  throw new NotFoundException(`Friend with ID ${id} not found`);
-    //}
+      if (!FriendFounded) {
+        throw new NotFoundException({
+          message: 'Solicitud de amigo no encontrada',
+        });
+      }
+      FriendFounded.Status = 'R';
+      await this.FriendRepositoy.save(FriendFounded);
 
-    // Cambiar el estado a "R" (Rejected)
-   // friend.Status = 'R';
-   // friend.rejectionReason = denyFriendRequestDTO.reason; 
-
-//    await this.FriendRepositoy.save(friend);
-
-    //return friend;
-//  }
+      return { message: 'Solicitud de amigo rechazada correctamente' };
+    } catch (error) {
+      throw new InternalServerErrorException({
+        message: error.message || 'Error al rechazar la solicitud de amigo',
+        error: error.stack,
+      });
+    }
+  }
 
 }

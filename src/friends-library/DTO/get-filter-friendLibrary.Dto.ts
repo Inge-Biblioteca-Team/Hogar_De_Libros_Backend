@@ -16,9 +16,9 @@ export class GetAllFriendsFilterDTO {
   @IsString()
   @IsOptional()
   Disability?: string;
-
-  @ApiProperty({ description: 'Filtrar por estado', example: 'Activo', required: false })
-  @IsEnum(['Activo', 'Inactivo'])
+  
+  @ApiProperty({ description: 'Filtrar por estado', example: 'P', required: false })
+  @IsEnum(['P', 'R', 'A'], { message: 'El estado debe ser "P", "R" o "A"' })
   @IsOptional()
   Status?: string;
 
