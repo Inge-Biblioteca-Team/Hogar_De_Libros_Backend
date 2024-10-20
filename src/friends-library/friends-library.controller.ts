@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Patch,
   Post,
   Query,
@@ -43,5 +44,12 @@ export class FriendsLibraryController {
     @Query('FriendID') FriendID: number,
   ): Promise<{ message: string }> {
     return this.friendService.aproveFriendLibrary(FriendID);
+  }
+
+  @Patch('denyFriendLibrary/:FriendID')
+  async denyFriendLibrary(
+    @Query('FriendID') FriendID: number,
+  ): Promise<{ message: string }> {
+    return this.friendService.denyFriendLibrary(FriendID);
   }
 }
