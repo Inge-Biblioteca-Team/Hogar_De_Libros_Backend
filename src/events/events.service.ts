@@ -206,6 +206,29 @@ export class EventsService {
     }
   }
 
+
+  async checkAndUpdateEventStatus() {
+    const currentDate = new Date();
+  
+    
+    const ongoingEvents = await this.EventsRepository.find({
+      where: { Status: 'Pendiente' },
+    });
+  
+    for (const event of ongoingEvents) {
+      const eventDate = new Date(event.Date);
+  
+      
+      if (eventDate <= currentDate) {
+        if (event.Status === 'P') { 
+          event.Status = 'Finalizado';
+          await this.EventsRepository.save(event);
+        }
+      }
+    }
+    console.log('Verificación de estado de eventos completada');
+  }
+  
   async getNextEventsSchedule(
     searchDTO: SeachDTO,
   ): Promise<{ data: NexEventsDTO[]; count: number }> {
