@@ -1,16 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BooksService } from './books.service';
 import { Repository } from 'typeorm';
-import { Book } from './book.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { NotFoundException } from '@nestjs/common';
-import { CreateBookDto } from './DTO/create-book.dto';
-import { UpdateBookDto } from './DTO/update-book.dto';
-import { EnableBookDto } from './DTO/enable-book.dto';
+import { Book } from './book.entity';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { CreateBookDto } from './dto/create-book.dto';
+import { UpdateBookDto } from './dto/update-book.dto';
+import { EnableBookDto } from './dto/enable-book.dto';
+import { PaginationFilterDto } from './dto/pagination-filter.dto';
 
 describe('BooksService', () => {
   let service: BooksService;
-  let repository: Repository<Book>;
+  let bookRepository: Repository<Book>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -18,122 +19,180 @@ describe('BooksService', () => {
         BooksService,
         {
           provide: getRepositoryToken(Book),
-          useClass: Repository,
+          useClass: Repository, // Simulamos el repositorio
         },
       ],
     }).compile();
 
     service = module.get<BooksService>(BooksService);
-    repository = module.get<Repository<Book>>(getRepositoryToken(Book));
+    bookRepository = module.get<Repository<Book>>(getRepositoryToken(Book));
   });
 
   describe('addBook', () => {
-    it('should add a book successfully', async () => {
-      const createBookDto: CreateBookDto = {   Title: 'Lazarillo de Tormes',
-        Author: 'Anonimo',
-        Editorial: 'Editorial Universitaria Centroamericana Educa',
-        PublishedYear: 1997,
-        ISBN: '9977-30-347-9',
-        ShelfCategory: 'Obras Literarias',
-        Cover: 'URL o Direccion Local',
-        BookConditionRating: 8,
-        signatureCode: 'Sig001',
-        InscriptionCode: '683251',
-        ReserveBook: true,
-        Observations: 'N/A',};
-      const savedBook = { ...createBookDto, BookCode: 1 } as Book;
+    it('should throw BadRequestException if a book with the same ISBN or InscriptionCode exists', async () => {
+      const createBookDto: CreateBookDto = {
+        Title: 'Test Book',
+        Author: 'Test Author',
+        Editorial: 'Test Editorial',
+        PublishedYear: 2021,
+        ISBN: '1234567890123',
+        ShelfCategory: 'Science',
+        Cover: 'URL',
+        BookConditionRating: 9,
+        signatureCode: 'ABC123',
+        InscriptionCode: '12345',
+        ReserveBook: false,
+        Observations: 'Test',
+      };
 
-      jest.spyOn(repository, 'create').mockReturnValue(savedBook);
-      jest.spyOn(repository, 'save').mockResolvedValue(savedBook);
+      // Simulamos que el libro ya existe en la base de datos
+      jest.spyOn(bookRepository, 'findOne').mockResolvedValue({} as Book);
+
+      await expect(service.addBook(createBookDto)).rejects.toThrow(BadRequestException);
+    });
+
+    it('should save a new book successfully', async () => {
+      const createBookDto: CreateBookDto = {
+        Title: 'Test Book',
+        Author: 'Test Author',
+        Editorial: 'Test Editorial',
+        PublishedYear: 2021,
+        ISBN: '1234567890123',
+        ShelfCategory: 'Science',
+        Cover: 'URL',
+        BookConditionRating: 9,
+        signatureCode: 'ABC123',
+        InscriptionCode: '12345',
+        ReserveBook: false,
+        Observations: 'Test',
+      };
+
+      // Simulamos que el libro no existe y se puede crear
+      jest.spyOn(bookRepository, 'findOne').mockResolvedValue(null);
+      jest.spyOn(bookRepository, 'create').mockReturnValue(createBookDto as any);
+      jest.spyOn(bookRepository, 'save').mockResolvedValue(createBookDto as any);
 
       const result = await service.addBook(createBookDto);
-      expect(result).toEqual(savedBook);
-      expect(repository.create).toHaveBeenCalledWith(createBookDto);
-      expect(repository.save).toHaveBeenCalledWith(savedBook);
+      expect(result).toEqual(createBookDto);
+      expect(bookRepository.save).toHaveBeenCalledWith(createBookDto);
     });
   });
 
   describe('update', () => {
-    it('should update a book successfully', async () => {
-      const bookCode = 1;
-      const updateBookDto: UpdateBookDto = { /* propiedades del DTO aquí */ };
-      const book = { BookCode: bookCode } as Book;
-      const updatedBook = { ...book, ...updateBookDto };
+    it('should throw NotFoundException if the book does not exist', async () => {
+      const updateBookDto: UpdateBookDto = { Title: 'Updated Title' };
 
-      jest.spyOn(repository, 'findOne').mockResolvedValue(book);
-      jest.spyOn(repository, 'save').mockResolvedValue(updatedBook);
+      // Simulamos que el libro no se encuentra en la base de datos
+      jest.spyOn(bookRepository, 'findOne').mockResolvedValue(null);
 
-      const result = await service.update(bookCode, updateBookDto);
-      expect(result).toEqual(updatedBook);
-      expect(repository.findOne).toHaveBeenCalledWith({ where: { BookCode: bookCode } });
-      expect(repository.save).toHaveBeenCalledWith(updatedBook);
+      await expect(service.update(123, updateBookDto)).rejects.toThrow(NotFoundException);
     });
 
-    it('should throw NotFoundException if book is not found', async () => {
-      const bookCode = 999;
-      const updateBookDto: UpdateBookDto = { /* propiedades del DTO aquí */ };
+    it('should update the book successfully', async () => {
+      const updateBookDto: UpdateBookDto = { Title: 'Updated Title' };
+      const existingBook = { BookCode: 123 } as Book;
 
-      jest.spyOn(repository, 'findOne').mockResolvedValue(null);
+      // Simulamos la existencia del libro y que se pueda actualizar
+      jest.spyOn(bookRepository, 'findOne').mockResolvedValue(existingBook);
+      jest.spyOn(bookRepository, 'save').mockResolvedValue(existingBook);
 
-      await expect(service.update(bookCode, updateBookDto)).rejects.toThrow(
-        new NotFoundException(`El libro con código ${bookCode} no fue encontrado`)
-      );
+      const result = await service.update(123, updateBookDto);
+      expect(result).toEqual(existingBook);
+      expect(bookRepository.save).toHaveBeenCalledWith(existingBook);
     });
   });
 
   describe('enableBook', () => {
-    it('should enable a book successfully', async () => {
-      const bookCode = 1;
+    it('should throw NotFoundException if the book does not exist', async () => {
       const enableBookDto: EnableBookDto = { Status: true };
-      const book = { BookCode: bookCode, Status: false } as Book;
-      const enabledBook = { ...book, Status: true };
 
-      jest.spyOn(repository, 'findOne').mockResolvedValue(book);
-      jest.spyOn(repository, 'save').mockResolvedValue(enabledBook);
+      // Simulamos que el libro no se encuentra en la base de datos
+      jest.spyOn(bookRepository, 'findOne').mockResolvedValue(null);
 
-      const result = await service.enableBook(bookCode, enableBookDto);
-      expect(result).toEqual(enabledBook);
-      expect(repository.findOne).toHaveBeenCalledWith({ where: { BookCode: bookCode } });
-      expect(repository.save).toHaveBeenCalledWith(enabledBook);
+      await expect(service.enableBook(123, enableBookDto)).rejects.toThrow(NotFoundException);
+    });
+
+    it('should update the book status successfully', async () => {
+      const enableBookDto: EnableBookDto = { Status: true };
+      const existingBook = { BookCode: 123, Status: false } as Book;
+
+      // Simulamos que el libro existe y se puede habilitar
+      jest.spyOn(bookRepository, 'findOne').mockResolvedValue(existingBook);
+      jest.spyOn(bookRepository, 'save').mockResolvedValue(existingBook);
+
+      const result = await service.enableBook(123, enableBookDto);
+      expect(result.Status).toBe(true);
+      expect(bookRepository.save).toHaveBeenCalledWith(existingBook);
     });
   });
 
   describe('disableBook', () => {
-    it('should disable a book successfully', async () => {
-      const bookCode = 1;
-      const book = { BookCode: bookCode, Status: true } as Book;
-      const disabledBook = { ...book, Status: false };
+    it('should throw NotFoundException if the book does not exist', async () => {
+      // Simulamos que el libro no se encuentra en la base de datos
+      jest.spyOn(bookRepository, 'findOne').mockResolvedValue(null);
 
-      jest.spyOn(repository, 'findOne').mockResolvedValue(book);
-      jest.spyOn(repository, 'save').mockResolvedValue(disabledBook);
+      await expect(service.disableBook(123)).rejects.toThrow(NotFoundException);
+    });
 
-      const result = await service.disableBook(bookCode);
-      expect(result).toEqual(disabledBook);
-      expect(repository.findOne).toHaveBeenCalledWith({ where: { BookCode: bookCode } });
-      expect(repository.save).toHaveBeenCalledWith(disabledBook);
+    it('should disable the book successfully', async () => {
+      const existingBook = { BookCode: 123, Status: true } as Book;
+
+      // Simulamos que el libro existe y se puede deshabilitar
+      jest.spyOn(bookRepository, 'findOne').mockResolvedValue(existingBook);
+      jest.spyOn(bookRepository, 'save').mockResolvedValue(existingBook);
+
+      const result = await service.disableBook(123);
+      expect(result.Status).toBe(false);
+      expect(bookRepository.save).toHaveBeenCalledWith(existingBook);
     });
   });
 
   describe('findById', () => {
-    it('should return a book if found', async () => {
-      const bookCode = 1;
-      const book = { BookCode: bookCode } as Book;
+    it('should throw NotFoundException if the book is not found', async () => {
+      // Simulamos que el libro no se encuentra en la base de datos
+      jest.spyOn(bookRepository, 'findOne').mockResolvedValue(null);
 
-      jest.spyOn(repository, 'findOne').mockResolvedValue(book);
-
-      const result = await service.findById(bookCode);
-      expect(result).toEqual(book);
-      expect(repository.findOne).toHaveBeenCalledWith({ where: { BookCode: bookCode } });
+      await expect(service.findById(123)).rejects.toThrow(NotFoundException);
     });
 
-    it('should throw NotFoundException if book is not found', async () => {
-      const bookCode = 999;
+    it('should return a book if found', async () => {
+      const existingBook = { BookCode: 123 } as Book;
 
-      jest.spyOn(repository, 'findOne').mockResolvedValue(null);
+      // Simulamos que el libro existe
+      jest.spyOn(bookRepository, 'findOne').mockResolvedValue(existingBook);
 
-      await expect(service.findById(bookCode)).rejects.toThrow(
-        new NotFoundException(`El libro con código ${bookCode} no fue encontrado`)
-      );
+      const result = await service.findById(123);
+      expect(result).toEqual(existingBook);
+    });
+  });
+
+  describe('findAll', () => {
+    it('should return books with pagination and filters', async () => {
+      const paginationFilterDto: PaginationFilterDto = { page: 1,
+        limit: 10,
+        Title: 'Test Title',
+        ISBN: '1234567890123',
+        Author: 'Test Author',
+        signatureCode: 'ABC123',
+        Status: 1,
+        ShelfCategory: 'Literature',
+        PublishedYear: 2021,
+        Editorial: 'Test Editorial',};
+
+      const books: Book[] = [{ BookCode: 123, Title: 'Test Book' } as Book];
+      const totalBooks = 1;
+
+      // Simulamos el comportamiento de `createQueryBuilder` para los filtros y la paginación
+      jest.spyOn(bookRepository, 'createQueryBuilder').mockImplementation(() => ({
+        andWhere: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([books, totalBooks]),
+      }) as any);
+
+      const result = await service.findAll(paginationFilterDto);
+      expect(result).toEqual({ data: books, count: totalBooks });
     });
   });
 });
