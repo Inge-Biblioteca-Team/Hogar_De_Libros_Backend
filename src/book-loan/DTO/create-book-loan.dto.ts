@@ -5,13 +5,6 @@ import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateBookLoanDto {
   @ApiProperty({
-    example: '2024-09-10 00:00:00',
-    description: 'Fecha en la que se solicita el préstamo',
-  })
-  @IsString()
-  LoanRequestDate: string;
-
-  @ApiProperty({
     example: '2024-09-11',
     description: 'Fecha en la que se recoge el libro',
   })

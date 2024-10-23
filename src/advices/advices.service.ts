@@ -97,7 +97,7 @@ export class AdvicesService {
       }
 
       if (date) {
-        queryBuilder.andWhere('advice.date = :date', { date });
+        queryBuilder.andWhere('advice.date >= :date', { date });
       }
 
       const [data, count] = await queryBuilder

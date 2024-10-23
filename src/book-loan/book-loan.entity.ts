@@ -4,7 +4,7 @@ import { Book } from 'src/books/book.entity';
 import { User } from 'src/user/user.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'book_loans' }) 
+@Entity({ name: 'book_loans' })
 export class BookLoan {
   @ApiProperty({ description: 'Id único del préstamo' })
   @PrimaryGeneratedColumn()
@@ -12,7 +12,7 @@ export class BookLoan {
 
   @ApiProperty({ description: 'Fecha en la que se solicita el préstamo' })
   @Column({ type: 'datetime' })
-  LoanRequestDate: Date;
+  LoanRequestDate: Date = new Date();
 
   @ApiProperty({ description: 'Fecha en la que se recoge el libro' })
   @Column({ type: 'date' })
@@ -24,25 +24,23 @@ export class BookLoan {
 
   @ApiProperty({ description: 'Estado en el cual se encuentra el préstamo' })
   @Column()
-  Status: string = "Pendiente";
+  Status: string = 'Pendiente';
 
   @ApiProperty({ description: 'Observaciones ' })
   @Column()
-  Observations: string ="";
-
+  Observations: string = '';
 
   @ApiProperty({ description: 'BookCode ' })
   @Column()
   bookBookCode: number;
 
-
   @Column()
-  userCedula:string;
+  userCedula: string;
 
   // Relaciones
-  @ManyToOne(() => Book, book => book.bookLoans,{ eager: true })
+  @ManyToOne(() => Book, (book) => book.bookLoans, { eager: true })
   book: Book;
 
-  @ManyToOne(() => User, user => user.bookLoans,{ eager: true })
+  @ManyToOne(() => User, (user) => user.bookLoans, { eager: true })
   user: User;
 }

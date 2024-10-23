@@ -31,7 +31,7 @@ export class BookLoanController {
 
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin','external_user')
+  @Roles('admin', 'external_user')
   @Post()
   @ApiBody({ type: CreateBookLoanDto })
   @ApiResponse({
@@ -44,9 +44,11 @@ export class BookLoanController {
     @Req() request: Request,
   ): Promise<BookLoan> {
     const user = request['user'];
-    
+
     if (!user) {
-      throw new UnauthorizedException('No se pudo obtener la información del usuario.');
+      throw new UnauthorizedException(
+        'No se pudo obtener la información del usuario.',
+      );
     }
     return this.bookLoanService.createLoan(createBookLoanDto, user);
   }
@@ -64,7 +66,6 @@ export class BookLoanController {
     }
     return updatedBookLoan;
   }
-
 
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard, RolesGuard)
@@ -105,31 +106,9 @@ export class BookLoanController {
     }
     return updatedBookLoan;
   }
-  /*
-  @Get('/in-progress')
-  async getInProgressLoans(@Query() paginationDto: PaginationBookLoanDto): Promise<{ data: BookLoan[], count: number }> {
-    return this.bookLoanService.getInProgressLoans(paginationDto);
-  }
-
-  @Get('/pending')
-  async getPendingLoans(@Query() paginationDto: PaginationBookLoanDto): Promise<{ data: BookLoan[], count: number }> {
-    return this.bookLoanService.getPendingLoans(paginationDto);
-  }
-
-  @Get('/completed')
-  async getCompletedLoans(@Query() paginationDto: PaginationBookLoanDto): Promise<{ data: BookLoan[], count: number }> {
-    return this.bookLoanService.getCompletedLoans(paginationDto);
-  }
-  @Get()
-  async findBookLoans(@Query() filters: PaginationFilterBookLoanDto) {
-    console.log('Filters:', filters)
-    return this.bookLoanService.findBookLoans(filters);
-    
-  }
-  */
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin','external_user')
+  @Roles('admin', 'external_user')
   @Get('in-progress')
   async getInProgressLoans(
     @Query() paginationDto: GETResponseDTO,
@@ -139,7 +118,7 @@ export class BookLoanController {
 
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin','external_user')
+  @Roles('admin', 'external_user')
   @Get('pending')
   async getPendingLoans(
     @Query() paginationDto: GETResponseDTO,
@@ -149,7 +128,7 @@ export class BookLoanController {
 
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin','external_user')
+  @Roles('admin', 'external_user')
   @Get('completed')
   async getCompletedLoans(
     @Query() paginationDto: GETResponseDTO,
