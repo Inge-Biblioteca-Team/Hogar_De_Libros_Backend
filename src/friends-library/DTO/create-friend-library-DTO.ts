@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsDate,
+  IsDateString,
   IsEmail,
   IsNotEmpty,
   IsOptional,
@@ -18,15 +18,16 @@ export class CreateFriendDTO {
   @IsNotEmpty()
   UserCedula: string;
 
-  @ApiProperty({ description: 'Discapacidad', example: 'Cojo' })
-  @IsString()
-  @IsNotEmpty()
-  Disability: string;
 
   @ApiProperty({ description: 'Edad del amigo', example: '2024-10-15' })
   @IsNotEmpty()
-  @IsDate()
-  UserBirthDate: Date;
+  @IsDateString()
+  UserBirthDate: string;
+
+  @ApiProperty({ description: 'Genero del amigo', example: 'Hombre' })
+  @IsString()
+  @IsNotEmpty()
+  UserGender: string;
 
   @ApiProperty({ description: 'Dirección del amigo', example: 'Calle 123' })
   @IsString()
@@ -49,14 +50,20 @@ export class CreateFriendDTO {
   @ApiProperty({ description: 'Categoría principal', example: 'Voluntariado' })
   @IsString()
   @IsNotEmpty()
-  @IsOptional()
   PrincipalCategory: string;
 
   @ApiProperty({ description: 'Subcategoría', example: 'Donación' })
   @IsString()
   @IsNotEmpty()
-  @IsOptional()
   SubCategory: string;
+
+  @ApiProperty({
+    description: 'Experencia de ser necesaria',
+    example: 'Experiencia en informatica',
+  })
+  @IsString()
+  @IsOptional()
+  Experience?: string;
 
   @ApiProperty({
     description: 'Documentos',
@@ -66,18 +73,11 @@ export class CreateFriendDTO {
   Document?: string[];
 
   @ApiProperty({
-    description: 'Fecha de recoleccion del donativo',
-    example: '2024-10-15',
-  })
-  @IsOptional()
-  @IsDate()
-  DateRecolatedDonation?: Date;
-
-  @ApiProperty({
     description: 'Información extra',
     example: 'Conocimiento previo',
   })
   @IsString()
   @IsOptional()
   ExtraInfo?: string;
+
 }

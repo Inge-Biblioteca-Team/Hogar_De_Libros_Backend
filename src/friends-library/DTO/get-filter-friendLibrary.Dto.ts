@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsEnum } from 'class-validator';
+import { IsOptional, IsString, IsEnum, IsDateString } from 'class-validator';
 
 export class GetAllFriendsFilterDTO {
   @ApiProperty({ description: 'Filtrar por subcategoría', example: 'Donación', required: false })
@@ -12,13 +12,13 @@ export class GetAllFriendsFilterDTO {
   @IsOptional()
   PrincipalCategory?: string;
 
-  @ApiProperty({ description: 'Filtrar por discapacidad', example: 'Cojo', required: false })
-  @IsString()
+  @ApiProperty({ description: 'Filtrar por fecha de solicitud', example: '2024-12-25', required: false })
+  @IsDateString()
   @IsOptional()
-  Disability?: string;
+  DateGenerated?: string;
   
   @ApiProperty({ description: 'Filtrar por estado', example: 'P', required: false })
-  @IsEnum(['P', 'R', 'A'], { message: 'El estado debe ser "P", "R" o "A"' })
+  @IsEnum(['P', 'R', 'A',], { message: 'El estado debe ser "P", "R", "A"' })
   @IsOptional()
   Status?: string;
 

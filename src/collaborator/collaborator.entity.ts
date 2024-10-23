@@ -20,6 +20,9 @@ export class Collaborator {
   UserBirthDate: Date;
 
   @Column()
+  UserGender: string;
+  
+  @Column()
   UserAddress: string;
 
   @Column()
@@ -43,8 +46,8 @@ export class Collaborator {
   @Column({ type: 'simple-array', nullable: true }) // DOcumento y Imagen mismo campo
   Document?: string[];
 
-  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
-  DateGenerated: Date;
+  @Column({ type: 'date'})
+  DateGenerated: Date = new Date();
 
 
   @Column({ nullable: true,  })

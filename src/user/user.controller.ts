@@ -19,6 +19,7 @@ import { FindAllUsersDto } from './DTO/GetPaginatedDTO';
 import { UpdatePasswordDto } from './DTO/UpdatePassDTO';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 
+
 @ApiTags('user')
 @Controller('user')
 export class UserController {
@@ -86,4 +87,6 @@ export class UserController {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
+ 
 }

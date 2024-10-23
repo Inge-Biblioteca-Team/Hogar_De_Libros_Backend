@@ -43,6 +43,8 @@ import { NotesModule } from './notes/notes.module';
 import { Note } from './notes/entities/note.entity';
 import { Donation } from './donation/donation.entity';
 import { Collaborator } from './collaborator/collaborator.entity';
+import { DonationModule } from './donation/donation.module';
+import { CollaboratorModule } from './collaborator/collaborator.module';
 
 dotenv.config();
 
@@ -98,6 +100,8 @@ dotenv.config();
     AdvicesModule,
     FriendsLibraryModule,
     NotesModule,
+    DonationModule,
+    CollaboratorModule
   ],
   controllers: [AppController],
   providers: [AppService],

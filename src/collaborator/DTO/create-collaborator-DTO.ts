@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsDate,
+  IsDateString,
   IsEmail,
   IsNotEmpty,
   IsOptional,
@@ -29,8 +29,13 @@ export class CreateCollaboratorDTO {
 
   @ApiProperty({ description: 'Edad del amigo', example: '2024-10-15' })
   @IsNotEmpty()
-  @IsDate()
-  UserBirthDate: Date;
+  @IsDateString()
+  UserBirthDate: string;
+
+  @ApiProperty({ description: 'Genero del amigo', example: 'Hombre' })
+  @IsString()
+  @IsNotEmpty()
+  UserGender: string;
 
   @ApiProperty({ description: 'Dirección del amigo', example: 'Calle 123' })
   @IsString()

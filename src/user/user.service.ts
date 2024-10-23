@@ -10,6 +10,7 @@ import { Role } from './loan-policy';
 import { FindAllUsersDto } from './DTO/GetPaginatedDTO';
 import { UpdatePasswordDto } from './DTO/UpdatePassDTO';
 
+
 @Injectable()
 export class UserService {
   constructor(
@@ -176,7 +177,7 @@ export class UserService {
       throw new HttpException('Usuario no encontrado.', HttpStatus.NOT_FOUND);
     }
 
-    const password = updatePasswordDto.newPassword
+    const password = updatePasswordDto.newPassword;
 
     const saltOrRounds = 10;
     const hash = await bcrypt.hash(password, saltOrRounds);
@@ -185,4 +186,5 @@ export class UserService {
 
     return { message: 'Contraseña actualizada con éxito' };
   }
+
 }
