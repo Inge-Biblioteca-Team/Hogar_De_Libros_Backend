@@ -12,7 +12,6 @@ import { CreateFriendDTO } from './DTO/create-friend-library-DTO';
 import { NotesService } from 'src/notes/notes.service';
 import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
 import { GetAllFriendsFilterDTO } from './DTO/get-filter-friendLibrary.Dto';
-import { DenyFriendRequestDTO } from './DTO/deny-friend-library.Dto';
 
 @Injectable()
 export class FriendsLibraryService {
@@ -42,14 +41,13 @@ export class FriendsLibraryService {
         newFriend = this.FriendRepositoy.create({
           UserFullName: `${User.name} ${User.lastName}`,
           UserCedula: User.cedula,
-          Disability: dto.Disability,
           UserBirthDate: User.birthDate,
           UserAddress: User.address,
           UserPhone: User.phoneNumber,
           UserEmail: User.email,
           PrincipalCategory: dto.PrincipalCategory,
           SubCategory: dto.SubCategory,
-          DateRecolatedDonation: dto.DateRecolatedDonation,
+          Experience: dto.Experience,
           ExtraInfo: dto.ExtraInfo,
           Document: documentPaths,
           user: User,
@@ -58,14 +56,13 @@ export class FriendsLibraryService {
         newFriend = this.FriendRepositoy.create({
           UserFullName: dto.UserFullName,
           UserCedula: dto.UserCedula,
-          Disability: dto.Disability,
           UserBirthDate: dto.UserBirthDate,
           UserAddress: dto.UserAddress,
           UserPhone: dto.UserPhone,
           UserEmail: dto.UserEmail,
           PrincipalCategory: dto.PrincipalCategory,
           SubCategory: dto.SubCategory,
-          DateRecolatedDonation: dto.DateRecolatedDonation,
+          Experience: dto.Experience,
           ExtraInfo: dto.ExtraInfo,
           Document: documentPaths,
         });
@@ -91,7 +88,7 @@ export class FriendsLibraryService {
 
   // provicional, no es la task es solo para ver la data del create
   async getAllFriends(filterDTO: GetAllFriendsFilterDTO) {
-    const { SubCategory, PrincipalCategory, Disability, Status, page = 1, limit = 10 } = filterDTO;
+    const { SubCategory, PrincipalCategory, DateGenerated, Status, page = 1, limit = 10 } = filterDTO;
 
     const query = this.FriendRepositoy.createQueryBuilder('friend');
 
@@ -103,8 +100,8 @@ export class FriendsLibraryService {
       query.andWhere('friend.PrincipalCategory = :PrincipalCategory', { PrincipalCategory });
     }
 
-    if (Disability) {
-      query.andWhere('friend.Disability = :Disability', { Disability });
+    if (DateGenerated) {
+      query.andWhere('friend.DateGenerated = :DateGenerated', { DateGenerated });
     }
 
     if (Status) {
@@ -135,7 +132,9 @@ export class FriendsLibraryService {
           message: 'Solicitud de amigo no encontrada',
         });
       }
-      FriendFounded.Status = 'A';
+     
+        FriendFounded.Status = 'A';
+      
       await this.FriendRepositoy.save(FriendFounded);
       return { message: 'Solicitud de amigo aprobada correctamente' };
     } catch (error) {
@@ -160,7 +159,6 @@ export class FriendsLibraryService {
       }
       FriendFounded.Status = 'R';
       await this.FriendRepositoy.save(FriendFounded);
-
       return { message: 'Solicitud de amigo rechazada correctamente' };
     } catch (error) {
       throw new InternalServerErrorException({

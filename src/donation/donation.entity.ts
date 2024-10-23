@@ -37,11 +37,11 @@ export class Donation {
   @Column({ type: 'simple-array', nullable: true }) // DOcumento y Imagen mismo campo
   Document?: string[];
 
-  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
-  DateGenerated: Date;
+  @Column({ type: 'date'})
+  DateGenerated: Date = new Date();
 
   @Column({type: 'date'})
-  DateRecolatedDonation?: Date;
+  DateRecolatedDonation: Date;
 
   @Column({ nullable: true })
   ExtraInfo: string;

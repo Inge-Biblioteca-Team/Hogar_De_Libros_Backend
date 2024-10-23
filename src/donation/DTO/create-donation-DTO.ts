@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsDate,
+  IsDateString,
   IsEmail,
   IsNotEmpty,
   IsOptional,
@@ -20,8 +20,8 @@ export class CreateDonationDTO {
 
   @ApiProperty({ description: 'Edad del amigo', example: '2024-10-15' })
   @IsNotEmpty()
-  @IsDate()
-  UserBirthDate: Date;
+  @IsDateString()
+  UserBirthDate: string;
 
   @ApiProperty({ description: 'Dirección del amigo', example: 'Calle 123' })
   @IsString()
@@ -58,8 +58,8 @@ export class CreateDonationDTO {
     example: '2024-10-15',
   })
   @IsNotEmpty()
-  @IsDate()
-  DateRecolatedDonation: Date;
+  @IsDateString()
+  DateRecolatedDonation: string;
 
   @ApiProperty({
     description: 'Documentos',

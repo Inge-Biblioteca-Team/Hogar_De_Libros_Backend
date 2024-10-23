@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsEnum, IsOptional, IsString } from "class-validator";
+import { IsDateString, IsEnum, IsOptional, IsString } from "class-validator";
 
 export class GetAllCollaboratorFilterDTO {
     @ApiProperty({ description: 'Filtrar por subcategoría', example: 'Donación', required: false })
@@ -13,9 +13,9 @@ export class GetAllCollaboratorFilterDTO {
     PrincipalCategory?: string;
   
     @ApiProperty({ description: 'Filtrar por fecha de solicitud', example: '2024-12-25', required: false })
-    @IsDate()
+    @IsDateString()
     @IsOptional()
-    DateGenerated?: Date;
+    DateGenerated?: string;
     
     @ApiProperty({ description: 'Filtrar por estado', example: 'P', required: false })
     @IsEnum(['P', 'R', 'A' ,'PE',], { message: 'El estado debe ser "P", "R", "A" o "PE"' })
