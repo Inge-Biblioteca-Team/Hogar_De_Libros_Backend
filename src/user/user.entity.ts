@@ -12,6 +12,8 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { Role } from './loan-policy';
+import { Donation } from 'src/donation/donation.entity';
+import { Collaborator } from 'src/collaborator/collaborator.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -89,4 +91,10 @@ export class User {
 
   @OneToMany(() => FriendsLibrary, (friendsLibrary) => friendsLibrary.user)
   friendsLibrary: FriendsLibrary[];
+
+  @OneToMany(() => Donation, (donation) => donation.user)
+  donation: Donation[];
+
+  @OneToMany(() => Collaborator, (collaborator) => collaborator.user)
+  collaborator: Collaborator[];
 }

@@ -41,6 +41,8 @@ import { FriendsLibraryModule } from './friends-library/friends-library.module';
 import { FriendsLibrary } from './friends-library/friend-library.entity';
 import { NotesModule } from './notes/notes.module';
 import { Note } from './notes/entities/note.entity';
+import { Donation } from './donation/donation.entity';
+import { Collaborator } from './collaborator/collaborator.entity';
 
 dotenv.config();
 
@@ -71,7 +73,9 @@ dotenv.config();
         RoomReservation,
         Advice,
         FriendsLibrary,
-        Note
+        Note,
+        Donation,
+        Collaborator
       ],
       synchronize: true,
     }),
