@@ -17,6 +17,9 @@ export class Donation {
   UserBirthDate: Date;
 
   @Column()
+  UserGender: string;
+
+  @Column()
   UserAddress: string;
 
   @Column()

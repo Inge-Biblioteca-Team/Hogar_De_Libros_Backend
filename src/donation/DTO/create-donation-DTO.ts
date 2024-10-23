@@ -23,6 +23,11 @@ export class CreateDonationDTO {
   @IsDateString()
   UserBirthDate: string;
 
+  @ApiProperty({ description: 'Genero del amigo', example: 'Hombre' })
+  @IsString()
+  @IsNotEmpty()
+  UserGender: string;
+
   @ApiProperty({ description: 'Dirección del amigo', example: 'Calle 123' })
   @IsString()
   @IsNotEmpty()

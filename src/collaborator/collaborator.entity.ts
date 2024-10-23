@@ -20,6 +20,9 @@ export class Collaborator {
   UserBirthDate: Date;
 
   @Column()
+  UserGender: string;
+  
+  @Column()
   UserAddress: string;
 
   @Column()

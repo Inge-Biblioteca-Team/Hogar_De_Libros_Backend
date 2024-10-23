@@ -23,6 +23,9 @@ export class FriendsLibrary {
   UserBirthDate: Date;
 
   @Column()
+  UserGender: string;
+
+  @Column()
   UserAddress: string;
 
   @Column()
