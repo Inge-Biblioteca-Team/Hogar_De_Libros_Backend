@@ -41,7 +41,6 @@ import { FriendsLibraryModule } from './friends-library/friends-library.module';
 import { FriendsLibrary } from './friends-library/friend-library.entity';
 import { NotesModule } from './notes/notes.module';
 import { Note } from './notes/entities/note.entity';
-import { EventsCronService } from './events-cron/events-cron.service';
 
 dotenv.config();
 
@@ -49,11 +48,11 @@ dotenv.config();
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'hogar_de_libros',
+      host: process.env.DB_HOST,
+      port: +process.env.DB_PORT,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
       entities: [
         Book,
         Computer,
@@ -97,6 +96,6 @@ dotenv.config();
     NotesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, EventsCronService],
+  providers: [AppService],
 })
 export class AppModule {}
