@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Body, Controller, Get, Patch, Post, Query, UploadedFiles, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import { CollaboratorService } from './collaborator.service';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsDateString,
@@ -18,16 +19,6 @@ export class CreateDonationDTO {
   @IsNotEmpty()
   UserCedula: string;
 
-  @ApiProperty({ description: 'Edad del amigo', example: '2024-10-15' })
-  @IsNotEmpty()
-  @IsDateString()
-  UserBirthDate: string;
-
-  @ApiProperty({ description: 'Genero del amigo', example: 'Hombre' })
-  @IsString()
-  @IsNotEmpty()
-  UserGender: string;
-
   @ApiProperty({ description: 'Dirección del amigo', example: 'Calle 123' })
   @IsString()
   @IsNotEmpty()
@@ -46,13 +37,7 @@ export class CreateDonationDTO {
   @IsNotEmpty()
   UserEmail: string;
 
-  @ApiProperty({ description: 'Categoría principal', example: 'Voluntariado' })
-  @IsString()
-  @IsNotEmpty()
-  @IsOptional()
-  PrincipalCategory: string;
-
-  @ApiProperty({ description: 'Subcategoría', example: 'Donación' })
+  @ApiProperty({ description: 'Subcategoría', example: 'Electrodomesticos' })
   @IsString()
   @IsNotEmpty()
   @IsOptional()
@@ -79,10 +64,10 @@ export class CreateDonationDTO {
   })
   @IsString()
   @IsOptional()
-  ExtraInfo?: string;
+  ItemDescription?: string;
 
-@ApiProperty({description: 'condcion del recurso donado', example: 'Bueno'})
-@IsString()
-@IsNotEmpty()
+  @ApiProperty({ description: 'condcion del recurso donado', example: 'Bueno' })
+  @IsString()
+  @IsNotEmpty()
   ResourceCondition: string;
 }

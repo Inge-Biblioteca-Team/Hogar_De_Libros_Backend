@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateCollaboratorDTO } from './DTO/create-collaborator-DTO';
 import { InjectRepository } from '@nestjs/typeorm';

@@ -1,6 +1,12 @@
 /* eslint-disable prettier/prettier */
 import { User } from 'src/user/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({ name: 'collaborator' })
 export class Collaborator {
@@ -21,7 +27,7 @@ export class Collaborator {
 
   @Column()
   UserGender: string;
-  
+
   @Column()
   UserAddress: string;
 
@@ -46,11 +52,10 @@ export class Collaborator {
   @Column({ type: 'simple-array', nullable: true }) // DOcumento y Imagen mismo campo
   Document?: string[];
 
-  @Column({ type: 'date'})
+  @Column({ type: 'date' })
   DateGenerated: Date = new Date();
 
-
-  @Column({ nullable: true,  })
+  @Column({ nullable: true })
   ExtraInfo: string;
 
   @Column({ nullable: true })
