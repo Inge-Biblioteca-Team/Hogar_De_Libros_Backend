@@ -308,4 +308,15 @@ export class CourseService {
 
     return course;
   }
+
+  async updateExpireCourses() {
+    const currentDate = new Date();
+    await this.courseRepository
+      .createQueryBuilder()
+      .update(Course)
+      .set({ Status: false })
+      .where('date < :currentDate', { currentDate })
+      .execute();
+  }
+
 }
