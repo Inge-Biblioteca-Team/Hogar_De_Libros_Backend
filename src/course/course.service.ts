@@ -41,7 +41,8 @@ export class CourseService {
         reason: `Proximo curso: ${savedCourse.courseName}`,
         date: savedCourse.date,
         image: savedCourse.image,
-        extraInfo: `:Realizado en ${savedCourse.location}`,
+        extraInfo: `Realizado en ${savedCourse.location}. Impartido por: ${savedCourse.instructor}. 
+        ${savedCourse.materials && `Necesitaras: ${savedCourse.materials}`} `,
         category: 'Curso',
       };
 

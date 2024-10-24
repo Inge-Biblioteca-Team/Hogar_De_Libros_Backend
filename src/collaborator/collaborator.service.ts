@@ -111,31 +111,31 @@ export class CollaboratorService {
     const skip = (page - 1) * limit;
 
     const query = this.collaboratorRepository
-      .createQueryBuilder('friend')
-      .orderBy('friend.activityDate', 'DESC');
+      .createQueryBuilder('collaborator')
+      .orderBy('collaborator.activityDate', 'DESC');
 
     if (SubCategory) {
-      query.andWhere('friend.SubCategory = :SubCategory', { SubCategory });
+      query.andWhere('collaborator.SubCategory = :SubCategory', { SubCategory });
     }
 
     if (PrincipalCategory) {
-      query.andWhere('friend.PrincipalCategory = :PrincipalCategory', {
+      query.andWhere('collaborator.PrincipalCategory = :PrincipalCategory', {
         PrincipalCategory,
       });
     }
 
     if (DateGenerated) {
-      query.andWhere('friend.DateGenerated = :DateGenerated', {
+      query.andWhere('collaborator.DateGenerated = :DateGenerated', {
         DateGenerated,
       });
     }
 
     if (Status) {
-      query.andWhere('friend.Status = :Status', { Status });
+      query.andWhere('collaborator.Status = :Status', { Status });
     }
     if (!Status) {
       query
-        .andWhere('friend.Status IN (:...statuses)', { statuses: ['Aprobado', 'Rechazado'] });
+        .andWhere('collaborator.Status IN (:...statuses)', { statuses: ['Aprobado', 'Rechazado'] });
     }
 
     const [data, count] = await query.skip(skip).take(limit).getManyAndCount();
@@ -186,8 +186,6 @@ export class CollaboratorService {
       CollaboratorFounded.Status = 'Rechazado';
 
       CollaboratorFounded.Reason = dto.reason;
-
-      console.log(CollaboratorFounded);
 
       await this.collaboratorRepository.save(CollaboratorFounded);
 
