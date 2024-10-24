@@ -22,6 +22,6 @@ import { User } from 'src/user/user.entity';
     }),
   ],
   controllers: [DonationController],
-  providers: [DonationService]
+  providers: [DonationService],
 })
 export class DonationModule {}

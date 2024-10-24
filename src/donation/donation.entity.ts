@@ -1,6 +1,12 @@
 /* eslint-disable prettier/prettier */
 import { User } from 'src/user/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({ name: 'donation' })
 export class Donation {
@@ -12,12 +18,6 @@ export class Donation {
 
   @Column()
   UserCedula: string;
-
-  @Column({ type: 'date' })
-  UserBirthDate: Date;
-
-  @Column()
-  UserGender: string;
 
   @Column()
   UserAddress: string;
@@ -32,22 +32,19 @@ export class Donation {
   Status: string;
 
   @Column()
-  PrincipalCategory: string;
-
-  @Column()
   SubCategory: string;
 
   @Column({ type: 'simple-array', nullable: true }) // DOcumento y Imagen mismo campo
   Document?: string[];
 
-  @Column({ type: 'date'})
+  @Column({ type: 'date' })
   DateGenerated: Date = new Date();
 
-  @Column({type: 'date'})
+  @Column({ type: 'date' })
   DateRecolatedDonation: Date;
 
   @Column({ nullable: true })
-  ExtraInfo: string;
+  ItemDescription: string;
 
   @Column()
   ResourceCondition: string;

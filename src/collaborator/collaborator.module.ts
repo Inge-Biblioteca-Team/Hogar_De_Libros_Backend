@@ -22,6 +22,6 @@ import { Collaborator } from './collaborator.entity';
     }),
   ],
   controllers: [CollaboratorController],
-  providers: [CollaboratorService]
+  providers: [CollaboratorService],
 })
 export class CollaboratorModule {}

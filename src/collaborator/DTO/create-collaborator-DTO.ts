@@ -1,5 +1,7 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsDate,
   IsDateString,
   IsEmail,
   IsNotEmpty,
@@ -20,7 +22,6 @@ export class CreateCollaboratorDTO {
   @IsString()
   @IsOptional()
   Entitycollaborator?: string;
-  
 
   @ApiProperty({ description: 'Cédula del amigo', example: '123456789' })
   @IsString()
@@ -84,8 +85,18 @@ export class CreateCollaboratorDTO {
     description: 'Información extra',
     example: 'Conocimiento previo',
   })
-  @IsString()
-  @IsOptional()
   ExtraInfo: string;
 
+  @ApiProperty({description:"Fecha de actividad conjunta", example:"2024-11-03"})
+  @IsDate()
+  @IsNotEmpty()
+  activityDate:Date
+
+  @ApiProperty({
+    description: 'Resumen de la actividad',
+    example: 'Clases de canto',
+  })
+  @IsString()
+  @IsNotEmpty()
+  Description: string;
 }
