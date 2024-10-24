@@ -1,10 +1,11 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Get, Patch, Post, Query, UploadedFiles, UseInterceptors, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, UploadedFiles, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import { CollaboratorService } from './collaborator.service';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { CreateCollaboratorDTO } from './DTO/create-collaborator-DTO';
 import { GetAllCollaboratorFilterDTO } from './DTO/get-filter-collaborator-DTO';
 import { ApiTags } from '@nestjs/swagger';
+import { DenyCollaboratorRequestDTO } from './DTO/deny-collaborator-DTO';
 
 @ApiTags('collaborator')
 @Controller('collaborator')
@@ -29,15 +30,16 @@ export class CollaboratorController {
       
         @Patch('aproveCollaborator/:CollaboratorId')
         async aproveCollaborator(
-          @Query('CollaboratorId') CollaboratorId: number,
+          @Param('CollaboratorId') CollaboratorId: number,
         ): Promise<{ message: string }> {
           return this.collaboratorService.aproveCollaborator(CollaboratorId);
         }
       
-        @Patch('denyCollaborator/:CollaboratorId')
+        @Patch('denyCollaborator/:id')
         async denyCollaborator(
-          @Query('CollaboratorId') CollaboratorId: number,
+          @Param('id') CollaboratorId: number,
+          @Body() dto:DenyCollaboratorRequestDTO
         ): Promise<{ message: string }> {
-          return this.collaboratorService.denyCollaborator(CollaboratorId);
+          return this.collaboratorService.denyCollaborator(CollaboratorId,dto);
         }
 }

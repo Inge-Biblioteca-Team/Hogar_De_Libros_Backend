@@ -37,7 +37,7 @@ export class Collaborator {
   @Column()
   UserEmail: string;
 
-  @Column({ default: 'P' })
+  @Column({ default: 'Pendiente' })
   Status: string;
 
   @Column()
@@ -55,11 +55,17 @@ export class Collaborator {
   @Column({ type: 'date' })
   DateGenerated: Date = new Date();
 
-  @Column({ nullable: true })
+  @Column({ default: 'No posee experiencia previa' })
   ExtraInfo: string;
+
+  @Column()
+  Description: string;
 
   @Column({ nullable: true })
   Reason?: string;
+
+  @Column({ type: 'date' })
+  activityDate: Date;
 
   @ManyToOne(() => User, (user) => user.collaborator, { nullable: true })
   @JoinColumn({ name: 'User_Cedula', referencedColumnName: 'cedula' })
