@@ -1,5 +1,6 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsEnum, IsDateString } from 'class-validator';
+import { IsOptional, IsString, IsDateString } from 'class-validator';
 
 export class GetAllFriendsFilterDTO {
   @ApiProperty({ description: 'Filtrar por subcategoría', example: 'Donación', required: false })
@@ -17,8 +18,7 @@ export class GetAllFriendsFilterDTO {
   @IsOptional()
   DateGenerated?: string;
   
-  @ApiProperty({ description: 'Filtrar por estado', example: 'P', required: false })
-  @IsEnum(['P', 'R', 'A',], { message: 'El estado debe ser "P", "R", "A"' })
+  @ApiProperty({ description: 'Filtrar por estado', example: 'Pendiente', required: false })
   @IsOptional()
   Status?: string;
 
@@ -29,4 +29,8 @@ export class GetAllFriendsFilterDTO {
   @ApiProperty({ description: 'Número de elementos por página', example: 10, required: false })
   @IsOptional()
   limit?: number;
+
+  @ApiProperty({description:"Tipo de experiencia", example:"Informática"})
+  @IsOptional()
+  Exp:string
 }

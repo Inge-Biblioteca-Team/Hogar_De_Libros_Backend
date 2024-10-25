@@ -109,9 +109,6 @@ export class BooksController {
     }
   }
 
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'viewer')
   @Get()
   @ApiOperation({ summary: 'Obtener libros con paginación y filtros' })
   @ApiResponse({

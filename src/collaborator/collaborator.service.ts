@@ -111,31 +111,34 @@ export class CollaboratorService {
     const skip = (page - 1) * limit;
 
     const query = this.collaboratorRepository
-      .createQueryBuilder('friend')
-      .orderBy('friend.activityDate', 'DESC');
+      .createQueryBuilder('collaborator')
+      .orderBy('collaborator.activityDate', 'DESC');
 
     if (SubCategory) {
-      query.andWhere('friend.SubCategory = :SubCategory', { SubCategory });
+      query.andWhere('collaborator.SubCategory = :SubCategory', {
+        SubCategory,
+      });
     }
 
     if (PrincipalCategory) {
-      query.andWhere('friend.PrincipalCategory = :PrincipalCategory', {
+      query.andWhere('collaborator.PrincipalCategory = :PrincipalCategory', {
         PrincipalCategory,
       });
     }
 
     if (DateGenerated) {
-      query.andWhere('friend.DateGenerated = :DateGenerated', {
+      query.andWhere('collaborator.activityDate = :DateGenerated', {
         DateGenerated,
       });
     }
 
     if (Status) {
-      query.andWhere('friend.Status = :Status', { Status });
+      query.andWhere('collaborator.Status = :Status', { Status });
     }
     if (!Status) {
-      query
-        .andWhere('friend.Status IN (:...statuses)', { statuses: ['Aprobado', 'Rechazado'] });
+      query.andWhere('collaborator.Status IN (:...statuses)', {
+        statuses: ['Aprobado', 'Rechazado', 'Cancelado'],
+      });
     }
 
     const [data, count] = await query.skip(skip).take(limit).getManyAndCount();
@@ -187,11 +190,39 @@ export class CollaboratorService {
 
       CollaboratorFounded.Reason = dto.reason;
 
-      console.log(CollaboratorFounded);
-
       await this.collaboratorRepository.save(CollaboratorFounded);
 
       return { message: 'Solicitud de colaborador rechazada correctamente' };
+    } catch (error) {
+      throw new InternalServerErrorException({
+        message:
+          error.message || 'Error al rechazar la solicitud de colaborador',
+        error: error.stack,
+      });
+    }
+  }
+
+  async CancelCollaborator(
+    CollaboratorId: number,
+    dto: DenyCollaboratorRequestDTO,
+  ): Promise<{ message: string }> {
+    console.log(dto);
+    try {
+      const CollaboratorFounded = await this.collaboratorRepository.findOne({
+        where: { CollaboratorId: CollaboratorId },
+      });
+      if (!CollaboratorFounded) {
+        throw new NotFoundException({
+          message: 'Solicitud de colaborador no encontrada',
+        });
+      }
+      CollaboratorFounded.Status = 'Cancelado';
+
+      CollaboratorFounded.Reason = dto.reason;
+
+      await this.collaboratorRepository.save(CollaboratorFounded);
+
+      return { message: 'Solicitud de colaborador cancelada correctamente' };
     } catch (error) {
       throw new InternalServerErrorException({
         message:

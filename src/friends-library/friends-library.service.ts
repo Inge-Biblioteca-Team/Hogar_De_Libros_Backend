@@ -12,6 +12,8 @@ import { CreateFriendDTO } from './DTO/create-friend-library-DTO';
 import { NotesService } from 'src/notes/notes.service';
 import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
 import { GetAllFriendsFilterDTO } from './DTO/get-filter-friendLibrary.Dto';
+import { DenyFriendRequestDTO } from './DTO/deny-friend-library.Dto';
+import { UpdateFriendDTO } from './DTO/update-friend-library-DTO';
 
 @Injectable()
 export class FriendsLibraryService {
@@ -88,40 +90,60 @@ export class FriendsLibraryService {
     }
   }
 
-  // provicional, no es la task es solo para ver la data del create
-  async getAllFriends(filterDTO: GetAllFriendsFilterDTO) {
-    const { SubCategory, PrincipalCategory, DateGenerated, Status, page = 1, limit = 10 } = filterDTO;
+  async getAllFriends(
+    filterDTO: GetAllFriendsFilterDTO,
+  ): Promise<{ data: FriendsLibrary[]; count: number }> {
+    const {
+      SubCategory,
+      PrincipalCategory,
+      DateGenerated,
+      Status,
+      page = 1,
+      limit = 10,
+      Exp,
+    } = filterDTO;
 
-    const query = this.FriendRepositoy.createQueryBuilder('friend');
+    const query = this.FriendRepositoy.createQueryBuilder('friend').orderBy(
+      'friend. DateGenerated',
+      'ASC',
+    );
 
     if (SubCategory) {
       query.andWhere('friend.SubCategory = :SubCategory', { SubCategory });
     }
 
     if (PrincipalCategory) {
-      query.andWhere('friend.PrincipalCategory = :PrincipalCategory', { PrincipalCategory });
+      query.andWhere('friend.PrincipalCategory = :PrincipalCategory', {
+        PrincipalCategory,
+      });
     }
 
     if (DateGenerated) {
-      query.andWhere('friend.DateGenerated = :DateGenerated', { DateGenerated });
+      query.andWhere('friend.DateGenerated = :DateGenerated', {
+        DateGenerated,
+      });
     }
 
     if (Status) {
       query.andWhere('friend.Status = :Status', { Status });
     }
+    if (!Status) {
+      query.andWhere('friend.Status IN (:...statuses)', {
+        statuses: ['Aprobado', 'Rechazado', 'Baja'],
+      });
+    }
+    if (Exp) {
+      query.andWhere('friend.Experience Like :Exp', { Exp: `%${Exp}%` });
+    }
 
-    // Aplicar paginación
     query.skip((page - 1) * limit).take(limit);
 
-    const [friends, total] = await query.getManyAndCount();
+    const [friends, count] = await query.getManyAndCount();
 
     return {
       data: friends,
-      total,
-      page,
-      limit,
+      count,
     };
-    
   }
 
   async aproveFriendLibrary(FriendID: number): Promise<{ message: string }> {
@@ -134,9 +156,9 @@ export class FriendsLibraryService {
           message: 'Solicitud de amigo no encontrada',
         });
       }
-     
-        FriendFounded.Status = 'A';
-      
+
+      FriendFounded.Status = 'Aprobado';
+
       await this.FriendRepositoy.save(FriendFounded);
       return { message: 'Solicitud de amigo aprobada correctamente' };
     } catch (error) {
@@ -147,8 +169,10 @@ export class FriendsLibraryService {
     }
   }
 
-
-  async denyFriendLibrary(FriendID: number): Promise<{ message: string }> {
+  async denyFriendLibrary(
+    FriendID: number,
+    dto: DenyFriendRequestDTO,
+  ): Promise<{ message: string }> {
     try {
       const FriendFounded = await this.FriendRepositoy.findOne({
         where: { FriendId: FriendID },
@@ -159,8 +183,12 @@ export class FriendsLibraryService {
           message: 'Solicitud de amigo no encontrada',
         });
       }
-      FriendFounded.Status = 'R';
+      FriendFounded.Status = 'Rechazado';
+      FriendFounded.Reason = dto.reason;
+
+      console.log(FriendFounded);
       await this.FriendRepositoy.save(FriendFounded);
+
       return { message: 'Solicitud de amigo rechazada correctamente' };
     } catch (error) {
       throw new InternalServerErrorException({
@@ -169,5 +197,58 @@ export class FriendsLibraryService {
       });
     }
   }
+  async downFriendLibrary(
+    FriendID: number,
+    dto: DenyFriendRequestDTO,
+  ): Promise<{ message: string }> {
+    try {
+      const FriendFounded = await this.FriendRepositoy.findOne({
+        where: { FriendId: FriendID },
+      });
 
+      if (!FriendFounded) {
+        throw new NotFoundException({
+          message: 'Solicitud de amigo no encontrada',
+        });
+      }
+      FriendFounded.Status = 'Baja';
+      FriendFounded.Reason = dto.reason;
+
+      await this.FriendRepositoy.save(FriendFounded);
+
+      return { message: 'Amigo dado de baja correctamente' };
+    } catch (error) {
+      throw new InternalServerErrorException({
+        message: error.message || 'Error al dar de baja',
+        error: error.stack,
+      });
+    }
+  }
+  async editFriendLibrary(
+    FriendID: number,
+    dto: UpdateFriendDTO,
+  ): Promise<{ message: string }> {
+    try {
+      const FriendFounded = await this.FriendRepositoy.findOne({
+        where: { FriendId: FriendID },
+      });
+
+      if (!FriendFounded) {
+        throw new NotFoundException({
+          message: 'Solicitud de amigo no encontrada',
+        });
+      }
+
+      Object.assign(FriendFounded, dto);
+      
+      await this.FriendRepositoy.save(FriendFounded);
+
+      return { message: 'Amigo dado de baja correctamente' };
+    } catch (error) {
+      throw new InternalServerErrorException({
+        message: error.message || 'Error al dar de baja',
+        error: error.stack,
+      });
+    }
+  }
 }

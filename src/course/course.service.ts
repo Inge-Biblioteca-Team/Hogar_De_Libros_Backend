@@ -41,7 +41,8 @@ export class CourseService {
         reason: `Proximo curso: ${savedCourse.courseName}`,
         date: savedCourse.date,
         image: savedCourse.image,
-        extraInfo: `:Realizado en ${savedCourse.location}`,
+        extraInfo: `Realizado en ${savedCourse.location}. Impartido por: ${savedCourse.instructor}. 
+        ${savedCourse.materials && `Necesitaras: ${savedCourse.materials}`} `,
         category: 'Curso',
       };
 
@@ -307,4 +308,15 @@ export class CourseService {
 
     return course;
   }
+
+  async updateExpireCourses() {
+    const currentDate = new Date();
+    await this.courseRepository
+      .createQueryBuilder()
+      .update(Course)
+      .set({ Status: false })
+      .where('date < :currentDate', { currentDate })
+      .execute();
+  }
+
 }

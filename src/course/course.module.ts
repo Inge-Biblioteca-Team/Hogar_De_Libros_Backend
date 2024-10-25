@@ -7,6 +7,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Course } from './course.entity';
 import { ProgramsModule } from 'src/programs/programs.module';
 import { AdvicesModule } from 'src/advices/advices.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CourseJobs } from './Job.Service';
 
 @Module({
   imports: [
@@ -14,8 +16,9 @@ import { AdvicesModule } from 'src/advices/advices.module';
     forwardRef(() => EnrollmentModule),
     TypeOrmModule.forFeature([Course]),
     AdvicesModule,
+    ScheduleModule.forRoot(),
   ],
-  providers: [CourseService],
+  providers: [CourseService, CourseJobs],
   controllers: [CourseController],
   exports: [TypeOrmModule, CourseService],
 })
