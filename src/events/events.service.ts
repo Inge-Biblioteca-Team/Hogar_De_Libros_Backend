@@ -206,21 +206,18 @@ export class EventsService {
     }
   }
 
-
   async checkAndUpdateEventStatus() {
     const currentDate = new Date();
-  
-    
+
     const ongoingEvents = await this.EventsRepository.find({
       where: { Status: 'Pendiente' },
     });
-  
+
     for (const event of ongoingEvents) {
       const eventDate = new Date(event.Date);
-  
-      
+
       if (eventDate <= currentDate) {
-        if (event.Status === 'P') { 
+        if (event.Status === 'P') {
           event.Status = 'Finalizado';
           await this.EventsRepository.save(event);
         }
@@ -228,7 +225,7 @@ export class EventsService {
     }
     console.log('Verificación de estado de eventos completada');
   }
-  
+
   async getNextEventsSchedule(
     searchDTO: SeachDTO,
   ): Promise<{ data: NexEventsDTO[]; count: number }> {
@@ -293,5 +290,16 @@ export class EventsService {
     });
 
     return event;
+  }
+
+  async updateExpireEvent() {
+    console.log("Job Start")
+    const currentDate = new Date();
+    await this.EventsRepository.createQueryBuilder()
+      .update(events)
+      .set({ Status: 'F' })
+      .where('Date < :currentDate', { currentDate })
+      .andWhere('Status != :status', { status: 'C' })
+      .execute();
   }
 }

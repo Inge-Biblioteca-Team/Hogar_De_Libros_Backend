@@ -315,8 +315,8 @@ export class CourseService {
       .createQueryBuilder()
       .update(Course)
       .set({ Status: false })
-      .where('date < :currentDate', { currentDate })
+      .where('endDate < :currentDate', { currentDate })
+      .andWhere('Status!= :status', { status: false })
       .execute();
   }
-
 }

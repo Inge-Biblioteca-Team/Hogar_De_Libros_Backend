@@ -13,7 +13,7 @@ export class CourseJobs implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    const updateCoursesJob = new CronJob('30 23 * * *', async () => {
+    const updateCoursesJob = new CronJob('10 10 * * *', async () => {
       await this.courseService.updateExpireCourses();
     });
 
