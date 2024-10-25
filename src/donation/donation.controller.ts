@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Patch,
   Post,
   Query,
@@ -15,6 +16,7 @@ import { CreateDonationDTO } from './DTO/create-donation-DTO';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { GetFilterDonationDTO } from './DTO/get-filter-donation-DTO';
 import { ApiTags } from '@nestjs/swagger';
+import { DenyDonationRequestDTO } from './DTO/deny-donation-DTO';
 
 @ApiTags('Donation')
 @Controller('donation')
@@ -39,15 +41,24 @@ export class DonationController {
 
   @Patch('aproveFriendDonation/:DonationID')
   async aproveDonation(
-    @Query('DonationID') DonationID: number,
+    @Param('DonationID') DonationID: number,
   ): Promise<{ message: string }> {
     return this.donationService.aproveDonation(DonationID);
   }
 
   @Patch('denyDonation/:DonationID')
   async denyDonation(
-    @Query('DonationID') DonationID: number,
+    @Param('DonationID') DonationID: number,
+    @Body() DTO: DenyDonationRequestDTO,
   ): Promise<{ message: string }> {
-    return this.donationService.denyDonation(DonationID);
+    return this.donationService.denyDonation(DonationID, DTO);
+  }
+
+  @Patch('confirmDonation/:DonationID')
+  async confirmDonation(
+    @Param('DonationID') DonationID: number,
+    @Body() DTO: DenyDonationRequestDTO,
+  ): Promise<{ message: string }> {
+    return this.donationService.confirmDonation(DonationID, DTO);
   }
 }

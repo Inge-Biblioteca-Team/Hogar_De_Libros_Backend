@@ -12,6 +12,7 @@ import { NotesService } from 'src/notes/notes.service';
 import { CreateDonationDTO } from './DTO/create-donation-DTO';
 import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
 import { GetFilterDonationDTO } from './DTO/get-filter-donation-DTO';
+import { DenyDonationRequestDTO } from './DTO/deny-donation-DTO';
 
 @Injectable()
 export class DonationService {
@@ -85,7 +86,9 @@ export class DonationService {
   }
 
   // provicional, no es la task es solo para ver la data del create
-  async getAllDonation(filterDTO: GetFilterDonationDTO) {
+  async getAllDonation(
+    filterDTO: GetFilterDonationDTO,
+  ): Promise<{ data: Donation[]; count: number }> {
     const {
       SubCategory,
       PrincipalCategory,
@@ -95,38 +98,46 @@ export class DonationService {
       limit = 10,
     } = filterDTO;
 
-    const query = this.donationRepository.createQueryBuilder('friend');
+    const query = this.donationRepository
+      .createQueryBuilder('donation')
+      .orderBy('donation.DateRecolatedDonation', 'DESC');
 
     if (SubCategory) {
-      query.andWhere('friend.SubCategory = :SubCategory', { SubCategory });
+      query.andWhere('donation.SubCategory = :SubCategory', { SubCategory });
     }
 
     if (PrincipalCategory) {
-      query.andWhere('friend.PrincipalCategory = :PrincipalCategory', {
+      query.andWhere('donation.SubCategory = :PrincipalCategory', {
         PrincipalCategory,
       });
     }
 
     if (DateRecolatedDonation) {
-      query.andWhere('friend.DateRecolatedDonation = :DateRecolatedDonation', {
-        DateRecolatedDonation,
-      });
+      query.andWhere(
+        'donation.DateRecolatedDonation = :DateRecolatedDonation',
+        {
+          DateRecolatedDonation,
+        },
+      );
     }
 
     if (Status) {
-      query.andWhere('friend.Status = :Status', { Status });
+      query.andWhere('donation.Status = :Status', { Status });
+    }
+    if (!Status) {
+      query.andWhere('donation.Status IN (:...statuses)', {
+        statuses: ['Aprobado', 'Rechazado', 'Recibido'],
+      });
     }
 
     // Aplicar paginación
     query.skip((page - 1) * limit).take(limit);
 
-    const [friends, total] = await query.getManyAndCount();
+    const [donations, count] = await query.getManyAndCount();
 
     return {
-      data: friends,
-      total,
-      page,
-      limit,
+      data: donations,
+      count,
     };
   }
 
@@ -140,19 +151,9 @@ export class DonationService {
           message: 'Solicitud de donacion no encontrada',
         });
       }
-      if (DonationFounded.Status === 'P') {
-        DonationFounded.Status = 'PE';
-        await this.donationRepository.save(DonationFounded);
-        return {
-          message:
-            'Solicitud de donacion aprobado para su recoleccion correctamente',
-        };
-      }
-      if (DonationFounded.Status === 'PE') {
-        DonationFounded.Status = 'A';
-        await this.donationRepository.save(DonationFounded);
-        return { message: 'Solicitud de donacion aprobada correctamente' };
-      }
+      DonationFounded.Status = 'Aprobado';
+      await this.donationRepository.save(DonationFounded);
+      return { message: 'Solicitud de donacion aprobada correctamente' };
     } catch (error) {
       throw new InternalServerErrorException({
         message: error.message || 'Error al aprobar la solicitud de donacion',
@@ -161,7 +162,10 @@ export class DonationService {
     }
   }
 
-  async denyDonation(DonationID: number): Promise<{ message: string }> {
+  async denyDonation(
+    DonationID: number,
+    DTO: DenyDonationRequestDTO,
+  ): Promise<{ message: string }> {
     try {
       const DonationFounded = await this.donationRepository.findOne({
         where: { DonationID: DonationID },
@@ -172,7 +176,34 @@ export class DonationService {
           message: 'Solicitud de donacion no encontrada',
         });
       }
-      DonationFounded.Status = 'R';
+      DonationFounded.Status = 'Rechazado';
+      DonationFounded.Reason = DTO.reason;
+      await this.donationRepository.save(DonationFounded);
+      return { message: 'Solicitud de donacion rechazada correctamente' };
+    } catch (error) {
+      throw new InternalServerErrorException({
+        message: error.message || 'Error al rechazar la solicitud de donacion',
+        error: error.stack,
+      });
+    }
+  }
+
+  async confirmDonation(
+    DonationID: number,
+    DTO: DenyDonationRequestDTO,
+  ): Promise<{ message: string }> {
+    try {
+      const DonationFounded = await this.donationRepository.findOne({
+        where: { DonationID: DonationID },
+      });
+
+      if (!DonationFounded) {
+        throw new NotFoundException({
+          message: 'Solicitud de donacion no encontrada',
+        });
+      }
+      DonationFounded.Status = 'Recibido';
+      DonationFounded.Reason = DTO.reason;
       await this.donationRepository.save(DonationFounded);
       return { message: 'Solicitud de donacion rechazada correctamente' };
     } catch (error) {

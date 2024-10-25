@@ -28,7 +28,7 @@ export class Donation {
   @Column()
   UserEmail: string;
 
-  @Column({ default: 'P' })
+  @Column({ default: 'Pendiente' })
   Status: string;
 
   @Column()

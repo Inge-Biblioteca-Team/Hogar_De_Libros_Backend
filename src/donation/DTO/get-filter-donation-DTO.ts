@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDateString, IsEnum, IsOptional, IsString } from "class-validator";
+import { IsDateString, IsOptional, IsString } from "class-validator";
 
 export class GetFilterDonationDTO{
     @ApiProperty({ description: 'Filtrar por subcategoría', example: 'Donación', required: false })
@@ -19,7 +19,6 @@ export class GetFilterDonationDTO{
     DateRecolatedDonation?: string;
     
     @ApiProperty({ description: 'Filtrar por estado', example: 'P', required: false })
-    @IsEnum(['P', 'R', 'A' ,'PE',], { message: 'El estado debe ser "P", "R", "A" o "PE"' })
     @IsOptional()
     Status?: string;
   
