@@ -33,6 +33,9 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'assets'), {
     prefix: '/assets/',
   });
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads/',
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       transformOptions: {

@@ -34,7 +34,7 @@ export class DonationService {
       });
 
       const documentPaths = documents.map(
-        (file) => `/uploads/${file.filename}`,
+        (file) => `http://localhost:3000/uploads/${file.filename}`,
       );
 
       let newDonation: Donation;
