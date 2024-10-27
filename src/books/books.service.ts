@@ -111,7 +111,7 @@ export class BooksService {
     }
 
     if (signatureCode) {
-      query.andWhere('book.SignatureCode LIKE :SignatureCode', {
+      query.andWhere('book.signatureCode LIKE :SignatureCode', {
         SignatureCode: `%${signatureCode}%`,
       });
     }

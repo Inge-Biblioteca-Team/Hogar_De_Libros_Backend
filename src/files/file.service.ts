@@ -6,11 +6,15 @@ import {
 } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Injectable()
 export class FilesService {
-  saveAdviceIMG(file: Express.Multer.File): string {
-    const destination = './assets/Avisos';
+  SaveImage(file: Express.Multer.File, path: string): string {
+    const baseUrl = process.env.BASE_URL;
+    const destination = `./assets/${path}`;
     if (!file.originalname) {
       throw new Error('El archivo no contiene un nombre original');
     }
@@ -19,101 +23,7 @@ export class FilesService {
     }
     const filePath = `${destination}/${file.originalname}`;
     fs.writeFileSync(filePath, file.buffer);
-    return `http://localhost:3000/${destination}/${file.originalname}`;
-  }
-
-  //Imagenes de cursos
-  saveCourseIMG(file: Express.Multer.File): string {
-    const destination = './assets/Cursos';
-    if (!file.originalname) {
-      throw new Error('El archivo no contiene un nombre original');
-    }
-    if (!fs.existsSync(destination)) {
-      fs.mkdirSync(destination, { recursive: true });
-    }
-    const filePath = `${destination}/${file.originalname}`;
-    fs.writeFileSync(filePath, file.buffer);
-    return `http://localhost:3000/${destination}/${file.originalname}`;
-  }
-
-  //de eventos
-  saveEventIMG(file: Express.Multer.File): string {
-    const destination = './assets/Eventos';
-    if (!file.originalname) {
-      throw new Error('El archivo no contiene un nombre original');
-    }
-    if (!fs.existsSync(destination)) {
-      fs.mkdirSync(destination, { recursive: true });
-    }
-    const filePath = `${destination}/${file.originalname}`;
-    fs.writeFileSync(filePath, file.buffer);
-    return `http://localhost:3000/${destination}/${file.originalname}`;
-  }
-
-  //Salas
-  saveRoomsIMG(file: Express.Multer.File): string {
-    const destination = './assets/Salas';
-    if (!file.originalname) {
-      throw new Error('El archivo no contiene un nombre original');
-    }
-    if (!fs.existsSync(destination)) {
-      fs.mkdirSync(destination, { recursive: true });
-    }
-    const filePath = `${destination}/${file.originalname}`;
-    fs.writeFileSync(filePath, file.buffer);
-    return `http://localhost:3000/${destination}/${file.originalname}`;
-  }
-  //Libros de niños
-  saveBookChildrenIMG(file: Express.Multer.File): string {
-    const destination = './assets/Libro_Infantil';
-    if (!file.originalname) {
-      throw new Error('El archivo no contiene un nombre original');
-    }
-    if (!fs.existsSync(destination)) {
-      fs.mkdirSync(destination, { recursive: true });
-    }
-    const filePath = `${destination}/${file.originalname}`;
-    fs.writeFileSync(filePath, file.buffer);
-    return `http://localhost:3000/${destination}/${file.originalname}`;
-  }
-  // Libros del catalogo general
-  saveBooksIMG(file: Express.Multer.File): string {
-    const destination = './assets/Libros';
-    if (!file.originalname) {
-      throw new Error('El archivo no contiene un nombre original');
-    }
-    if (!fs.existsSync(destination)) {
-      fs.mkdirSync(destination, { recursive: true });
-    }
-    const filePath = `${destination}/${file.originalname}`;
-    fs.writeFileSync(filePath, file.buffer);
-    return `http://localhost:3000/${destination}/${file.originalname}`;
-  }
-  //Artistas Locales
-  saveArtistIMG(file: Express.Multer.File): string {
-    const destination = './assets/Artistas';
-    if (!file.originalname) {
-      throw new Error('El archivo no contiene un nombre original');
-    }
-    if (!fs.existsSync(destination)) {
-      fs.mkdirSync(destination, { recursive: true });
-    }
-    const filePath = `${destination}/${file.originalname}`;
-    fs.writeFileSync(filePath, file.buffer);
-    return `http://localhost:3000/${destination}/${file.originalname}`;
-  }
-  // Programas
-  saveProgramsIMG(file: Express.Multer.File): string {
-    const destination = './assets/Programas';
-    if (!file.originalname) {
-      throw new Error('El archivo no contiene un nombre original');
-    }
-    if (!fs.existsSync(destination)) {
-      fs.mkdirSync(destination, { recursive: true });
-    }
-    const filePath = `${destination}/${file.originalname}`;
-    fs.writeFileSync(filePath, file.buffer);
-    return `http://localhost:3000/${destination}/${file.originalname}`;
+    return `${baseUrl}/${destination}/${file.originalname}`;
   }
 
   //Imagen unica, Posiblemente no se use
@@ -129,6 +39,7 @@ export class FilesService {
 
   //Galeria por carpeta
   getAllImagesInCategory(category: string): string[] {
+    const baseUrl = process.env.BASE_URL;
     const directoryPath = path.join('./assets', category);
 
     try {
@@ -141,9 +52,7 @@ export class FilesService {
           `No se encontraron archivos en la carpeta ${category}`,
         );
       }
-      return files.map(
-        (file) => `http://localhost:3000/assets/${category}/${file}`,
-      );
+      return files.map((file) => `${baseUrl}/assets/${category}/${file}`);
     } catch (error) {
       console.error('Error leyendo la carpeta:', error);
       throw new InternalServerErrorException(
