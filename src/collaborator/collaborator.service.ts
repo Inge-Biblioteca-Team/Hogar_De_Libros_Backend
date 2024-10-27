@@ -85,13 +85,10 @@ export class CollaboratorService {
       await this.noteService.createNote(createNoteDto);
       await this.collaboratorRepository.save(newCollaborator);
       return { message: 'Solicitud de colaborador enviada correctamente.' };
-    } catch (error) {
-      throw new InternalServerErrorException({
-        message:
-          error.message ||
-          'Error al crear la solicitud de colaborador en la biblioteca',
-        error: error.stack,
-      });
+    }  catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -163,12 +160,10 @@ export class CollaboratorService {
 
       await this.collaboratorRepository.save(CollaboratorFounded);
       return { message: 'Solicitud de colaborador aprobada correctamente' };
-    } catch (error) {
-      throw new InternalServerErrorException({
-        message:
-          error.message || 'Error al aprobar la solicitud de colaborador',
-        error: error.stack,
-      });
+    }  catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -193,12 +188,10 @@ export class CollaboratorService {
       await this.collaboratorRepository.save(CollaboratorFounded);
 
       return { message: 'Solicitud de colaborador rechazada correctamente' };
-    } catch (error) {
-      throw new InternalServerErrorException({
-        message:
-          error.message || 'Error al rechazar la solicitud de colaborador',
-        error: error.stack,
-      });
+    }  catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -223,12 +216,10 @@ export class CollaboratorService {
       await this.collaboratorRepository.save(CollaboratorFounded);
 
       return { message: 'Solicitud de colaborador cancelada correctamente' };
-    } catch (error) {
-      throw new InternalServerErrorException({
-        message:
-          error.message || 'Error al rechazar la solicitud de colaborador',
-        error: error.stack,
-      });
+    }  catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 }

@@ -80,13 +80,10 @@ export class FriendsLibraryService {
       await this.noteService.createNote(createNoteDto);
       await this.FriendRepositoy.save(newFriend);
       return { message: 'Solicitud de amigo enviada correctamente.' };
-    } catch (error) {
-      throw new InternalServerErrorException({
-        message:
-          error.message ||
-          'Error al crear la solicitud de amigo en la biblioteca',
-        error: error.stack,
-      });
+    }  catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -161,11 +158,10 @@ export class FriendsLibraryService {
 
       await this.FriendRepositoy.save(FriendFounded);
       return { message: 'Solicitud de amigo aprobada correctamente' };
-    } catch (error) {
-      throw new InternalServerErrorException({
-        message: error.message || 'Error al aprobar la solicitud de amigo',
-        error: error.stack,
-      });
+    }  catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -190,11 +186,10 @@ export class FriendsLibraryService {
       await this.FriendRepositoy.save(FriendFounded);
 
       return { message: 'Solicitud de amigo rechazada correctamente' };
-    } catch (error) {
-      throw new InternalServerErrorException({
-        message: error.message || 'Error al rechazar la solicitud de amigo',
-        error: error.stack,
-      });
+    }  catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
   async downFriendLibrary(
@@ -217,11 +212,10 @@ export class FriendsLibraryService {
       await this.FriendRepositoy.save(FriendFounded);
 
       return { message: 'Amigo dado de baja correctamente' };
-    } catch (error) {
-      throw new InternalServerErrorException({
-        message: error.message || 'Error al dar de baja',
-        error: error.stack,
-      });
+    }  catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
   async editFriendLibrary(
@@ -245,10 +239,9 @@ export class FriendsLibraryService {
 
       return { message: 'Amigo dado de baja correctamente' };
     } catch (error) {
-      throw new InternalServerErrorException({
-        message: error.message || 'Error al dar de baja',
-        error: error.stack,
-      });
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 }

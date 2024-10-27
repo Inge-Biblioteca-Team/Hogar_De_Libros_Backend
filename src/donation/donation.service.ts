@@ -75,13 +75,10 @@ export class DonationService {
       await this.noteService.createNote(createNoteDto);
       await this.donationRepository.save(newDonation);
       return { message: 'Solicitud de amigo enviada correctamente.' };
-    } catch (error) {
-      throw new InternalServerErrorException({
-        message:
-          error.message ||
-          'Error al crear la solicitud de amigo en la biblioteca',
-        error: error.stack,
-      });
+    }  catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -154,11 +151,10 @@ export class DonationService {
       DonationFounded.Status = 'Aprobado';
       await this.donationRepository.save(DonationFounded);
       return { message: 'Solicitud de donacion aprobada correctamente' };
-    } catch (error) {
-      throw new InternalServerErrorException({
-        message: error.message || 'Error al aprobar la solicitud de donacion',
-        error: error.stack,
-      });
+    }  catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -181,10 +177,9 @@ export class DonationService {
       await this.donationRepository.save(DonationFounded);
       return { message: 'Solicitud de donacion rechazada correctamente' };
     } catch (error) {
-      throw new InternalServerErrorException({
-        message: error.message || 'Error al rechazar la solicitud de donacion',
-        error: error.stack,
-      });
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -206,11 +201,10 @@ export class DonationService {
       DonationFounded.Reason = DTO.reason;
       await this.donationRepository.save(DonationFounded);
       return { message: 'Solicitud de donacion rechazada correctamente' };
-    } catch (error) {
-      throw new InternalServerErrorException({
-        message: error.message || 'Error al rechazar la solicitud de donacion',
-        error: error.stack,
-      });
+    }  catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 }
