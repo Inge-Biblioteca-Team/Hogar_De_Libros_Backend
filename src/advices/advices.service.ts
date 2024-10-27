@@ -26,9 +26,9 @@ export class AdvicesService {
         message: 'El aviso se genero correctamente',
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        error.message || 'Error al procesar la solicitud',
-      );
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -50,9 +50,9 @@ export class AdvicesService {
         message: 'El aviso se modifico correctamente',
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        error.message || 'Error al procesar la solicitud',
-      );
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -71,9 +71,9 @@ export class AdvicesService {
         message: 'El aviso se elimino correctamente',
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        error.message || 'Error al procesar la solicitud',
-      );
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -106,10 +106,10 @@ export class AdvicesService {
         .getManyAndCount();
 
       return { data, count };
-    } catch (error) {
-      throw new InternalServerErrorException(
-        error.message || 'Error al procesar la solicitud',
-      );
+    }catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 

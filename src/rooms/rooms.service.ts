@@ -25,9 +25,9 @@ export class RoomsService {
         message: 'Se creó la sala correctamente',
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        error.message || 'Error al crear la sala',
-      );
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -72,9 +72,9 @@ export class RoomsService {
         message: 'Se actualizó la sala correctamente',
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        error.message || 'Error al modificar la sala',
-      );
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -92,9 +92,9 @@ export class RoomsService {
           'Se actualizó el estado de la sala a en mantenimiento correctamente',
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        error.message || 'Error al actualizar el estado de la sala',
-      );
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -111,9 +111,9 @@ export class RoomsService {
         message: 'Se actualizó el estado de la sala a clausurada correctamente',
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        error.message || 'Error al actualizar el estado de la sala',
-      );
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -130,9 +130,9 @@ export class RoomsService {
         message: 'Se actualizó el estado de la sala a disponible correctamente',
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        error.message || 'Error al actualizar el estado de la sala',
-      );
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 

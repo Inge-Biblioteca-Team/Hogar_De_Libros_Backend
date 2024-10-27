@@ -49,10 +49,9 @@ export class CourseService {
       await this.adviceService.createNewAdvice(adviceData);
       return savedCourse;
     } catch (error) {
-      throw new Error(
-        error.message ||
-          'Error al crear el curso. Por favor, inténtelo nuevamente.',
-      );
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 

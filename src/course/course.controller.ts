@@ -2,7 +2,6 @@
 import {
   BadRequestException,
   Body,
-  ConflictException,
   Controller,
   Get,
   NotFoundException,
@@ -56,23 +55,11 @@ export class CourseController {
       const course = await this.courseService.createCourse(createCourseDto);
       return course;
     } catch (error) {
-      // Manejo de errores de campos nulos
-      if (error.code === 'ER_BAD_NULL_ERROR') {
-        throw new BadRequestException(
-          'Uno o más campos son requeridos y no pueden ser nulos.',
-        );
-      }
-
-      // Manejo de errores por duplicación de curso
-      if (error.code === 'ER_DUP_ENTRY') {
-        throw new ConflictException(
-          'Ya existe un curso con este nombre o identificador.',
-        );
-      }
-
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
       // Cualquier otro error
       throw new BadRequestException(
-        error.message || 'Error inesperado al crear el curso.',
+        errorMessage || 'Error inesperado al crear el curso.',
       );
     }
   }
@@ -88,10 +75,12 @@ export class CourseController {
       }
       return courses;
     } catch (error) {
-      if (error.name === 'QueryFailedError') {
-        throw new BadRequestException('Error al procesar la solicitud.');
-      }
-      throw error;
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+
+      throw new BadRequestException(
+        errorMessage || 'Error inesperado al crear el curso.',
+      );
     }
   }
 
@@ -194,7 +183,7 @@ export class CourseController {
   }
 
   @Get('CourseList')
-  async CourseList(@Query('fecha') fecha:Date ): Promise<CreateCourseDto[]> {
+  async CourseList(@Query('fecha') fecha: Date): Promise<CreateCourseDto[]> {
     return this.courseService.CourseList(fecha);
   }
 }

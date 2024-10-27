@@ -19,7 +19,6 @@ import { FindAllUsersDto } from './DTO/GetPaginatedDTO';
 import { UpdatePasswordDto } from './DTO/UpdatePassDTO';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 
-
 @ApiTags('user')
 @Controller('user')
 export class UserController {
@@ -55,7 +54,9 @@ export class UserController {
     try {
       return await this.userService.update(cedula, updateUserDto);
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new HttpException(errorMessage, HttpStatus.NOT_FOUND);
     }
   }
   @Patch('change-status/:cedula')
@@ -63,7 +64,9 @@ export class UserController {
     try {
       return await this.userService.changeStatus(cedula);
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new HttpException(errorMessage, HttpStatus.NOT_FOUND);
     }
   }
   @Patch('UP-status/:cedula')
@@ -71,7 +74,9 @@ export class UserController {
     try {
       return await this.userService.UPStatus(cedula);
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new HttpException(errorMessage, HttpStatus.NOT_FOUND);
     }
   }
 
@@ -84,9 +89,9 @@ export class UserController {
       const result = await this.userService.updatePassword(updatePasswordDto);
       return result;
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new HttpException(errorMessage, HttpStatus.BAD_REQUEST);
     }
   }
-
- 
 }
