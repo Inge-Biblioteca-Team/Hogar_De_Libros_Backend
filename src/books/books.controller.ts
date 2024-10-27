@@ -92,7 +92,9 @@ export class BooksController {
     try {
       return await this.booksService.findById(BookCode);
     } catch (error) {
-      throw new NotFoundException(error.message);
+      const errorMessage =
+          (error as Error).message || 'Error al procesar la solicitud';
+      throw new NotFoundException(errorMessage);
     }
   }
 

@@ -3,6 +3,7 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -80,13 +81,9 @@ export class ProgramsService {
 
       return await this.programsRepository.save(program);
     } catch (error) {
-      if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
-        throw new BadRequestException('El programa ya existe.');
-      }
-
-      // Registrar otros errores para propósitos de depuración (opcional)
-      console.error('Error al crear el programa:', error);
-      throw new BadRequestException('Error al crear el programa.');
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -107,7 +104,9 @@ export class ProgramsService {
 
       return await this.programsRepository.save(program);
     } catch (error) {
-      throw new BadRequestException('Error al actualizar el programa.');
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 

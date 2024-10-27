@@ -169,9 +169,9 @@ export class RoomReservationService {
       };
 
     } catch (error) {
-      throw new InternalServerErrorException(
-        error.message || 'Error al procesar la solicitud',
-      );
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -196,9 +196,9 @@ export class RoomReservationService {
         message: 'La solicitud se genero correctamente',
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        error.message || 'Error al procesar la solicitud',
-      );
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -220,9 +220,9 @@ export class RoomReservationService {
         message: 'La solicitud se genero correctamente',
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        error.message || 'Error al procesar la solicitud',
-      );
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -244,9 +244,9 @@ export class RoomReservationService {
         message: 'La solicitud se genero correctamente',
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        error.message || 'Error al procesar la solicitud',
-      );
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -266,9 +266,9 @@ export class RoomReservationService {
         message: 'La solicitud se genero correctamente',
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        error.message || 'Error al procesar la solicitud',
-      );
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 

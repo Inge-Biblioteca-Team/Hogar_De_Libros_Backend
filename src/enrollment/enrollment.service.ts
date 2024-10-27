@@ -68,10 +68,9 @@ export class EnrollmentService {
 
       return { message: 'Matrícula creada con éxito' };
     } catch (error) {
-      throw new InternalServerErrorException(
-        error.message ||
-          'Error al crear la matrícula. Por favor, inténtelo nuevamente.',
-      );
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 

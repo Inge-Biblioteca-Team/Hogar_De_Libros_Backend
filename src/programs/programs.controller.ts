@@ -10,6 +10,7 @@ import {
   NotFoundException,
   Patch,
   Query,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 import { CreateProgramDto } from './dto/create-program.dto';
@@ -90,11 +91,9 @@ export class ProgramsController {
     try {
       return await this.programService.createProgramns(createProgramDto);
     } catch (error) {
-      if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
-        throw new BadRequestException('El programa ya existe.');
-      } else {
-        throw new BadRequestException('Error al crear el programa.');
-      }
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 

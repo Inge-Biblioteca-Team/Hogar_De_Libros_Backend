@@ -200,9 +200,9 @@ export class EventsService {
       await this.EventsRepository.update(id, { Status: 'C' });
       return { message: 'Se cancelo el evento exitosamente' };
     } catch (error) {
-      throw new InternalServerErrorException(
-        error.message || 'Error al cancelar el evento.',
-      );
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 

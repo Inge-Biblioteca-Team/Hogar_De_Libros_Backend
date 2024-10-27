@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BooksChildren } from './book-children.entity';
 import { Repository } from 'typeorm';
