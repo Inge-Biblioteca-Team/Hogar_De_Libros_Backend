@@ -9,7 +9,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from './DTO/create-user.dto';
 import { UpdateUserDto } from './DTO/update-user.dto';
@@ -17,7 +16,6 @@ import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
 import { FindAllUsersDto } from './DTO/GetPaginatedDTO';
 import { UpdatePasswordDto } from './DTO/UpdatePassDTO';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @ApiTags('user')
 @Controller('user')
@@ -59,6 +57,7 @@ export class UserController {
       throw new HttpException(errorMessage, HttpStatus.NOT_FOUND);
     }
   }
+
   @Patch('change-status/:cedula')
   async changeUserStatus(@Param('cedula') cedula: string) {
     try {
@@ -69,6 +68,7 @@ export class UserController {
       throw new HttpException(errorMessage, HttpStatus.NOT_FOUND);
     }
   }
+
   @Patch('UP-status/:cedula')
   async changeUserStatusUP(@Param('cedula') cedula: string) {
     try {
@@ -80,7 +80,6 @@ export class UserController {
     }
   }
 
-  @UseGuards(AuthGuard)
   @Patch('update-password')
   async updatePassword(
     @Body() updatePasswordDto: UpdatePasswordDto,

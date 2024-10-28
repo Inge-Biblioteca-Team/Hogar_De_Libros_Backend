@@ -29,9 +29,6 @@ export class CourseController {
     private readonly courseService: CourseService,
   ) {}
 
-  //@ApiBearerAuth('access-token')
-  // @UseGuards(AuthGuard, RolesGuard)
-  // @Roles('admin','external_user')
 
   @Post()
   @ApiBody({ type: CreateCourseDto })
