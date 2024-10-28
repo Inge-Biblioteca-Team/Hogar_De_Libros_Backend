@@ -25,7 +25,6 @@ export class AuthService {
     email: string,
     pass: string,
   ): Promise<{ accessToken?: string; user?: UserProfile; message: string }> {
-    console.log(email, pass)
     try {
       const user = await this.usersService.findOne(email);
       if (!user) {

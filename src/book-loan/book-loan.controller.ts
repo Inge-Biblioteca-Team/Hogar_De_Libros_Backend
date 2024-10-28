@@ -8,11 +8,9 @@ import {
   Patch,
   Post,
   Query,
-  Req,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { BookLoanService } from './book-loan.service';
-import {  ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {  ApiBody, ApiTags } from '@nestjs/swagger';
 import { CreateBookLoanDto } from './DTO/create-book-loan.dto';
 import { BookLoan } from './book-loan.entity';
 import { FinalizeBookLoanDto } from './DTO/finalize-bookloan.dto';
@@ -27,23 +25,10 @@ export class BookLoanController {
 
   @Post()
   @ApiBody({ type: CreateBookLoanDto })
-  @ApiResponse({
-    status: 201,
-    description: 'Creates a new book loan',
-    type: BookLoan,
-  })
   async createLoan(
     @Body() createBookLoanDto: CreateBookLoanDto,
-    @Req() request: Request,
-  ): Promise<BookLoan> {
-    const user = request['user'];
-
-    if (!user) {
-      throw new UnauthorizedException(
-        'No se pudo obtener la información del usuario.',
-      );
-    }
-    return this.bookLoanService.createLoan(createBookLoanDto, user);
+  ): Promise<{message:string}> {
+    return this.bookLoanService.createLoan(createBookLoanDto);
   }
 
   @Patch(':id/in-process')
