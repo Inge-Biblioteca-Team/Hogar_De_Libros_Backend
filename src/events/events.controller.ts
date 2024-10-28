@@ -8,19 +8,15 @@ import {
   Put,
   Query,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventsDTO } from './DTO/create-events.dto';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {  ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationEventsDTO } from './DTO/pagination-events.dto';
 import { UpdateEventsDTO } from './DTO/update-events.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Roles } from 'src/auth/decorators/roles.decorators';
 import { SeachDTO } from './DTO/SeachDTO';
 import { NexEventsDTO } from './DTO/NextEvents';
 @ApiTags('events')
@@ -68,9 +64,6 @@ export class EventsController {
     return this.eventsService.getAllEvents(paginationEventsDTO);
   }
 
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'creator')
   @Put()
   @UseInterceptors(
     FileInterceptor('image', {
@@ -104,9 +97,7 @@ export class EventsController {
     return this.eventsService.updateEvent(updateEvetsDTO, id);
   }
 
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'creator')
+
   @Patch('ejecution-status')
   @ApiResponse({
     status: 200,
@@ -120,9 +111,6 @@ export class EventsController {
     return this.eventsService.updateEjecutionStatus(id);
   }
 
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'creator')
   @Patch('finalized-status')
   @ApiResponse({
     status: 200,

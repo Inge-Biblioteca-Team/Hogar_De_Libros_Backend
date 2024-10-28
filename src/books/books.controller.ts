@@ -26,7 +26,6 @@ import { UpdateBookDto } from './DTO/update-book.dto';
 import { Book } from './book.entity';
 import { PaginationFilterDto } from './DTO/pagination-filter.dto';
 import { EnableBookDto } from './DTO/enable-book.dto';
-import { Roles } from 'src/auth/decorators/roles.decorators';
 
 @ApiTags('books')
 @Controller('books')
@@ -78,7 +77,6 @@ export class BooksController {
   }
 
 
-  @Roles('admin')
   @Patch(':bookCode/disable')
   @ApiOperation({})
   async disableBook(@Param('bookCode') bookCode: number) {
