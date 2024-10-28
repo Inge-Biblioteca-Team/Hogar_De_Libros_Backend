@@ -10,7 +10,6 @@ import { Role } from './loan-policy';
 import { FindAllUsersDto } from './DTO/GetPaginatedDTO';
 import { UpdatePasswordDto } from './DTO/UpdatePassDTO';
 
-
 @Injectable()
 export class UserService {
   constructor(
@@ -58,6 +57,9 @@ export class UserService {
 
   async findOne(email: string) {
     return this.UserRepository.findOne({ where: { email } });
+  }
+  async findCedula(cedula: string) {
+    return this.UserRepository.findOne({ where: { cedula } });
   }
 
   async findUser(email: string, cedula: string): Promise<User | null> {
@@ -186,5 +188,4 @@ export class UserService {
 
     return { message: 'Contraseña actualizada con éxito' };
   }
-
 }

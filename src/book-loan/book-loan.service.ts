@@ -3,6 +3,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,6 +19,7 @@ import { BookLoanResponseDTO } from './DTO/RequestDTO';
 import { LoanPolicy } from 'src/user/loan-policy';
 import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
 import { NotesService } from 'src/notes/notes.service';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class BookLoanService {
@@ -28,87 +30,98 @@ export class BookLoanService {
     private readonly bookRepository: Repository<Book>,
 
     private noteService: NotesService,
+    private userService: UserService,
   ) {}
   async createLoan(
     createBookLoanDto: CreateBookLoanDto,
-    user: any,
-  ): Promise<BookLoan> {
-    const role = user.role;
-
-    if (!LoanPolicy.canLoan(role)) {
-      throw new ForbiddenException(
-        'No tienes permisos para realizar préstamos.',
+  ): Promise<{ message: string }> {
+    try {
+      const user = await this.userService.findCedula(
+        createBookLoanDto.userCedula,
       );
+
+      const role = user.role;
+
+      console.log(user);
+
+      if (!LoanPolicy.canLoan(role)) {
+        throw new ForbiddenException(
+          'No tienes permisos para realizar préstamos.',
+        );
+      }
+
+      const book = await this.bookRepository.findOne({
+        where: { BookCode: createBookLoanDto.bookBookCode },
+      });
+
+      if (!book) {
+        throw new NotFoundException(
+          `El libro con código ${createBookLoanDto.bookBookCode} no fue encontrado`,
+        );
+      }
+
+      if (book.Status === false) {
+        throw new BadRequestException(
+          `El libro con código ${book.BookCode} está inactivo y no puede ser prestado.`,
+        );
+      }
+
+      const existingLoan = await this.bookLoanRepository.findOne({
+        where: {
+          bookBookCode: book.BookCode,
+          Status: In(['Pendiente', 'En progreso']),
+        },
+      });
+
+      if (existingLoan) {
+        throw new BadRequestException(
+          `El libro con código ${book.BookCode} ya está prestado.`,
+        );
+      }
+
+      const userCurrentLoans = await this.bookLoanRepository.count({
+        where: {
+          userCedula: createBookLoanDto.userCedula,
+          Status: In(['Pendiente', 'En progreso']),
+        },
+      });
+
+      const loanLimits = LoanPolicy.getLoanLimits(role, userCurrentLoans + 1);
+
+      const maxBooksAllowed = loanLimits.maxBooks;
+      if (
+        maxBooksAllowed !== 'unlimited' &&
+        userCurrentLoans >= maxBooksAllowed
+      ) {
+        throw new BadRequestException(
+          `Has alcanzado el límite máximo de ${maxBooksAllowed} préstamos para tu rol.`,
+        );
+      }
+
+      const newBookLoan = this.bookLoanRepository.create(createBookLoanDto);
+      newBookLoan.Status = 'Pendiente';
+      newBookLoan.book = book;
+
+      const createNoteDto: CreateNoteDto = {
+        message: `El libro con código ${book.BookCode} ha sido solicitado por el usuario.`,
+        type: 'Solicitud de libro',
+      };
+
+      await this.noteService.createNote(createNoteDto);
+      this.bookLoanRepository.save(newBookLoan);
+
+      const maxDaysAllowed = loanLimits.days;
+      if (maxDaysAllowed !== 'unlimited') {
+        const expirationDate = new Date();
+        expirationDate.setDate(expirationDate.getDate() + maxDaysAllowed);
+        newBookLoan.LoanExpirationDate = expirationDate;
+      }
+
+      return { message: `Éxito` };
+    } catch (error) {
+      const errorMessage = (error as Error).message || 'Error al solicitar';
+      throw new InternalServerErrorException(errorMessage);
     }
-
-    const book = await this.bookRepository.findOne({
-      where: { BookCode: createBookLoanDto.bookBookCode },
-    });
-
-    
-    if (!book) {
-      throw new NotFoundException(
-        `El libro con código ${createBookLoanDto.bookBookCode} no fue encontrado`,
-      );
-    }
-
-    if (book.Status === false) {
-      throw new BadRequestException(
-        `El libro con código ${book.BookCode} está inactivo y no puede ser prestado.`,
-      );
-    }
-
-    const existingLoan = await this.bookLoanRepository.findOne({
-      where: {
-        bookBookCode: book.BookCode,
-        Status: In(['Pendiente', 'En progreso']),
-      },
-    });
-
-    if (existingLoan) {
-      throw new BadRequestException(
-        `El libro con código ${book.BookCode} ya está prestado.`,
-      );
-    }
-
-    const userCurrentLoans = await this.bookLoanRepository.count({
-      where: {
-        userCedula: createBookLoanDto.userCedula,
-        Status: In(['Pendiente', 'En progreso']),
-      },
-    });
-
-    const loanLimits = LoanPolicy.getLoanLimits(role, userCurrentLoans + 1);
-
-    const maxBooksAllowed = loanLimits.maxBooks;
-    if (
-      maxBooksAllowed !== 'unlimited' &&
-      userCurrentLoans >= maxBooksAllowed
-    ) {
-      throw new BadRequestException(
-        `Has alcanzado el límite máximo de ${maxBooksAllowed} préstamos para tu rol.`,
-      );
-    }
-
-    const newBookLoan = this.bookLoanRepository.create(createBookLoanDto);
-    newBookLoan.Status = 'Pendiente';
-    newBookLoan.book = book;
-
-    const createNoteDto: CreateNoteDto = {
-      message: `El libro con código ${book.BookCode} ha sido solicitado por el usuario.`,
-      type: 'Solicitud de libro',
-    };
-
-    await this.noteService.createNote(createNoteDto);
-
-    const maxDaysAllowed = loanLimits.days;
-    if (maxDaysAllowed !== 'unlimited') {
-      const expirationDate = new Date();
-      expirationDate.setDate(expirationDate.getDate() + maxDaysAllowed);
-      newBookLoan.LoanExpirationDate = expirationDate;
-    }
-
-    return await this.bookLoanRepository.save(newBookLoan);
   }
 
   async setInProcess(bookLoanId: number): Promise<BookLoan> {
