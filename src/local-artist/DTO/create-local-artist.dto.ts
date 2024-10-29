@@ -1,45 +1,42 @@
 /* eslint-disable prettier/prettier */
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsUrl, IsOptional } from 'class-validator';
 
 export class CreateLocalArtistDTO {
   
-  @IsString()
   @IsNotEmpty({ message: 'Nombre completo del artista es obligatorio' })
+  @IsString()
   @ApiProperty({ description: 'Nombre completo del artista' })
   Name: string;
 
-  @IsString()
   @IsNotEmpty({ message: 'Profesión del artista es obligatorio' })
+  @IsString()
   @ApiProperty({ description: 'Profesión del artista (ej. Pintor, Cantante)' })
   ArtisProfession: string;
 
+  @IsOptional()
+  @ApiPropertyOptional({ description: 'URL de la imagen de portada del artista', example: 'http://example.com/image.jpg' })
   @IsString()
   @IsUrl({}, { message: ' URL de la imagen de portada del artista debe ser una URL válida' })
-  @IsOptional()
-  @ApiProperty({ description: 'URL de la imagen de portada del artista', example: 'http://example.com/image.jpg' })
   Cover: string;
 
+  @IsOptional()
+  @ApiPropertyOptional({ description: 'Menciones y otra información adicional sobre el artista' })
   @IsString({ message: 'MoreInfo debe ser una cadena de texto' })
-  @IsOptional()
-  @ApiProperty({ description: 'Menciones y otra información adicional sobre el artista' })
-  MoreInfo: string;
+  MoreInfo?: string;
 
-  @IsString()
-  @IsUrl({}, { message: 'FBLink debe ser una URL válida' })
   @IsOptional()
-  @ApiProperty({ description: 'Enlace a Facebook del artista' })
-  FBLink: string;
+  @ApiPropertyOptional({ description: 'Enlace a Facebook del artista' })
+  @IsString()
+  FBLink?: string;
 
-  @IsString()
-  @IsUrl({}, {  message: 'La URL debe ser una URL válida'  })
   @IsOptional()
-  @ApiProperty({ description: 'Enlace a Instagram del artista' })
-  IGLink: string;
+  @ApiPropertyOptional({ description: 'Enlace a Instagram del artista' })
+  @IsString()
+  IGLink?: string;
 
-  @IsString()
-  @IsUrl({}, { message: 'La URL debe ser una URL válida' })
   @IsOptional()
-  @ApiProperty({ description: 'Enlace a LinkedIn del artista' })
-  LILink: string;
+  @ApiPropertyOptional({ description: 'Enlace a LinkedIn del artista' })
+  @IsString()
+  LILink?: string;
 }
