@@ -4,9 +4,7 @@ import {
   IsDate,
   IsNotEmpty,
   IsString,
-  Matches,
   IsOptional,
-  IsDateString,
 } from 'class-validator';
 
 export class CreateEventsDTO {
@@ -36,7 +34,7 @@ export class CreateEventsDTO {
   @ApiProperty({ example: '10-10-2021' })
   @IsDate({ message: 'Date debe ser una fecha en formato DD-MM-YYYY' })
   @IsNotEmpty({ message: 'Date es un campo obligatorio' })
-  Date: string;
+  Date: Date;
 
   @ApiProperty({ example: '10:00:00' })
   @IsString()
