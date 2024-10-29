@@ -65,20 +65,7 @@ export class CourseController {
   async findAllCourses(
     @Query() query: GetCoursesDto,
   ): Promise<{ data: CoursesDTO[]; count: number }> {
-    try {
-      const courses = await this.courseService.findAllCourses(query);
-      if (!courses.data || courses.data.length === 0) {
-        throw new NotFoundException('No se encontraron cursos.');
-      }
-      return courses;
-    } catch (error) {
-      const errorMessage =
-        (error as Error).message || 'Error al procesar la solicitud';
-
-      throw new BadRequestException(
-        errorMessage || 'Error inesperado al crear el curso.',
-      );
-    }
+    return await this.courseService.findAllCourses(query)
   }
 
   @Patch(':courseId')

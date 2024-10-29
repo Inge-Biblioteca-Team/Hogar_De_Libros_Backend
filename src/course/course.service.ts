@@ -79,10 +79,6 @@ export class CourseService {
 
     const [courses, count] = await query.getManyAndCount();
 
-    if (!courses || courses.length === 0) {
-      throw new NotFoundException('No se encontraron cursos.');
-    }
-
     const result = await Promise.all(
       courses.map(async (course) => {
         const enrollmentCount =

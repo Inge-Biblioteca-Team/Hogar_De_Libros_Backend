@@ -7,7 +7,6 @@ import {
   IsNumber,
   IsNotEmpty,
   IsOptional,
-  IsDateString,
 } from 'class-validator';
 
 export class CreateCourseDto {
@@ -20,7 +19,7 @@ export class CreateCourseDto {
   @ApiProperty({ description: 'Fecha de inicio del curso' })
   @IsDate({ message: 'Fecha de inicio debe ser una fecha válida (DD-MM-YYYY)' })
   @IsNotEmpty({ message: 'Fecha de inicio es obligatorio' })
-  date: string;
+  date: Date;
 
   @ApiProperty({ description: 'Hora del curso' })
   @IsString()
@@ -65,7 +64,7 @@ export class CreateCourseDto {
   @ApiProperty({ description: 'Fecha final del curso' })
   @IsDate({ message: 'Fecha de finalizacion debe ser una fecha válida (DD-MM-YYYY)' })
   @IsNotEmpty({ message: 'Fecha de finalizacion es obligatorio' })
-  endDate: string;
+  endDate: Date;
 
   @ApiProperty({ description: 'ID del programa', default: null })
   @IsNumber()
