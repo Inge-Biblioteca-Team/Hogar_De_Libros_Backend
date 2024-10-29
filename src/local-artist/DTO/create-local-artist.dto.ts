@@ -1,33 +1,45 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsString, IsNotEmpty, IsUrl, IsOptional } from 'class-validator';
 
 export class CreateLocalArtistDTO {
+  
   @IsString()
-  @ApiProperty({ description: 'Nombre completo' })
+  @IsNotEmpty({ message: 'Nombre completo del artista es obligatorio' })
+  @ApiProperty({ description: 'Nombre completo del artista' })
   Name: string;
 
   @IsString()
-  @ApiProperty({ description: 'Profecion Pintor Cantante o otro' })
+  @IsNotEmpty({ message: 'Profesión del artista es obligatorio' })
+  @ApiProperty({ description: 'Profesión del artista (ej. Pintor, Cantante)' })
   ArtisProfession: string;
 
   @IsString()
-  @ApiProperty({ description: 'Url' })
+  @IsUrl({}, { message: ' URL de la imagen de portada del artista debe ser una URL válida' })
+  @IsOptional()
+  @ApiProperty({ description: 'URL de la imagen de portada del artista', example: 'http://example.com/image.jpg' })
   Cover: string;
 
-  @IsString()
-  @ApiProperty({ description: 'Menciones y Demas' })
+  @IsString({ message: 'MoreInfo debe ser una cadena de texto' })
+  @IsOptional()
+  @ApiProperty({ description: 'Menciones y otra información adicional sobre el artista' })
   MoreInfo: string;
 
   @IsString()
-  @ApiProperty({ description: 'Red FB' })
+  @IsUrl({}, { message: 'FBLink debe ser una URL válida' })
+  @IsOptional()
+  @ApiProperty({ description: 'Enlace a Facebook del artista' })
   FBLink: string;
 
   @IsString()
-  @ApiProperty({ description: 'Red IG' })
+  @IsUrl({}, {  message: 'La URL debe ser una URL válida'  })
+  @IsOptional()
+  @ApiProperty({ description: 'Enlace a Instagram del artista' })
   IGLink: string;
 
   @IsString()
-  @ApiProperty({ description: 'Red LI' })
+  @IsUrl({}, { message: 'La URL debe ser una URL válida' })
+  @IsOptional()
+  @ApiProperty({ description: 'Enlace a LinkedIn del artista' })
   LILink: string;
 }
