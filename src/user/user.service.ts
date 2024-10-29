@@ -1,12 +1,16 @@
 /* eslint-disable prettier/prettier */
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './DTO/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './DTO/update-user.dto';
-import { Role } from './loan-policy';
 import { FindAllUsersDto } from './DTO/GetPaginatedDTO';
 import { UpdatePasswordDto } from './DTO/UpdatePassDTO';
 
@@ -68,55 +72,44 @@ export class UserService {
     });
   }
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<{ message: string }> {
     const { email, cedula, password } = createUserDto;
 
-    const existingUser = await this.UserRepository.findOne({
-      where: [{ email }, { cedula }],
-    });
+    try {
+      const existingUser = await this.UserRepository.findOne({
+        where: [{ email }, { cedula }],
+      });
 
-    if (existingUser) {
-      if (existingUser.email === email) {
-        throw new HttpException(
-          'El correo electrónico ya está registrado.',
-          HttpStatus.CONFLICT,
-        );
+      if (existingUser) {
+        if (existingUser.email === email) {
+          throw new HttpException(
+            'El correo electrónico ya está registrado por favor intente con otro.',
+            HttpStatus.CONFLICT,
+          );
+        }
+
+        if (existingUser.cedula === cedula) {
+          throw new HttpException(
+            'Ya existe un usuario con la cedula ingresada.',
+            HttpStatus.CONFLICT,
+          );
+        }
       }
 
-      if (existingUser.cedula === cedula) {
-        throw new HttpException(
-          'Error durante el registro revise sus datos.',
-          HttpStatus.CONFLICT,
-        );
-      }
+      const saltOrRounds = 10;
+      const hash = await bcrypt.hash(password, saltOrRounds);
+      const newUser = this.UserRepository.create(createUserDto);
+      newUser.password = hash;
+      newUser.status = true;
+      await this.UserRepository.save(newUser);
+
+      return { message: 'Se ha registrado exitosamente' };
+    } catch (error) {
+      const errorMessage = (error as Error).message || 'Error al registrar';
+      throw new InternalServerErrorException(errorMessage);
     }
-
-    const saltOrRounds = 10;
-    const hash = await bcrypt.hash(password, saltOrRounds);
-    const newUser = this.UserRepository.create(createUserDto);
-    newUser.password = hash;
-    newUser.status = true;
-
-    return await this.UserRepository.save(newUser);
   }
 
-  async createExternalUser(createUserDto: CreateUserDto): Promise<User> {
-    createUserDto.role = Role.ExternalUser;
-
-    return await this.create(createUserDto);
-  }
-
-  async createViewerUser(createUserDto: CreateUserDto): Promise<User> {
-    createUserDto.role = Role.Viewer;
-
-    return await this.create(createUserDto);
-  }
-
-  async createCreatorUser(createUserDto: CreateUserDto): Promise<User> {
-    createUserDto.role = Role.Creator;
-
-    return await this.create(createUserDto);
-  }
   async update(cedula: string, updateUserDto: UpdateUserDto) {
     const user = await this.UserRepository.findOneBy({ cedula });
     if (!user)
