@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, IsEmail, Matches } from 'class-validator';
 
 export class CreateEnrollmentDto {
+  
   @ApiProperty({
     description: 'Cédula del usuario, opcional si no está registrado',
     nullable: true,
@@ -17,7 +18,7 @@ export class CreateEnrollmentDto {
   })
   @IsOptional()
   @IsString()
-  direction?: string; // Cambiado de direcction a direction (corrección ortográfica)
+  direction?: string;
 
   @ApiProperty({
     description: 'Teléfono del usuario',
@@ -40,7 +41,7 @@ export class CreateEnrollmentDto {
     nullable: true,
   })
   @IsOptional()
-  @IsString()
+  @IsEmail({}, { message: 'Debe ser una dirección de correo válida' })
   email?: string;
 
   @ApiProperty({

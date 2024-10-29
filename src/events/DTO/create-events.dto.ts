@@ -5,54 +5,56 @@ import {
   IsNotEmpty,
   IsString,
   Matches,
+  IsOptional,
+  IsDateString,
 } from 'class-validator';
 
 export class CreateEventsDTO {
+  
   @ApiProperty({ example: 'Parque recadero Briceño' })
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Location es un campo obligatorio' })
   Location: string;
 
   @ApiProperty({ example: 'Charla de lectura' })
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Title es un campo obligatorio' })
   Title: string;
 
   @ApiProperty({
     example: 'Evento de charla sobre la importancia de la lectura',
   })
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Details es un campo obligatorio' })
   Details: string;
 
   @ApiProperty({ example: 'Charla' })
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Category es un campo obligatorio' })
   Category: string;
 
-  @ApiProperty({ example: '2021-10-10' })
-  @IsDate()
-  @IsNotEmpty()
-  Date: Date;
+  @ApiProperty({ example: '10-10-2021' })
+  @IsDate({ message: 'Date debe ser una fecha en formato DD-MM-YYYY' })
+  @IsNotEmpty({ message: 'Date es un campo obligatorio' })
+  Date: string;
 
   @ApiProperty({ example: '10:00:00' })
   @IsString()
-  @IsNotEmpty()
-  @Matches(/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/, {
-    message: 'El tiempo debe respetar el formato de 24 horas HH:mm:ss',
-  })
+  @IsNotEmpty({ message: 'Time es un campo obligatorio' })
   Time: string;
 
   @ApiProperty({ example: 'URL de la imagen del evento' })
+  @IsOptional()
+  @IsString()
   Image?: string;
 
   @ApiProperty({ example: 'Niños de 5 a 10 años' })
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'TargetAudience es un campo obligatorio' })
   TargetAudience: string;
 
   @ApiProperty({ example: 'Juan Perez' })
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'InchargePerson es un campo obligatorio' })
   InchargePerson: string;
 }
