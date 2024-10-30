@@ -33,4 +33,7 @@ export class FindAllUsersDto {
   @IsOptional()
   @IsDateString()
   registerDate?: string;
+
+
+  loanPolicy:number
 }

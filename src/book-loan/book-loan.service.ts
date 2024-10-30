@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -32,6 +31,7 @@ export class BookLoanService {
     private noteService: NotesService,
     private userService: UserService,
   ) {}
+
   async createLoan(
     createBookLoanDto: CreateBookLoanDto,
   ): Promise<{ message: string }> {
@@ -39,43 +39,23 @@ export class BookLoanService {
       const user = await this.userService.findCedula(
         createBookLoanDto.userCedula,
       );
-
-      const role = user.role;
-
-      console.log(user);
-
-      if (!LoanPolicy.canLoan(role)) {
-        throw new ForbiddenException(
-          'No tienes permisos para realizar préstamos.',
+      if (!user) {
+        throw new NotFoundException(
+          `Usuario no encontrado con cédula ${createBookLoanDto.userCedula}`,
         );
       }
 
       const book = await this.bookRepository.findOne({
         where: { BookCode: createBookLoanDto.bookBookCode },
       });
-
       if (!book) {
         throw new NotFoundException(
           `El libro con código ${createBookLoanDto.bookBookCode} no fue encontrado`,
         );
       }
-
       if (book.Status === false) {
         throw new BadRequestException(
           `El libro con código ${book.BookCode} está inactivo y no puede ser prestado.`,
-        );
-      }
-
-      const existingLoan = await this.bookLoanRepository.findOne({
-        where: {
-          bookBookCode: book.BookCode,
-          Status: In(['Pendiente', 'En progreso']),
-        },
-      });
-
-      if (existingLoan) {
-        throw new BadRequestException(
-          `El libro con código ${book.BookCode} ya está prestado.`,
         );
       }
 
@@ -86,15 +66,14 @@ export class BookLoanService {
         },
       });
 
-      const loanLimits = LoanPolicy.getLoanLimits(role, userCurrentLoans + 1);
+      const loanLimits = LoanPolicy.getLoanLimits(
+        user.loanPolicy,
+        userCurrentLoans,
+      );
 
-      const maxBooksAllowed = loanLimits.maxBooks;
-      if (
-        maxBooksAllowed !== 'unlimited' &&
-        userCurrentLoans >= maxBooksAllowed
-      ) {
+      if (!loanLimits.canLoan) {
         throw new BadRequestException(
-          `Has alcanzado el límite máximo de ${maxBooksAllowed} préstamos para tu rol.`,
+          'No puedes realizar mas préstamos en este momento, excediste el máximo de prestamos, puedes cancelar alguna solicitud pendiente o devolver un libro a la biblioteca para realizar una nueva solicitud.',
         );
       }
 
@@ -102,22 +81,15 @@ export class BookLoanService {
       newBookLoan.Status = 'Pendiente';
       newBookLoan.book = book;
 
+      await this.bookLoanRepository.save(newBookLoan);
+
       const createNoteDto: CreateNoteDto = {
-        message: `El libro con código ${book.BookCode} ha sido solicitado por el usuario.`,
+        message: `El libro con código ${book.BookCode} ha sido solicitado por el usuario con cédula ${user.cedula}.`,
         type: 'Solicitud de libro',
       };
-
       await this.noteService.createNote(createNoteDto);
-      this.bookLoanRepository.save(newBookLoan);
 
-      const maxDaysAllowed = loanLimits.days;
-      if (maxDaysAllowed !== 'unlimited') {
-        const expirationDate = new Date();
-        expirationDate.setDate(expirationDate.getDate() + maxDaysAllowed);
-        newBookLoan.LoanExpirationDate = expirationDate;
-      }
-
-      return { message: `Éxito` };
+      return { message: 'Éxito' };
     } catch (error) {
       const errorMessage = (error as Error).message || 'Error al solicitar';
       throw new InternalServerErrorException(errorMessage);
@@ -427,5 +399,15 @@ export class BookLoanService {
     }));
 
     return { data: result, count };
+  }
+
+  async isBookLoanActive(bookCode: number): Promise<boolean> {
+    const count = await this.bookLoanRepository.count({
+      where: {
+        bookBookCode: bookCode,
+        Status: In(['Pendiente', 'En progreso']),
+      },
+    });
+    return count > 0;
   }
 }

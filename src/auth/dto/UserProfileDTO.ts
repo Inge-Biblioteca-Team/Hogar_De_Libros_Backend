@@ -14,5 +14,6 @@ export class UserProfile {
     address?: string;
     birthDate?: Date;
     role?: string;
+    loanPolicity:number
     
 }
