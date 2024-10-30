@@ -39,6 +39,12 @@ export class NotesController {
   ): Promise<{ message: string }> {
     return await this.notyService.markAsRead(notificationId);
   }
+  @Patch('read/multiple')
+  async markMultipleAsRead(
+    @Body('ids') notificationIds: number[],
+  ): Promise<{ message: string }> {
+    return await this.notyService.moveMultipleToRead(notificationIds);
+  }
 
   @Patch(':id/trash')
   async moveToTrash(

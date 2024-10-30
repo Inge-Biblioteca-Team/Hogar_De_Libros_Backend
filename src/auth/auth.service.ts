@@ -54,7 +54,7 @@ export class AuthService {
         address: user.address,
         birthDate: user.birthDate,
         role: user.role,
-        loanPolicity:user.loanPolicy
+        loanPolicity: user.loanPolicy,
       };
 
       return {
@@ -74,19 +74,14 @@ export class AuthService {
     if (!user) {
       throw new HttpException('No registrado.', HttpStatus.BAD_REQUEST);
     }
-
+    const userFullName = `~${user.name} ${user.lastName}`
+    
     const token = this.jwtService.sign(
       { id: user.cedula },
       { expiresIn: '1h' },
     );
-    const resetLink = `http://localhost:5173/reset-password?token=${token}`;
+    const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${token}`;
 
-    await this.mailService.sendPasswordReset(
-      user.email,
-      `
-      <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
-      <a href="${resetLink}"> recuperar contraseña </a>`,
-      'Restablecer tu contraseña',
-    );
+    await this.mailService.sendPasswordReset(user.email, resetLink, userFullName );
   }
 }

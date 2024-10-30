@@ -72,6 +72,25 @@ export class NotesService {
     }
   }
 
+  
+  async moveMultipleToRead(
+    notificationIds: number[],
+  ): Promise<{ message: string }> {
+    try {
+      await this.notyRepository
+        .createQueryBuilder()
+        .update('notes')
+        .set({ isRead: true })
+        .whereInIds(notificationIds)
+        .execute();
+      return { message: 'Exito' };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error al mover las notificaciones a la papelera',
+      );
+    }
+  }
+
   //Para mover a papelera y establecer un dia de borrado para luego un job si supera los 30 se borra total
   async moveToTras(notificationId: number): Promise<{ message: string }> {
     const currentDate = new Date().toISOString().split('T')[0];
