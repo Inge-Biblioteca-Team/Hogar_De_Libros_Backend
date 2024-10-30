@@ -4,7 +4,7 @@ export class LoanPolicy {
     switch (policity) {
       case 0:
         return {
-          canLoan: currentLoan === 0,
+          canLoan: false,
         };
       case 8:
         return {

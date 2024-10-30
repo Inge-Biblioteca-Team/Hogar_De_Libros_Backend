@@ -1,14 +1,15 @@
 /* eslint-disable prettier/prettier */
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsDate,
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsString,
 } from 'class-validator';
-import { Role } from '../loan-policy';
+import { Role } from '../user.entity';
 
 export class CreateUserDto {
 
@@ -74,5 +75,9 @@ export class CreateUserDto {
 
   @ApiProperty({ description: 'Rol del usuario', enum: Role })
   @IsEnum(Role)
-  role: Role = Role.Viewer;
+  role: Role = Role.ExternalUser;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  loanPolicy:number
 }

@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsDate,
   IsEmail,
@@ -9,7 +9,7 @@ import {
 
 export class UpdateUserDto {
   @ApiProperty()
-  cedula:string;
+  cedula: string;
   @ApiProperty({ description: 'Correo electrónico del usuario' })
   @IsEmail()
   @IsOptional()
@@ -53,5 +53,8 @@ export class UpdateUserDto {
   @ApiProperty({ description: 'Fecha de nacimiento del usuario' })
   @IsDate()
   @IsOptional()
-  birthDate: Date; 
+  birthDate: Date;
+
+  @ApiPropertyOptional()
+  loanPolicy: number;
 }

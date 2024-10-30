@@ -73,7 +73,7 @@ export class BookLoanService {
 
       if (!loanLimits.canLoan) {
         throw new BadRequestException(
-          'No puedes realizar préstamos en este momento.',
+          'No puedes realizar mas préstamos en este momento, excediste el máximo de prestamos, puedes cancelar alguna solicitud pendiente o devolver un libro a la biblioteca para realizar una nueva solicitud.',
         );
       }
 
@@ -399,5 +399,15 @@ export class BookLoanService {
     }));
 
     return { data: result, count };
+  }
+
+  async isBookLoanActive(bookCode: number): Promise<boolean> {
+    const count = await this.bookLoanRepository.count({
+      where: {
+        bookBookCode: bookCode,
+        Status: In(['Pendiente', 'En progreso']),
+      },
+    });
+    return count > 0;
   }
 }

@@ -54,6 +54,7 @@ export class AuthService {
         address: user.address,
         birthDate: user.birthDate,
         role: user.role,
+        loanPolicity:user.loanPolicy
       };
 
       return {
