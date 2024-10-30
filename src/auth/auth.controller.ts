@@ -51,4 +51,14 @@ export class AuthController {
     const { email, cedula } = sendPasswordResetDto;
     await this.authService.sendPasswordReset(email, cedula);
   }
+
+  @Post('/logout')
+  async logout(@Res() res: Response) {
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+    });
+    res.status(200).send({ message: 'Éxito al cerrar sesión' });
+  }
 }
