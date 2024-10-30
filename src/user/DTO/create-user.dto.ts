@@ -7,6 +7,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
 } from 'class-validator';
 import { Role } from '../user.entity';
@@ -78,6 +79,7 @@ export class CreateUserDto {
   role: Role = Role.ExternalUser;
 
   @ApiPropertyOptional()
+  @IsOptional() 
   @IsNumber()
-  loanPolicy:number
+  loanPolicy?:number
 }
