@@ -11,6 +11,7 @@ import {
   Patch,
   Query,
   InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 import { CreateProgramDto } from './dto/create-program.dto';
@@ -22,25 +23,33 @@ import { ProgramDTO } from './DTO/GetPDTO';
 import { ProgramsNames } from './DTO/ProgramNames';
 import { Course } from 'src/course/course.entity';
 import { activities } from './DTO/Programs-Activities.dto';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+import { Role } from 'src/user/user.entity';
 
 @ApiTags('Programs')
 @Controller('programs')
+@UseGuards(AuthGuard, RolesGuard)
 export class ProgramsController {
   constructor(private readonly programService: ProgramsService) {}
   
   @Get('Activities')
+  @Roles(Role.Admin, Role.Creator)
   async getActivities(
     @Query() filters:SearchPDTO
   ): Promise<{data:activities[], count:number}> {
     return this.programService.getActivities(filters);
   }
   @Get('All')
+  @Roles(Role.Admin, Role.Creator)
   async getAllPrograms(
     @Query() searchDTO: SearchPDTO,
   ): Promise<{ data: ProgramDTO[]; count: number }> {
     return this.programService.getAllsPrograms(searchDTO);
   }
   @Get('Actived')
+  @Roles(Role.Admin, Role.Creator)
   async getActivedProgram(): Promise<ProgramsNames[]> {
     try {
       return await this.programService.getProgramsNames();
@@ -53,6 +62,7 @@ export class ProgramsController {
   }
 
   @Get(':id')
+  @Roles(Role.Admin, Role.Creator)
   @ApiResponse({
     status: 201,
     description: 'Se ha encontrado el programa.',
@@ -76,6 +86,7 @@ export class ProgramsController {
   }
 
   @Post()
+  @Roles(Role.Admin, Role.Creator)
   @ApiResponse({
     status: 201,
     description: 'Programa creado exitosamente.',
@@ -98,6 +109,7 @@ export class ProgramsController {
   }
 
   @Patch(':id')
+  @Roles(Role.Admin, Role.Creator)
   @ApiResponse({
     status: 201,
     description: 'Programa se ha actualizado exitosamente.',
@@ -119,6 +131,7 @@ export class ProgramsController {
   }
 
   @Patch(':id/disable')
+  @Roles(Role.Admin)
   @ApiResponse({
     status: 201,
     description: 'Programa se ha deshabilitado exitosamente.',
@@ -145,6 +158,7 @@ export class ProgramsController {
   }
 
   @Get(':id/courses')
+  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
   async getCoursesByProgram(@Param('id') id: number): Promise<Course[]> {
     const courses = await this.programService.getCoursesByProgram(id);
 

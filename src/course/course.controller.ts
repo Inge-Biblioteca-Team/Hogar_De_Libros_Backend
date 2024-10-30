@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './DTO/create-course.dto';
@@ -19,9 +20,14 @@ import { GetCoursesDto } from './DTO/get.-course.dto';
 import { NexCorusesDTO } from './DTO/NexCoursesDTO';
 import { SearchDTO } from './DTO/SearchDTO';
 import { CoursesDTO } from './DTO/CoursesDTO';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+import { Role } from 'src/user/user.entity';
 
 @ApiTags('Courses')
 @Controller('courses')
+@UseGuards(AuthGuard,RolesGuard)
 export class CourseController {
   constructor(
     // private readonly enrollmentService: EnrollmentService,
@@ -31,6 +37,7 @@ export class CourseController {
 
 
   @Post()
+  @Roles(Role.Admin, Role.Creator)
   @ApiBody({ type: CreateCourseDto })
   @ApiResponse({
     status: 201,
@@ -46,6 +53,7 @@ export class CourseController {
     description: 'Conflict: Conflicto de datos (ej. curso ya existe)',
   })
   async createCourse(
+    
     @Body() createCourseDto: CreateCourseDto,
   ): Promise<Course> {
     try {
@@ -62,6 +70,7 @@ export class CourseController {
   }
 
   @Get()
+  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
   async findAllCourses(
     @Query() query: GetCoursesDto,
   ): Promise<{ data: CoursesDTO[]; count: number }> {
@@ -69,6 +78,7 @@ export class CourseController {
   }
 
   @Patch(':courseId')
+  @Roles(Role.Admin, Role.Creator)
   @ApiBody({ type: PartialType(CreateCourseDto) })
   @ApiResponse({
     status: 200,
@@ -103,6 +113,7 @@ export class CourseController {
   }
 
   @Patch(':courseId/disable')
+  @Roles(Role.Admin)
   @ApiResponse({
     status: 200,
     description: 'Course disabled successfully',
@@ -127,6 +138,7 @@ export class CourseController {
   }
 
   @Get(':courseId/active')
+  @Roles(Role.Admin)
   @ApiResponse({
     status: 200,
     description: 'Active course found',
@@ -153,6 +165,7 @@ export class CourseController {
   }
 
   @Get('/NextCourtes')
+  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
   async getNextCourses(
     @Query() SearchDTO: SearchDTO,
   ): Promise<{ data: NexCorusesDTO[]; count: number }> {
@@ -160,13 +173,16 @@ export class CourseController {
   }
 
   @Get('User_Courses')
+  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
   async getCoursesByUserCedula(
     @Query() searchDTO: SearchDTO,
   ): Promise<{ data: NexCorusesDTO[]; count: number }> {
     return this.courseService.getCoursesByUserCedula(searchDTO);
   }
 
+
   @Get('CourseList')
+  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
   async CourseList(@Query('fecha') fecha: Date): Promise<CreateCourseDto[]> {
     return this.courseService.CourseList(fecha);
   }

@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -24,13 +25,19 @@ import { UpdateBookChildrenDto } from './DTO/update-book-children.dto';
 import { EnableBookChildrenDto } from './DTO/enable-book-children.dto';
 import { BooksChildren } from './book-children.entity';
 import { PaginationFilterChildrenDto } from './DTO/pagination-filter-children.dto';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+import { Role } from 'src/user/user.entity';
 
 @ApiTags('book-children')
 @Controller('book-children')
+@UseGuards(AuthGuard, RolesGuard)
 export class BookChildrenController {
   constructor(private readonly bookChildrenService: BookChildrenService) {}
 
   @Post()
+  @Roles(Role.Admin, Role.Creator)
   @ApiBody({ type: CreateBookChildrenDto })
   @ApiResponse({
     status: 201,
@@ -44,6 +51,7 @@ export class BookChildrenController {
   }
 
   @Patch(':bookChildCode')
+  @Roles(Role.Admin, Role.Creator)
   @ApiOperation({})
   async updatePartial(
     @Param('bookChildCode') bookChildCode: number,
@@ -56,6 +64,7 @@ export class BookChildrenController {
   }
 
   @Put(':bookChildCode/enable')
+  @Roles(Role.Admin)
   @ApiOperation({})
   @ApiParam({
     name: 'bookChildCode',
@@ -80,12 +89,14 @@ export class BookChildrenController {
   }
 
   @Patch(':bookChildCode/disable')
+  @Roles(Role.Admin)
   @ApiOperation({})
   async disableBookChild(@Param('bookChildCode') bookChildCode: number) {
     return await this.bookChildrenService.disableBook(bookChildCode);
   }
 
   @Get(':bookChildCode')
+  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
   @ApiProperty({ description: 'Obtiene un libro infantil por su código' })
   async findById(
     @Param('bookChildCode') bookChildCode: number,
@@ -100,6 +111,7 @@ export class BookChildrenController {
   }
 
   @Get()
+  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
   @ApiOperation({
     summary: 'Obtener libros infantiles con paginación y filtros',
   })

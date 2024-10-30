@@ -7,25 +7,32 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ComputerLoanService } from './computer-loan.service';
 import { CreateComputerLoanDto } from './DTO/create-computer-loan.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationQueryDTO } from './DTO/Pagination-querry.dto';
 import { ComputerLoan } from './computer-loan.entity';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+import { Role } from 'src/user/user.entity';
 
 @ApiTags('ComputerLoan')
 @Controller('computer-loan')
+@UseGuards(AuthGuard, RolesGuard)
 export class ComputerLoanController {
   constructor(private computerLoanService: ComputerLoanService) {}
 
   @Post()
-
+  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
   CreateComputerLoan(@Body() createComputerLoanDto: CreateComputerLoanDto) {
     return this.computerLoanService.CreateComputerLoan(createComputerLoanDto);
   }
 
   @Get()
+  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
   @ApiOperation({ summary: 'Obtener todos los préstamos con paginación' })
   @ApiResponse({
     status: 200,
@@ -39,6 +46,7 @@ export class ComputerLoanController {
   }
 
   @Patch('/finish/:machineNumber')
+  @Roles(Role.Admin)
   @ApiOperation({
     summary: 'Finalizar un préstamo de cómputo por número de máquina',
   })

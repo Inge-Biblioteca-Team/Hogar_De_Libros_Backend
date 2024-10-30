@@ -8,6 +8,7 @@ import {
   Put,
   Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
@@ -19,12 +20,18 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { SeachDTO } from './DTO/SeachDTO';
 import { NexEventsDTO } from './DTO/NextEvents';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+import { Role } from 'src/user/user.entity';
 @ApiTags('events')
 @Controller('events')
+@UseGuards(AuthGuard, RolesGuard)
 export class EventsController {
   constructor(private eventsService: EventsService) {}
 
   @Post()
+  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -54,6 +61,7 @@ export class EventsController {
   }
 
   @Get()
+  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
   @ApiResponse({ status: 200, description: 'Lista de eventos mostrada' })
   @ApiResponse({ status: 400, description: 'Parametros invalidos' })
   @ApiResponse({
@@ -65,6 +73,7 @@ export class EventsController {
   }
 
   @Put()
+  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -99,6 +108,7 @@ export class EventsController {
 
 
   @Patch('ejecution-status')
+  @Roles(Role.Admin, Role.Creator)
   @ApiResponse({
     status: 200,
     description: 'Se cambio el estado a en ejecucion',
@@ -112,6 +122,7 @@ export class EventsController {
   }
 
   @Patch('finalized-status')
+  @Roles(Role.Admin, Role.Creator)
   @ApiResponse({
     status: 200,
     description: 'Se cambio el estado a en ejecucion',
@@ -125,11 +136,13 @@ export class EventsController {
   }
 
   @Patch('CancelEvent')
+  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
   updatePendientStatus(@Query('id') id: number): Promise<{ message: string }> {
     return this.eventsService.cancelEvent(id);
   }
 
   @Get('NextEvents')
+  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
   getNextEvents(
     @Query() SearchParams: SeachDTO,
   ): Promise<{ data: NexEventsDTO[]; count: number }> {
@@ -137,6 +150,7 @@ export class EventsController {
   }
 
   @Get('EventList')
+  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
   async EventList(@Query('date') date: Date): Promise< CreateEventsDTO[] > {
     return this.eventsService.EventList(date);
   }
