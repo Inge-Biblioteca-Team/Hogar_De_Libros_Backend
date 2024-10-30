@@ -5,15 +5,16 @@ import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
 import { FriendsLibrary } from 'src/friends-library/friend-library.entity';
 import { RoomReservation } from 'src/room-reservation/entities/room-reservation.entity';
 
-import {
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryColumn,
-} from 'typeorm';
-import { Role } from './loan-policy';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { Donation } from 'src/donation/donation.entity';
 import { Collaborator } from 'src/collaborator/collaborator.entity';
+
+export enum Role {
+  ExternalUser = 'external_user', //Puede solicitar libros bajo la política que se le establezca
+  Reception = 'reception', // usuario destinado a consultas de libros y demás(Usuario de recepción)
+  Creator = 'creator', // Asistentes pueden crear registros dar asistencia a la colección pero no borrar o dar de baja
+  Admin = 'admin', //Puede incidir en todo
+}
 
 @Entity({ name: 'users' })
 export class User {
@@ -72,10 +73,13 @@ export class User {
   @Column()
   status: boolean;
 
+  @Column({ default: 0 })
+  loanPolicy: number;
+
   @Column({
     type: 'enum',
     enum: Role,
-    default: Role.Viewer,
+    default: Role.ExternalUser,
   })
   role: Role;
 
