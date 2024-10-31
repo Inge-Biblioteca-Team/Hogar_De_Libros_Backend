@@ -21,16 +21,14 @@ import { DenyDonationRequestDTO } from './DTO/deny-donation-DTO';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
-import { Role } from 'src/user/user.entity';
+
 
 @ApiTags('Donation')
 @Controller('donation')
-@UseGuards(AuthGuard, RolesGuard)
 export class DonationController {
   constructor(private donationService: DonationService) {}
 
   @Post()
-  @Roles(Role.Admin,Role.Creator, Role.ExternalUser, Role.Reception)
   @UseInterceptors(AnyFilesInterceptor())
   async CreateDonation(
     @Body() dto: CreateDonationDTO,
@@ -42,13 +40,15 @@ export class DonationController {
   }
 
   @Get()
-  @Roles(Role.Admin,Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin','Asistente')
   async getAllDonation(@Query(ValidationPipe) filterDTO: GetFilterDonationDTO) {
     return await this.donationService.getAllDonation(filterDTO);
   }
 
   @Patch('aproveFriendDonation/:DonationID')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async aproveDonation(
     @Param('DonationID') DonationID: number,
   ): Promise<{ message: string }> {
@@ -56,7 +56,8 @@ export class DonationController {
   }
 
   @Patch('denyDonation/:DonationID')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async denyDonation(
     @Param('DonationID') DonationID: number,
     @Body() DTO: DenyDonationRequestDTO,
@@ -65,7 +66,8 @@ export class DonationController {
   }
 
   @Patch('confirmDonation/:DonationID')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async confirmDonation(
     @Param('DonationID') DonationID: number,
     @Body() DTO: DenyDonationRequestDTO,

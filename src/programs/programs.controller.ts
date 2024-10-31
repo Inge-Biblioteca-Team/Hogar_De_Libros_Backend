@@ -26,7 +26,7 @@ import { activities } from './DTO/Programs-Activities.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
-import { Role } from 'src/user/user.entity';
+
 
 @ApiTags('Programs')
 @Controller('programs')
@@ -35,21 +35,24 @@ export class ProgramsController {
   constructor(private readonly programService: ProgramsService) {}
   
   @Get('Activities')
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente', 'Recepcion', 'Externo', 'Institucional')
   async getActivities(
     @Query() filters:SearchPDTO
   ): Promise<{data:activities[], count:number}> {
     return this.programService.getActivities(filters);
   }
+
   @Get('All')
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente')
   async getAllPrograms(
     @Query() searchDTO: SearchPDTO,
   ): Promise<{ data: ProgramDTO[]; count: number }> {
     return this.programService.getAllsPrograms(searchDTO);
   }
+
   @Get('Actived')
-  @Roles(Role.Admin, Role.Creator)
   async getActivedProgram(): Promise<ProgramsNames[]> {
     try {
       return await this.programService.getProgramsNames();
@@ -62,7 +65,8 @@ export class ProgramsController {
   }
 
   @Get(':id')
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente', 'Recepcion', 'Externo', 'Institucional')
   @ApiResponse({
     status: 201,
     description: 'Se ha encontrado el programa.',
@@ -86,7 +90,8 @@ export class ProgramsController {
   }
 
   @Post()
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente')
   @ApiResponse({
     status: 201,
     description: 'Programa creado exitosamente.',
@@ -109,7 +114,8 @@ export class ProgramsController {
   }
 
   @Patch(':id')
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   @ApiResponse({
     status: 201,
     description: 'Programa se ha actualizado exitosamente.',
@@ -131,7 +137,8 @@ export class ProgramsController {
   }
 
   @Patch(':id/disable')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   @ApiResponse({
     status: 201,
     description: 'Programa se ha deshabilitado exitosamente.',
@@ -158,7 +165,8 @@ export class ProgramsController {
   }
 
   @Get(':id/courses')
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente', 'Recepcion', 'Externo', 'Institucional')
   async getCoursesByProgram(@Param('id') id: number): Promise<Course[]> {
     const courses = await this.programService.getCoursesByProgram(id);
 

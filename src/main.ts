@@ -6,10 +6,11 @@ import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as cookieParser from 'cookie-parser';
+import { SwaggerAuthInterceptor } from './Interceptors/SwaggerAuthInterceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: false,
+    cors: true,
   });
 
   app.enableCors({
@@ -36,6 +37,8 @@ async function bootstrap() {
       'access-token',
     )
     .build();
+
+    app.useGlobalInterceptors(new SwaggerAuthInterceptor())
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
   app.useStaticAssets(join(__dirname, '..', 'assets'), {

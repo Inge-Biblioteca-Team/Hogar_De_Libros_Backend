@@ -26,13 +26,13 @@ export class ComputerLoanController {
   constructor(private computerLoanService: ComputerLoanService) {}
 
   @Post()
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
+  @Roles('Admin', 'Asistente', 'Recepcion')
   CreateComputerLoan(@Body() createComputerLoanDto: CreateComputerLoanDto) {
     return this.computerLoanService.CreateComputerLoan(createComputerLoanDto);
   }
 
   @Get()
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
+  @Roles('Admin', 'Asistente', 'Recepcion')
   @ApiOperation({ summary: 'Obtener todos los préstamos con paginación' })
   @ApiResponse({
     status: 200,
@@ -46,7 +46,7 @@ export class ComputerLoanController {
   }
 
   @Patch('/finish/:machineNumber')
-  @Roles(Role.Admin)
+  @Roles('Admin', 'Asistente', 'Recepcion')
   @ApiOperation({
     summary: 'Finalizar un préstamo de cómputo por número de máquina',
   })

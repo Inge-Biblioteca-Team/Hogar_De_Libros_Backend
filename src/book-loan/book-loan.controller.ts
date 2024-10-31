@@ -21,16 +21,15 @@ import { BookLoanResponseDTO } from './DTO/RequestDTO';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
-import { Role } from 'src/user/user.entity';
 
 @ApiTags('booksLoan')
 @Controller('book-loan')
-@UseGuards(AuthGuard, RolesGuard)
 export class BookLoanController {
   constructor(private bookLoanService: BookLoanService) {}
 
   @Post()
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente', 'Recepcion')
   @ApiBody({ type: CreateBookLoanDto })
   async createLoan(
     @Body() createBookLoanDto: CreateBookLoanDto,
@@ -39,7 +38,8 @@ export class BookLoanController {
   }
 
   @Patch(':id/in-process')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async setInProcess(@Param('id') bookLoanId: number): Promise<BookLoan> {
     const updatedBookLoan = await this.bookLoanService.setInProcess(bookLoanId);
     if (!updatedBookLoan) {
@@ -52,7 +52,8 @@ export class BookLoanController {
 
   
   @Patch(':id/finalize')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async finalizeLoan(
     @Param('id') bookLoanId: number,
     @Body() finalizeBookLoanDto: FinalizeBookLoanDto,
@@ -70,7 +71,8 @@ export class BookLoanController {
   }
 
   @Patch(':id')
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async update(
     @Param('id') bookLoanId: number,
     @Body() updatedBookLoanDto: updatedBookLoan,
@@ -89,7 +91,8 @@ export class BookLoanController {
 
 
   @Get('in-progress')
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente')
   async getInProgressLoans(
     @Query() paginationDto: GETResponseDTO,
   ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
@@ -98,7 +101,8 @@ export class BookLoanController {
 
 
   @Get('pending')
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente')
   async getPendingLoans(
     @Query() paginationDto: GETResponseDTO,
   ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
@@ -107,7 +111,8 @@ export class BookLoanController {
 
 
   @Get('completed')
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente')
   async getCompletedLoans(
     @Query() paginationDto: GETResponseDTO,
   ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {

@@ -23,15 +23,14 @@ import { NexEventsDTO } from './DTO/NextEvents';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
-import { Role } from 'src/user/user.entity';
 @ApiTags('events')
 @Controller('events')
-@UseGuards(AuthGuard, RolesGuard)
 export class EventsController {
   constructor(private eventsService: EventsService) {}
 
   @Post()
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin','Asistente')
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -61,7 +60,8 @@ export class EventsController {
   }
 
   @Get()
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin','Asistente')
   @ApiResponse({ status: 200, description: 'Lista de eventos mostrada' })
   @ApiResponse({ status: 400, description: 'Parametros invalidos' })
   @ApiResponse({
@@ -73,7 +73,8 @@ export class EventsController {
   }
 
   @Put()
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -108,7 +109,8 @@ export class EventsController {
 
 
   @Patch('ejecution-status')
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   @ApiResponse({
     status: 200,
     description: 'Se cambio el estado a en ejecucion',
@@ -122,7 +124,8 @@ export class EventsController {
   }
 
   @Patch('finalized-status')
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   @ApiResponse({
     status: 200,
     description: 'Se cambio el estado a en ejecucion',
@@ -136,13 +139,12 @@ export class EventsController {
   }
 
   @Patch('CancelEvent')
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
+  @Roles('Admin')
   updatePendientStatus(@Query('id') id: number): Promise<{ message: string }> {
     return this.eventsService.cancelEvent(id);
   }
 
   @Get('NextEvents')
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
   getNextEvents(
     @Query() SearchParams: SeachDTO,
   ): Promise<{ data: NexEventsDTO[]; count: number }> {
@@ -150,7 +152,6 @@ export class EventsController {
   }
 
   @Get('EventList')
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
   async EventList(@Query('date') date: Date): Promise< CreateEventsDTO[] > {
     return this.eventsService.EventList(date);
   }

@@ -22,28 +22,31 @@ import { EnableBookDto } from './DTO/enable-book.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
-import { Role } from 'src/user/user.entity';
+
 
 @ApiTags('books')
 @Controller('books')
-@UseGuards(AuthGuard, RolesGuard)
+
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
   @Post()
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente')
   async addBook(@Body() createBookDto: CreateBookDto): Promise<CreateBookDto> {
     return this.booksService.addBook(createBookDto);
   }
 
   @Patch(':bookCode/disable')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async disableBook(@Param('bookCode') bookCode: number) {
     return await this.booksService.disableBook(bookCode);
   }
 
   @Patch(':bookCode')
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async updatePartial(
     @Param('bookCode') bookCode: number,
     @Body() updateBookDto: UpdateBookDto,
@@ -52,7 +55,8 @@ export class BooksController {
   }
 
   @Put(':bookCode/enable')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async enableBook(
     @Param('bookCode') bookCode: number,
     @Body() enableBookDto: EnableBookDto,
@@ -61,13 +65,13 @@ export class BooksController {
   }
 
   @Get('/Colection')
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
   async findColection(@Query() paginationFilterDto: PaginationFilterDto) {
     return await this.booksService.getColecction(paginationFilterDto);
   }
 
   @Get(':BookCode')
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente', 'Externo' ,'Recepcion', 'Institucional')
   async findById(@Param('BookCode') BookCode: number): Promise<Book> {
     try {
       return await this.booksService.findById(BookCode);
@@ -79,7 +83,8 @@ export class BooksController {
   }
 
   @Get()
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente')
   async findAll(@Query() paginationFilterDto: PaginationFilterDto) {
     return await this.booksService.findAll(paginationFilterDto);
   }

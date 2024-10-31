@@ -16,16 +16,15 @@ import { PaginationEnrollmentListDto } from './DTO/pagination-enrollmentList.dto
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
-import { Role } from 'src/user/user.entity';
+
 
 @ApiTags('Enrollments')
 @Controller('enrollments')
-@UseGuards(AuthGuard, RolesGuard)
+
 export class EnrollmentController {
   constructor(private readonly enrollmentService: EnrollmentService) {}
 
   @Post(':courseId')
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
   async enrollUser(
     @Body() createEnrollmentDto: CreateEnrollmentDto,
     @Param('courseId') courseId: number,
@@ -34,7 +33,6 @@ export class EnrollmentController {
   }
 
   @Patch('/cancel')
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
   async cancelEnrollment(
     @Query('courseId') courseId: number,
     @Query('userCedula') userCedula: string,
@@ -43,7 +41,8 @@ export class EnrollmentController {
   }
 
   @Get()
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente', 'Recepcion', 'Externo', 'Institucional')
   async getEnrollmentsListByIdCourse(
     @Query() paginationEnrollmentListDTO: PaginationEnrollmentListDto,
   ) {

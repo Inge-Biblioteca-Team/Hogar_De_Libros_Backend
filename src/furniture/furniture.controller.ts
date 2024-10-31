@@ -17,8 +17,6 @@ import { PaginatedDTO } from './DTO/PaginationQueryDTO';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
-import { Role } from 'src/user/user.entity';
-
 @ApiTags('Furniture')
 @Controller('furniture')
 @UseGuards(AuthGuard, RolesGuard)
@@ -26,7 +24,7 @@ export class FurnitureController {
   constructor(private readonly furnitureService: FurnitureService) {}
 
   @Post()
-  @Roles(Role.Admin, Role.Creator)
+  @Roles('Admin', 'Asistente')
   @ApiOperation({ summary: 'Create a new Furniture' })
   @ApiBody({ type: CreateFurnitureDto })
   async create(
@@ -36,21 +34,21 @@ export class FurnitureController {
   }
 
   @Get()
-  @Roles(Role.Admin, Role.Creator)
+  @Roles('Admin', 'Asistente')
   @ApiOperation({ summary: 'Get all paginated' })
   async findAll(@Query() query: PaginatedDTO) {
     return this.furnitureService.findAll(query);
   }
 
   @Get(':id')
-  @Roles(Role.Admin, Role.Creator)
+  @Roles('Admin', 'Asistente')
   @ApiOperation({ summary: 'Get Furniture by ID for See operation' })
   async findOne(@Param('id') id: number): Promise<Furniture> {
     return this.furnitureService.findOne(id);
   }
 
   @Patch(':id')
-  @Roles(Role.Admin, Role.Creator)
+  @Roles('Admin')
   @ApiOperation({ summary: 'Edit register' })
   @ApiBody({ type: CreateFurnitureDto })
   async update(
@@ -61,21 +59,21 @@ export class FurnitureController {
   }
 
   @Patch(':id/Down')
-  @Roles(Role.Admin)
+  @Roles('Admin')
   @ApiOperation({ summary: 'Change Status to Baja' })
   async DownFurniture(@Param('id') Id: number) {
     return await this.furnitureService.DowFurniture(Id);
   }
 
   @Patch(':id/NA')
-  @Roles(Role.Admin)
+  @Roles('Admin')
   @ApiOperation({ summary: 'Change Status To N.A.' })
   async NAFurniture(@Param('id') Id: number) {
     return await this.furnitureService.NAFurniture(Id);
   }
 
   @Patch(':id/SE')
-  @Roles(Role.Admin)
+  @Roles('Admin')
   @ApiOperation({ summary: 'Change Status To S.E.' })
   async SEFurniture(@Param('id') Id: number) {
     return await this.furnitureService.SEFurniture(Id);

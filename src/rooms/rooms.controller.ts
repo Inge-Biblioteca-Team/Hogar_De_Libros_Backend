@@ -21,16 +21,14 @@ import { diskStorage } from 'multer';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
-import { Role } from 'src/user/user.entity';
-
 @ApiTags('rooms')
 @Controller('rooms')
-@UseGuards(AuthGuard, RolesGuard)
 export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}
 
   @Post()
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente')
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -54,7 +52,6 @@ export class RoomsController {
   }
 
   @Get()
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
   @ApiQuery({ name: 'page', required: false, example: 1 })
   @ApiQuery({ name: 'limit', required: false, example: 10 })
   @ApiResponse({
@@ -68,19 +65,22 @@ export class RoomsController {
   }
 
   @Get('table')
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente', 'Insititucionales')
   async findAllRoomsTable(): Promise<CreateRoomDto[]> {
     return this.roomsService.findAllRoomsTable();
   }
 
   @Get(':id')
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente', 'Recepcion','Insititucionales', 'Externo')
   findOne(@Param('id') id: string) {
     return this.roomsService.findOne(+id);
   }
 
   @Patch(':id')
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -105,7 +105,8 @@ export class RoomsController {
   }
 
   @Patch('maintenance/:id')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async updateStatusMaintenance(
     @Param('id') id: string,
   ): Promise<{ message: string }> {
@@ -113,7 +114,8 @@ export class RoomsController {
   }
 
   @Patch('closed/:id')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async updateStatusClosed(
     @Param('id') id: string,
   ): Promise<{ message: string }> {
@@ -121,7 +123,8 @@ export class RoomsController {
   }
 
   @Patch('available/:id')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async updateStatusAvailable(
     @Param('id') id: string,
   ): Promise<{ message: string }> {

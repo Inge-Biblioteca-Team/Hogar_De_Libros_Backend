@@ -21,16 +21,14 @@ import { DenyCollaboratorRequestDTO } from './DTO/deny-collaborator-DTO';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
-import { Role } from 'src/user/user.entity';
+
 
 @ApiTags('collaborator')
 @Controller('collaborator')
-@UseGuards(AuthGuard, RolesGuard)
 export class CollaboratorController {
   constructor(private collaboratorService: CollaboratorService) {}
 
   @Post()
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
   @UseInterceptors(AnyFilesInterceptor())
   async CreateCollaborator(
     @Body() dto: CreateCollaboratorDTO,
@@ -42,7 +40,8 @@ export class CollaboratorController {
   }
 
   @Get()
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin','Asistente')
   async getAllCollaborator(
     @Query(ValidationPipe) filterDTO: GetAllCollaboratorFilterDTO,
   ) {
@@ -50,7 +49,8 @@ export class CollaboratorController {
   }
 
   @Patch('aproveCollaborator/:CollaboratorId')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async aproveCollaborator(
     @Param('CollaboratorId') CollaboratorId: number,
   ): Promise<{ message: string }> {
@@ -58,7 +58,8 @@ export class CollaboratorController {
   }
 
   @Patch('denyCollaborator/:id')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async denyCollaborator(
     @Param('id') CollaboratorId: number,
     @Body() dto: DenyCollaboratorRequestDTO,
@@ -67,7 +68,8 @@ export class CollaboratorController {
   }
 
   @Patch('cancelCollaborator/:id')
-  @Roles(Role.Admin, Role.ExternalUser, Role.Creator, Role.Reception)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async canelCollaborator(
     @Param('id') CollaboratorId: number,
     @Body() dto: DenyCollaboratorRequestDTO,

@@ -23,16 +23,14 @@ import { UpdateFriendDTO } from './DTO/update-friend-library-DTO';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
-import { Role } from 'src/user/user.entity';
+
 
 @ApiTags('friends-library')
 @Controller('friends-library')
-@UseGuards(AuthGuard, RolesGuard)
 export class FriendsLibraryController {
   constructor(private friendService: FriendsLibraryService) {}
 
   @Post()
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
   @UseInterceptors(AnyFilesInterceptor())
   async CreateFriend(
     @Body() createFriendLibraryDto: CreateFriendDTO,
@@ -44,7 +42,8 @@ export class FriendsLibraryController {
   }
 
   @Get()
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin','Asistente')
   async getAllFriends(
     @Query(ValidationPipe) filterDTO: GetAllFriendsFilterDTO,
   ) {
@@ -52,7 +51,8 @@ export class FriendsLibraryController {
   }
 
   @Patch('aproveFriendLibrary/:FriendID')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async aproveFriendLibrary(
     @Param('FriendID') FriendID: number,
   ): Promise<{ message: string }> {
@@ -60,7 +60,8 @@ export class FriendsLibraryController {
   }
 
   @Patch('denyFriendLibrary/:FriendID')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async denyFriendLibrary(
     @Param('FriendID') FriendID: number,
     @Body() dto: DenyFriendRequestDTO,
@@ -69,7 +70,8 @@ export class FriendsLibraryController {
   }
 
   @Patch('downFriendLibrary/:FriendID')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async downFriendLibrary(
     @Param('FriendID') FriendID: number,
     @Body() dto: DenyFriendRequestDTO,
@@ -78,7 +80,8 @@ export class FriendsLibraryController {
   }
 
   @Patch('Edit-Friend/:FriendID')
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async editFriendLibrary(
     @Param('FriendID') FriendID: number,
     @Body() dto: UpdateFriendDTO,

@@ -27,18 +27,17 @@ import { PaginationQueryDTO } from './DTO/pagination-querry.dto';
 import { Roles } from 'src/auth/decorators/roles.decorators';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { Role } from 'src/user/user.entity';
 
 @ApiTags('computers')
 @Controller('computers')
-@UseGuards(AuthGuard, RolesGuard)
 export class ComputersController {
   constructor(private computerService: ComputersService) {}
 
   @ApiBearerAuth('access-token')
 
   @Post()
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente')
   @ApiBody({ type: ComputerDTO })
   @ApiOperation({ summary: 'Create a new Computer equipment' })
   @ApiResponse({
@@ -52,7 +51,8 @@ export class ComputersController {
 
   @ApiBearerAuth('access-token')
   @Get(':EquipmentUniqueCode')
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente')
   @ApiProperty({ description: 'Obtiene un equipo de cómputo  por su código' })
   async findById(
     @Param('EquipmentUniqueCode') EquipmentUniqueCode: number,
@@ -70,7 +70,8 @@ export class ComputersController {
 
   @ApiBearerAuth('access-token')
   @Put(':EquipmentUniqueCode')
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   @ApiOperation({ summary: 'Modify a Computer equipment' })
   @ApiResponse({
     status: 201,
@@ -88,7 +89,8 @@ export class ComputersController {
 
   @ApiBearerAuth('access-token')
   @Patch(':EquipmentUniqueCode')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   @ApiOperation({ summary: 'Inactivates a computer equipment ' })
   @ApiResponse({
     status: 201,
@@ -101,7 +103,8 @@ export class ComputersController {
   }
 
   @Get()
-  @Roles(Role.Admin, Role.Creator, Role.ExternalUser, Role.Reception)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente')
   @ApiOperation({ summary: 'get all equipments and filters' })
   @ApiResponse({
     status: 200,
@@ -113,7 +116,8 @@ export class ComputersController {
   }
 
   @Get('workstation/Status')
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin', 'Asistente', 'Recepcion')
   @ApiResponse({
     status: 200,
     description: 'The WorkStation status has been finded.',
@@ -125,7 +129,8 @@ export class ComputersController {
   }
 
   @Patch(':machineNumber/maintenance')
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async setWorkStationToMaintenance(
     @Param('machineNumber') machineNumber: number,
     @Body('location') location: string,
@@ -139,7 +144,8 @@ export class ComputersController {
   }
 
   @Patch(':machineNumber/available')
-  @Roles(Role.Admin, Role.Creator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async setWorkStationToAvailable(
     @Param('machineNumber') machineNumber: number,
   ): Promise<string> {
@@ -147,7 +153,8 @@ export class ComputersController {
   }
 
   @Patch(':machineNumber/reactive')
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('Admin')
   async ReactiveMachine(
     @Param('machineNumber') machineNumber: number,
   ): Promise<string> {
