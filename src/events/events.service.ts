@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
 import {
-  BadRequestException,
   Body,
   Injectable,
   InternalServerErrorException,
@@ -29,6 +28,7 @@ export class EventsService {
   ): Promise<{ message: string; eventId?: number }> {
     try {
       const event = this.EventsRepository.create(createEventsDTO);
+      console.log(event);
       await this.EventsRepository.save(event);
 
       const adviceData: CreateAdviceDto = {
@@ -46,13 +46,9 @@ export class EventsService {
           'Se creó el evento con id: ' + event.EventId + ' correctamente',
       };
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        return { message: 'Error en la petición del evento, no se pudo crear' };
-      }
-      if (error instanceof InternalServerErrorException) {
-        return { message: 'Error en el servidor, no se pudo crear el evento' };
-      }
-      return { message: 'Hubo un error al crear el evento' };
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -124,13 +120,9 @@ export class EventsService {
       await this.EventsRepository.update(id, updateEvetsDTO);
       return { message: 'Se actualizó el evento correctamente' };
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        return { message: 'Error en la petición del evento, no se pudo crear' };
-      }
-      if (error instanceof InternalServerErrorException) {
-        return { message: 'Error en el servidor, no se pudo crear el evento' };
-      }
-      return { message: 'Hubo un error al actualizar el evento' };
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -145,10 +137,9 @@ export class EventsService {
       await this.EventsRepository.update(id, { Status: 'E' });
       return { message: 'Se cambió el estado a en ejecución exitosamente' };
     } catch (error) {
-      if (error instanceof InternalServerErrorException) {
-        return { message: 'Error en el servidor, no se pudo crear el evento' };
-      }
-      return { message: 'Hubo un error al actualizar el estado del evento' };
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -163,10 +154,9 @@ export class EventsService {
       await this.EventsRepository.update(id, { Status: 'F' });
       return { message: 'Se cambió el estado a finalizado exitosamente' };
     } catch (error) {
-      if (error instanceof InternalServerErrorException) {
-        return { message: 'Error en el servidor, no se pudo crear el evento' };
-      }
-      return { message: 'Hubo un error al actualizar el estado del evento' };
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -181,10 +171,9 @@ export class EventsService {
       await this.EventsRepository.update(id, { Status: 'P' });
       return { message: 'Se cambió el estado a finalizado exitosamente' };
     } catch (error) {
-      if (error instanceof InternalServerErrorException) {
-        return { message: 'Error en el servidor, no se pudo crear el evento' };
-      }
-      return { message: 'Hubo un error al actualizar el estado del evento' };
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 
@@ -293,7 +282,7 @@ export class EventsService {
   }
 
   async updateExpireEvent() {
-    console.log("Job Start")
+    console.log('Job Start');
     const currentDate = new Date();
     await this.EventsRepository.createQueryBuilder()
       .update(events)
