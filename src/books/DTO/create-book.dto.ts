@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateBookDto {
   @ApiProperty({ example: 'Lazarillo de Tormes' })
@@ -29,9 +29,9 @@ export class CreateBookDto {
   @IsString()
   ShelfCategory: string;
 
-  @ApiProperty({ example: 'URL o Direccion Local' })
-  @IsString()
-  Cover: string;
+  @ApiPropertyOptional({ example: 'URL o Direccion Local' })
+  @IsOptional()
+  Cover?: string;
 
   @ApiProperty({ example: '8' })
   @IsNumber()

@@ -37,7 +37,7 @@ export class Book {
 
   @Column()
   @ApiProperty({ description: 'URL de la portada del libro' })
-  Cover: string;
+  Cover: string="https://img.freepik.com/free-vector/hand-drawn-flat-design-stack-books-illustration_23-2149330605.jpg?w=360";
 
   @Column()
   @ApiProperty({ description: 'Calificación de la condición del libro' })

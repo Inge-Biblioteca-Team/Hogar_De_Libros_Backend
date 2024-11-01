@@ -58,5 +58,11 @@ export class AdvicesController {
   ): Promise<{ data: Advice[]; count: number }> {
     return this.advicesService.getAdvice(params);
   }
+  @Get("/List")
+  async getAdviceList(
+    @Query() params: Paginacion_AdviceDTO,
+  ): Promise<{ data: Advice[]; count: number }> {
+    return this.advicesService.getAdviceList(params);
+  }
 
 }

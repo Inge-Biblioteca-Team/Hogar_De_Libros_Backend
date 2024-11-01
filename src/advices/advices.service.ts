@@ -113,6 +113,42 @@ export class AdvicesService {
     }
   }
 
+  async getAdviceList(
+    params: Paginacion_AdviceDTO,
+  ): Promise<{ data: Advice[]; count: number }> {
+    try {
+      const { page = 1, limit = 5, reason, category, date } = params;
+      const skip = (page - 1) * limit;
+      const queryBuilder = this.adviceRepository
+        .createQueryBuilder('advice')
+        .orderBy('advice.date', 'DESC');
+      if (reason) {
+        queryBuilder.andWhere('advice.reason LIKE :reason', {
+          reason: `%${reason}%`,
+        });
+      }
+
+      if (category) {
+        queryBuilder.andWhere('advice.category = :category', { category });
+      }
+
+      if (date) {
+        queryBuilder.andWhere('advice.date = :date', { date });
+      }
+
+      const [data, count] = await queryBuilder
+        .skip(skip)
+        .take(limit)
+        .getManyAndCount();
+
+      return { data, count };
+    }catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
+    }
+  }
+
   async updateExpiredAdvice() {
     const currentDate = new Date();
     await this.adviceRepository
