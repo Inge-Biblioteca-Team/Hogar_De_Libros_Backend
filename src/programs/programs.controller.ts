@@ -3,17 +3,14 @@ import {
   Controller,
   Post,
   Body,
-  BadRequestException,
   Get,
   ParseIntPipe,
   Param,
-  NotFoundException,
   Patch,
   Query,
-  InternalServerErrorException,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiResponse } from '@nestjs/swagger';
+import { ApiTags} from '@nestjs/swagger';
 import { CreateProgramDto } from './dto/create-program.dto';
 import { Programs } from './programs.entity';
 import { ProgramsService } from './programs.service';
@@ -26,6 +23,8 @@ import { activities } from './DTO/Programs-Activities.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
+import { ActivitiesDTO } from './DTO/Activities.dto';
+import { ActivitiesFilterDTO } from './DTO/ActivitiesFilter.dto';
 
 @ApiTags('Programs')
 @Controller('programs')
@@ -41,12 +40,17 @@ export class ProgramsController {
   }
 
   @Get('All')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'asistente')
   async getAllPrograms(
     @Query() searchDTO: SearchPDTO,
   ): Promise<{ data: ProgramDTO[]; count: number }> {
     return this.programService.getAllsPrograms(searchDTO);
+  }
+
+  @Get('Program/Activities')
+  async getActivitiesByPrograms(
+    @Query() filters:ActivitiesFilterDTO ,
+  ): Promise<{ data: ActivitiesDTO[]; count: number }> {
+    return this.programService.getActivitiesByProgram(filters);
   }
 
   @Get('Actived')
