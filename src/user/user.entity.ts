@@ -14,6 +14,7 @@ export enum Role {
   Reception = 'reception', // usuario destinado a consultas de libros y demás(Usuario de recepción)
   Creator = 'creator', // Asistentes pueden crear registros dar asistencia a la colección pero no borrar o dar de baja
   Admin = 'admin', //Puede incidir en todo
+  Institucional = 'institucional', //Usuario con permiso de reservas de salas
 }
 
 @Entity({ name: 'users' })

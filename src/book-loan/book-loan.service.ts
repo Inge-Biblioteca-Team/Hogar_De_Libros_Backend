@@ -32,6 +32,7 @@ export class BookLoanService {
     private userService: UserService,
   ) {}
 
+  // Si no hay usuario, usuario = null y guardar info del usuario, 
   async createLoan(
     createBookLoanDto: CreateBookLoanDto,
   ): Promise<{ message: string }> {

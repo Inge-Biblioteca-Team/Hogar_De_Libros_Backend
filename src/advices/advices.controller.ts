@@ -28,7 +28,7 @@ export class AdvicesController {
 
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente')
+  @Roles('admin', 'asistente')
   async createAdvice(
     @Body() Dto: CreateAdviceDto,
   ): Promise<{ message: string }> {
@@ -37,7 +37,7 @@ export class AdvicesController {
 
   @Patch('/:id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente')
+  @Roles('admin', 'asistente')
   async editAdvice(
     @Body() Dto: UpdateAdviceDto,
     @Param('id') id: number,
@@ -47,7 +47,7 @@ export class AdvicesController {
 
   @Delete('/:id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente')
+  @Roles('admin', 'asistente')
   async deleteAdvice(@Param('id') id: number): Promise<{ message: string }> {
     return this.advicesService.deleteAdvice(id);
   }

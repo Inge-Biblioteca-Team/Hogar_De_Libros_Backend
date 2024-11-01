@@ -29,7 +29,7 @@ export class BookLoanController {
 
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente', 'Recepcion')
+  @Roles('admin', 'asistente')
   @ApiBody({ type: CreateBookLoanDto })
   async createLoan(
     @Body() createBookLoanDto: CreateBookLoanDto,
@@ -37,9 +37,10 @@ export class BookLoanController {
     return this.bookLoanService.createLoan(createBookLoanDto);
   }
 
+  // Corregir la logica no va en el controlador
   @Patch(':id/in-process')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async setInProcess(@Param('id') bookLoanId: number): Promise<BookLoan> {
     const updatedBookLoan = await this.bookLoanService.setInProcess(bookLoanId);
     if (!updatedBookLoan) {
@@ -50,10 +51,10 @@ export class BookLoanController {
     return updatedBookLoan;
   }
 
-  
+  // Corregir la logica no va en el controlador
   @Patch(':id/finalize')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async finalizeLoan(
     @Param('id') bookLoanId: number,
     @Body() finalizeBookLoanDto: FinalizeBookLoanDto,
@@ -70,9 +71,10 @@ export class BookLoanController {
     return updatedBookLoan;
   }
 
+  // Corregir la logica no va en el controlador
   @Patch(':id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async update(
     @Param('id') bookLoanId: number,
     @Body() updatedBookLoanDto: updatedBookLoan,
@@ -92,7 +94,7 @@ export class BookLoanController {
 
   @Get('in-progress')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente')
+  @Roles('admin', 'asistente', 'external_user')
   async getInProgressLoans(
     @Query() paginationDto: GETResponseDTO,
   ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
@@ -102,7 +104,7 @@ export class BookLoanController {
 
   @Get('pending')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente')
+  @Roles('admin', 'asistente' ,'external_user')
   async getPendingLoans(
     @Query() paginationDto: GETResponseDTO,
   ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
@@ -112,7 +114,7 @@ export class BookLoanController {
 
   @Get('completed')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente')
+  @Roles('Admin', 'Asistente', 'external_user')
   async getCompletedLoans(
     @Query() paginationDto: GETResponseDTO,
   ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
