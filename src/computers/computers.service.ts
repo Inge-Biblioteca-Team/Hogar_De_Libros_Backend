@@ -16,6 +16,7 @@ export class ComputersService {
     @InjectRepository(WorkStation)
     private workStationRepository: Repository<WorkStation>,
   ) {}
+  // PROMISE MESSAGE
   async createComputer(createComputerDto: ComputerDTO): Promise<Computer> {
     let workStation = await this.workStationRepository.findOne({
       where: { MachineNumber: createComputerDto.MachineNumber },
@@ -37,6 +38,7 @@ export class ComputersService {
 
     return this.computerRepository.save(computer);
   }
+
   async findByEquipmentUniqueCode(
     EquipmentUniqueCode: number,
   ): Promise<Computer> {
@@ -53,6 +55,7 @@ export class ComputersService {
     return computer;
   }
   // método para modificar un equipo de cómputo
+  // PROMISE MESSAGE
   async modifyComputer(
     EquipmentUniqueCode: number,
     modifyComputerDTO: ModifyComputerDTO,
@@ -63,6 +66,7 @@ export class ComputersService {
     );
   }
   // método para inactivar un equipo de cómputo
+  // PROMISE MESSAGE
   async DisableEquipment(EquipmentUniqueCode: number): Promise<Computer> {
     const Equipment = await this.computerRepository.findOne({
       where: { EquipmentUniqueCode: EquipmentUniqueCode },
@@ -128,7 +132,7 @@ export class ComputersService {
       order: { MachineNumber: 'ASC' },
     });
   }
-
+// PROMISE MESSAGE
   async SetWorkStationToMaintenance(
     machineNumber: number,
     location: string,
@@ -150,6 +154,8 @@ export class ComputersService {
 
     return 'Estado actualizado a Mantenimiento';
   }
+
+  // PROMISE MESSAGE
   async ResetWorkStation(machineNumber: number): Promise<string> {
     const workStation = await this.workStationRepository.findOne({
       where: { MachineNumber: machineNumber },
@@ -165,7 +171,7 @@ export class ComputersService {
 
     return 'Estado actualizado a Disponible';
   }
-
+// PROMISE MESSAGE
   async ReactiveMachine(machineNumber: number): Promise<string> {
     const workStation = await this.workStationRepository.findOne({
       where: { MachineNumber: machineNumber },

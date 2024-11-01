@@ -34,26 +34,11 @@ export class CourseController {
     private readonly courseService: CourseService,
   ) {}
 
-
+// PROMISE MESSAGE
   @Post()
   @UseGuards(AuthGuard,RolesGuard)
-  @Roles('Admin', 'Asistente')
-  @ApiBody({ type: CreateCourseDto })
-  @ApiResponse({
-    status: 201,
-    description: 'Create a new Course',
-    type: Course,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad Request: Datos inválidos',
-  })
-  @ApiResponse({
-    status: 409,
-    description: 'Conflict: Conflicto de datos (ej. curso ya existe)',
-  })
+  @Roles('admin', 'asistente')
   async createCourse(
-    
     @Body() createCourseDto: CreateCourseDto,
   ): Promise<Course> {
     try {
@@ -71,30 +56,16 @@ export class CourseController {
 
   @Get()
   @UseGuards(AuthGuard,RolesGuard)
-  @Roles('Admin', 'Asistente')
+  @Roles('admin', 'asistente')
   async findAllCourses(
     @Query() query: GetCoursesDto,
   ): Promise<{ data: CoursesDTO[]; count: number }> {
     return await this.courseService.findAllCourses(query)
   }
 
+  // PROMISE MESSAGE
   @Patch(':courseId')
-  @UseGuards(AuthGuard,RolesGuard)
-  @Roles('Admin', 'Asistente', 'Recepcion', 'Externo', 'Institucional')
-  @ApiBody({ type: PartialType(CreateCourseDto) })
-  @ApiResponse({
-    status: 200,
-    description: 'Course updated successfully',
-    type: Course,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Course not found',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Invalid data',
-  })
+  @UseGuards(AuthGuard)
   async patchCourseById(
     @Param('courseId', ParseIntPipe) courseId: number,
     @Body() updateCourseDto: Partial<CreateCourseDto>,
@@ -114,18 +85,10 @@ export class CourseController {
     }
   }
 
+  // PROMISE MESSAGE
   @Patch(':courseId/disable')
   @UseGuards(AuthGuard,RolesGuard)
-  @Roles('Admin')
-  @ApiResponse({
-    status: 200,
-    description: 'Course disabled successfully',
-    type: Course,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Course not found',
-  })
+  @Roles('admin')
   async disableCourse(
     @Param('courseId', ParseIntPipe) courseId: number,
   ): Promise<Course> {
@@ -141,17 +104,7 @@ export class CourseController {
   }
 
   @Get(':courseId/active')
-  @UseGuards(AuthGuard,RolesGuard)
-  @Roles('Admin', 'Asistente', 'Recepcion', 'Externo', 'Institucional')
-  @ApiResponse({
-    status: 200,
-    description: 'Active course found',
-    type: Course,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Active course not found',
-  })
+  @UseGuards(AuthGuard)
   async getActiveCourseById(
     @Param('courseId', ParseIntPipe) courseId: number,
   ): Promise<Course> {
@@ -176,8 +129,7 @@ export class CourseController {
   }
 
   @Get('User_Courses')
-  @UseGuards(AuthGuard,RolesGuard)
-  @Roles('Admin', 'Asistente', 'Recepcion', 'Externo', 'Institucional')
+  @UseGuards(AuthGuard)
   async getCoursesByUserCedula(
     @Query() searchDTO: SearchDTO,
   ): Promise<{ data: NexCorusesDTO[]; count: number }> {
@@ -186,8 +138,7 @@ export class CourseController {
 
 
   @Get('CourseList')
-  @UseGuards(AuthGuard,RolesGuard)
-  @Roles('Admin', 'Asistente', 'Recepcion', 'Externo', 'Institucional')
+  @UseGuards(AuthGuard)
   async CourseList(@Query('fecha') fecha: Date): Promise<CreateCourseDto[]> {
     return this.courseService.CourseList(fecha);
   }

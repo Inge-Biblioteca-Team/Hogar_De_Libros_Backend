@@ -25,36 +25,24 @@ import { Role } from 'src/user/user.entity';
 export class ComputerLoanController {
   constructor(private computerLoanService: ComputerLoanService) {}
 
+   // Cambiar a promise message, 
   @Post()
-  @Roles('Admin', 'Asistente', 'Recepcion')
+  @Roles('admin', 'asistente', 'recepcion')
   CreateComputerLoan(@Body() createComputerLoanDto: CreateComputerLoanDto) {
     return this.computerLoanService.CreateComputerLoan(createComputerLoanDto);
   }
 
   @Get()
-  @Roles('Admin', 'Asistente', 'Recepcion')
-  @ApiOperation({ summary: 'Obtener todos los préstamos con paginación' })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de préstamos',
-    type: [ComputerLoan],
-  })
+  @Roles('admin', 'asistente', 'recepcion')
   async getAllComputerLoans(@Query() paginationQuery: PaginationQueryDTO) {
     const { data, count } =
       await this.computerLoanService.getAllComputerLoans(paginationQuery);
     return { data, count };
   }
 
+   // Cambiar a promise message, 
   @Patch('/finish/:machineNumber')
-  @Roles('Admin', 'Asistente', 'Recepcion')
-  @ApiOperation({
-    summary: 'Finalizar un préstamo de cómputo por número de máquina',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Préstamo finalizado',
-  })
-  @ApiResponse({ status: 404, description: 'Préstamo no encontrado' })
+  @Roles('admin', 'asistente', 'recepcion')
   async finish(@Param('machineNumber') machineNumber: number): Promise<string> {
     return this.computerLoanService.FinishComputerLoanByMachineNumber(
       machineNumber,

@@ -109,7 +109,7 @@ export class UserService {
       throw new InternalServerErrorException(errorMessage);
     }
   }
-
+// PROMISE MESSAGE
   async update(cedula: string, updateUserDto: UpdateUserDto) {
     const user = await this.UserRepository.findOneBy({ cedula });
     if (!user)
@@ -121,6 +121,7 @@ export class UserService {
     return await this.UserRepository.findOneBy({ cedula });
   }
 
+  // PROMISE MESSAGE
   async changeStatus(cedula: string) {
     const user = await this.UserRepository.findOneBy({ cedula });
 
@@ -161,6 +162,7 @@ export class UserService {
     return user;
   }
 
+  // PROMISE MESSAGE
   async updatePassword(
     updatePasswordDto: UpdatePasswordDto,
   ): Promise<{ message: string }> {

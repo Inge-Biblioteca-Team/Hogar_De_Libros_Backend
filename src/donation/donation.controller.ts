@@ -41,14 +41,14 @@ export class DonationController {
 
   @Get()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin','Asistente')
+  @Roles('admin','asistente')
   async getAllDonation(@Query(ValidationPipe) filterDTO: GetFilterDonationDTO) {
     return await this.donationService.getAllDonation(filterDTO);
   }
 
   @Patch('aproveFriendDonation/:DonationID')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async aproveDonation(
     @Param('DonationID') DonationID: number,
   ): Promise<{ message: string }> {
@@ -57,7 +57,7 @@ export class DonationController {
 
   @Patch('denyDonation/:DonationID')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async denyDonation(
     @Param('DonationID') DonationID: number,
     @Body() DTO: DenyDonationRequestDTO,
@@ -67,7 +67,7 @@ export class DonationController {
 
   @Patch('confirmDonation/:DonationID')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async confirmDonation(
     @Param('DonationID') DonationID: number,
     @Body() DTO: DenyDonationRequestDTO,

@@ -7,17 +7,13 @@ import {
   Patch,
   Param,
   Query,
-  UseInterceptors,
-  UploadedFile,
   UseGuards,
 } from '@nestjs/common';
 import { RoomsService } from './rooms.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
-import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {  ApiTags } from '@nestjs/swagger';
 import { getRoomDto } from './dto/get-pagination.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
@@ -28,36 +24,14 @@ export class RoomsController {
 
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente')
-  @UseInterceptors(
-    FileInterceptor('image', {
-      storage: diskStorage({
-        destination: '../assets/Rooms',
-        filename: (req, file, cb) => {
-          cb(null, file.originalname);
-        },
-      }),
-    }),
-  )
+  @Roles('admin', 'asistente')
   async create(
-    @Body() createRoomDto: CreateRoomDto,
-    @UploadedFile() file: Express.Multer.File,
+    @Body() createRoomDto: CreateRoomDto
   ): Promise<{ message: string; roomID?: number }> {
-    if (file) {
-      const baseUrl = 'http://localhost:3000';
-      const filePath = `${baseUrl}/assets/Rooms/${file.filename}`;
-      createRoomDto.image = [filePath];
-    }
     return this.roomsService.create(createRoomDto);
   }
 
   @Get()
-  @ApiQuery({ name: 'page', required: false, example: 1 })
-  @ApiQuery({ name: 'limit', required: false, example: 10 })
-  @ApiResponse({
-    status: 200,
-    description: 'Retrieved all rooms with pagination',
-  })
   async findAllRooms(
     @Query() filter: getRoomDto,
   ): Promise<{ data: CreateRoomDto[]; count: number }> {
@@ -66,47 +40,30 @@ export class RoomsController {
 
   @Get('table')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente', 'Insititucionales')
+  @Roles('admin', 'asistente', 'Insititucionales')
   async findAllRoomsTable(): Promise<CreateRoomDto[]> {
     return this.roomsService.findAllRoomsTable();
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente', 'Recepcion','Insititucionales', 'Externo')
+  @UseGuards(AuthGuard)
   findOne(@Param('id') id: string) {
     return this.roomsService.findOne(+id);
   }
 
   @Patch(':id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
-  @UseInterceptors(
-    FileInterceptor('image', {
-      storage: diskStorage({
-        destination: '../assets/Rooms',
-        filename: (req, file, cb) => {
-          cb(null, file.originalname);
-        },
-      }),
-    }),
-  )
+  @Roles('admin')
   async update(
     @Param('id') id: string,
-    @Body() updateRoomDto: UpdateRoomDto,
-    @UploadedFile() file: Express.Multer.File,
+    @Body() updateRoomDto: UpdateRoomDto
   ): Promise<{ message: string }> {
-    if (file) {
-      const baseUrl = 'http://localhost:3000';
-      const filePath = `${baseUrl}/assets/Rooms/${file.filename}`;
-      updateRoomDto.image = [filePath];
-    }
     return this.roomsService.update(+id, updateRoomDto);
   }
 
   @Patch('maintenance/:id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async updateStatusMaintenance(
     @Param('id') id: string,
   ): Promise<{ message: string }> {
@@ -115,7 +72,7 @@ export class RoomsController {
 
   @Patch('closed/:id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async updateStatusClosed(
     @Param('id') id: string,
   ): Promise<{ message: string }> {
@@ -124,7 +81,7 @@ export class RoomsController {
 
   @Patch('available/:id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async updateStatusAvailable(
     @Param('id') id: string,
   ): Promise<{ message: string }> {

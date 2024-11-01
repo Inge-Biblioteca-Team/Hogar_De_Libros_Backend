@@ -75,6 +75,7 @@ export class ProgramsService {
       throw new BadRequestException('Error al obtener el programa.');
     }
   }
+  // PROMISE MESSAGE
   async createProgramns(createProgramDto: CreateProgramDto): Promise<Programs> {
     try {
       const program = this.programsRepository.create(createProgramDto);
@@ -87,6 +88,7 @@ export class ProgramsService {
     }
   }
 
+  // PROMISE MESSAGE
   async updatePrograms(
     id: number,
     updateProgramDto: UpdateProgramsDto,

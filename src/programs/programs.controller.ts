@@ -27,25 +27,22 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
 
-
 @ApiTags('Programs')
 @Controller('programs')
-@UseGuards(AuthGuard, RolesGuard)
 export class ProgramsController {
   constructor(private readonly programService: ProgramsService) {}
-  
+
   @Get('Activities')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente', 'Recepcion', 'Externo', 'Institucional')
+  @UseGuards(AuthGuard)
   async getActivities(
-    @Query() filters:SearchPDTO
-  ): Promise<{data:activities[], count:number}> {
+    @Query() filters: SearchPDTO,
+  ): Promise<{ data: activities[]; count: number }> {
     return this.programService.getActivities(filters);
   }
 
   @Get('All')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente')
+  @Roles('admin', 'asistente')
   async getAllPrograms(
     @Query() searchDTO: SearchPDTO,
   ): Promise<{ data: ProgramDTO[]; count: number }> {
@@ -54,128 +51,48 @@ export class ProgramsController {
 
   @Get('Actived')
   async getActivedProgram(): Promise<ProgramsNames[]> {
-    try {
-      return await this.programService.getProgramsNames();
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw new NotFoundException(error.message);
-      }
-      throw new BadRequestException('Programa inactivo');
-    }
+    return await this.programService.getProgramsNames();
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente', 'Recepcion', 'Externo', 'Institucional')
-  @ApiResponse({
-    status: 201,
-    description: 'Se ha encontrado el programa.',
-    type: Programs,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'No se ha encontrado el programa .',
-  })
+  @UseGuards(AuthGuard)
   async getActiveProgramById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Programs> {
-    try {
-      return await this.programService.getActiveProgramById(id);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw new NotFoundException(error.message);
-      }
-      throw new BadRequestException('Programa inactivo');
-    }
+    return await this.programService.getActiveProgramById(id);
   }
 
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente')
-  @ApiResponse({
-    status: 201,
-    description: 'Programa creado exitosamente.',
-    type: Programs,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'El programa ya existe o error en los datos.',
-  })
+  @Roles('admin', 'asistente')
   async createProgram(
     @Body() createProgramDto: CreateProgramDto,
   ): Promise<Programs> {
-    try {
-      return await this.programService.createProgramns(createProgramDto);
-    } catch (error) {
-      const errorMessage =
-        (error as Error).message || 'Error al procesar la solicitud';
-      throw new InternalServerErrorException(errorMessage);
-    }
+    return await this.programService.createProgramns(createProgramDto);
   }
-
+  // PROMISE MESSAGE
   @Patch(':id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
-  @ApiResponse({
-    status: 201,
-    description: 'Programa se ha actualizado exitosamente.',
-    type: Programs,
-  })
-  @ApiResponse({ status: 400, description: 'Falta un campo .' })
+  @Roles('admin')
   async updateProgram(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateProgramDto: UpdateProgramsDto,
   ): Promise<Programs> {
-    try {
-      return await this.programService.updatePrograms(id, updateProgramDto);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw new NotFoundException(error.message);
-      }
-      throw new BadRequestException('Error al actualizar el programa.');
-    }
+    return await this.programService.updatePrograms(id, updateProgramDto);
   }
 
   @Patch(':id/disable')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
-  @ApiResponse({
-    status: 201,
-    description: 'Programa se ha deshabilitado exitosamente.',
-    type: Programs,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'No se ha podido deshabiliatr exitosamente .',
-  })
+  @Roles('admin')
   async disableProgram(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ message: string }> {
-    try {
-      return await this.programService.disableProgram(id);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw new NotFoundException(error.message);
-      }
-      if (error instanceof BadRequestException) {
-        throw new BadRequestException(error.message);
-      }
-      throw new BadRequestException('Error al deshabilitar el programa.');
-    }
+    return await this.programService.disableProgram(id);
   }
 
   @Get(':id/courses')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente', 'Recepcion', 'Externo', 'Institucional')
+  @UseGuards(AuthGuard)
   async getCoursesByProgram(@Param('id') id: number): Promise<Course[]> {
-    const courses = await this.programService.getCoursesByProgram(id);
-
-    if (!courses || courses.length === 0) {
-      throw new NotFoundException(
-        `No existen cursos relacionados al programa.`,
-      );
-    }
-    return courses;
+    return await this.programService.getCoursesByProgram(id);
   }
-
 }

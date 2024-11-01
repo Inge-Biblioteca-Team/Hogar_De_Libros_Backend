@@ -114,7 +114,7 @@ export class BookLoanController {
 
   @Get('completed')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente', 'external_user')
+  @Roles('admin', 'asistente', 'external_user')
   async getCompletedLoans(
     @Query() paginationDto: GETResponseDTO,
   ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {

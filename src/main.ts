@@ -10,7 +10,7 @@ import { SwaggerAuthInterceptor } from './Interceptors/SwaggerAuthInterceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: true,
+    cors: false,
   });
 
   app.enableCors({

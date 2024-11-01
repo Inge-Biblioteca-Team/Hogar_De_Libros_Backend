@@ -16,7 +16,7 @@ export class FurnitureService {
     @InjectRepository(Furniture)
     private FurnitureRepository: Repository<Furniture>,
   ) {}
-
+// PROMISE MESSAGE
   async create(createFurnitureDto: CreateFurnitureDto): Promise<Furniture> {
     const newFurniture = this.FurnitureRepository.create(createFurnitureDto);
     return this.FurnitureRepository.save(newFurniture);
@@ -31,7 +31,7 @@ export class FurnitureService {
     }
     return furniture;
   }
-
+// PROMISE MESSAGE
   async update(
     id: number,
     updateFurniture: CreateFurnitureDto,
@@ -52,7 +52,7 @@ export class FurnitureService {
 
     return this.findOne(id);
   }
-
+// PROMISE MESSAGE
   async DowFurniture(Id: number): Promise<Furniture> {
     const Furniture = await this.FurnitureRepository.findOne({
       where: { Id: Id },
@@ -63,7 +63,7 @@ export class FurnitureService {
     Furniture.Status = 'Baja';
     return this.FurnitureRepository.save(Furniture);
   }
-
+// PROMISE MESSAGE
   async NAFurniture(Id: number): Promise<Furniture> {
     const Furniture = await this.FurnitureRepository.findOne({
       where: { Id: Id },
@@ -79,6 +79,8 @@ export class FurnitureService {
     Furniture.Status = 'N.A.';
     return this.FurnitureRepository.save(Furniture);
   }
+
+  // PROMISE MESSAGE
   async SEFurniture(Id: number): Promise<Furniture> {
     const Furniture = await this.FurnitureRepository.findOne({
       where: { Id: Id },

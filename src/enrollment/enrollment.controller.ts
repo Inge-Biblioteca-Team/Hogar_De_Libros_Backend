@@ -24,6 +24,7 @@ import { Roles } from 'src/auth/decorators/roles.decorators';
 export class EnrollmentController {
   constructor(private readonly enrollmentService: EnrollmentService) {}
 
+  
   @Post(':courseId')
   async enrollUser(
     @Body() createEnrollmentDto: CreateEnrollmentDto,
@@ -41,8 +42,7 @@ export class EnrollmentController {
   }
 
   @Get()
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente', 'Recepcion', 'Externo', 'Institucional')
+  @UseGuards(AuthGuard)
   async getEnrollmentsListByIdCourse(
     @Query() paginationEnrollmentListDTO: PaginationEnrollmentListDto,
   ) {

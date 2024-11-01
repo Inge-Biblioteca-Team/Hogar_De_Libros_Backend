@@ -96,7 +96,7 @@ export class BookLoanService {
       throw new InternalServerErrorException(errorMessage);
     }
   }
-
+// Cambiar a promise message, 
   async setInProcess(bookLoanId: number): Promise<BookLoan> {
     const bookLoan = await this.bookLoanRepository.findOne({
       where: { BookLoanId: bookLoanId },
@@ -111,6 +111,7 @@ export class BookLoanService {
     return await this.bookLoanRepository.save(bookLoan);
   }
 
+  // Cambiar a promise message, 
   async finalizeLoan(
     bookLoanId: number,
     finalizeBookLoanDto: FinalizeBookLoanDto,
@@ -129,6 +130,7 @@ export class BookLoanService {
     return await this.bookLoanRepository.save(bookLoan);
   }
 
+  // Cambiar a promise message, 
   async update(
     bookLoanId: number,
     updateBookLoanDto: updatedBookLoan,
@@ -178,19 +180,14 @@ export class BookLoanService {
       query.andWhere('DATE(bookLoan.BookPickUpDate) = :BookPickUpDate', {
         BookPickUpDate: filters.BookPickUpDate,
       });
-      console.log('Entre');
     }
-    console.log(filters.BookPickUpDate);
 
     if (filters.signatureCode) {
-      console.log('signatureCode:', filters.signatureCode);
       query
         .leftJoinAndSelect('bookLoan.book', 'book')
         .andWhere('book.signatureCode = :signatureCode', {
           signatureCode: String(filters.signatureCode),
         });
-
-      console.log(filters.signatureCode);
     }
 
     if (filters.cedula) {

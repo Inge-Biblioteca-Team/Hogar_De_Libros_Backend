@@ -43,7 +43,7 @@ export class FriendsLibraryController {
 
   @Get()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin','Asistente')
+  @Roles('admin','asistente')
   async getAllFriends(
     @Query(ValidationPipe) filterDTO: GetAllFriendsFilterDTO,
   ) {
@@ -52,7 +52,7 @@ export class FriendsLibraryController {
 
   @Patch('aproveFriendLibrary/:FriendID')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async aproveFriendLibrary(
     @Param('FriendID') FriendID: number,
   ): Promise<{ message: string }> {
@@ -61,7 +61,7 @@ export class FriendsLibraryController {
 
   @Patch('denyFriendLibrary/:FriendID')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async denyFriendLibrary(
     @Param('FriendID') FriendID: number,
     @Body() dto: DenyFriendRequestDTO,
@@ -71,7 +71,7 @@ export class FriendsLibraryController {
 
   @Patch('downFriendLibrary/:FriendID')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async downFriendLibrary(
     @Param('FriendID') FriendID: number,
     @Body() dto: DenyFriendRequestDTO,
@@ -81,7 +81,7 @@ export class FriendsLibraryController {
 
   @Patch('Edit-Friend/:FriendID')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async editFriendLibrary(
     @Param('FriendID') FriendID: number,
     @Body() dto: UpdateFriendDTO,

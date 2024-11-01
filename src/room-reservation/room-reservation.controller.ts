@@ -31,7 +31,7 @@ export class RoomReservationController {
 
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente', 'Institucional')
+  @Roles('admin', 'asistente', 'institucional')
   create(
     @Body() createRoomReservationDto: CreateRoomReservationDto,
   ): Promise<{ message: string }> {
@@ -40,7 +40,7 @@ export class RoomReservationController {
 
   @Get()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente')
+  @Roles('admin', 'asistente')
   async getAllReservations(
     @Query() filter: FilterGetDTO,
   ): Promise<{ data: ReservationDTO[]; count: number }> {
@@ -49,7 +49,7 @@ export class RoomReservationController {
 
   @Get('queque')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente')
+  @Roles('admin', 'asistente')
   async getQuequeReservations(
     @Query() filter: FilterGetDTO,
   ): Promise<Queque[]> {
@@ -58,14 +58,14 @@ export class RoomReservationController {
 
   @Patch('Aprove/:id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin' )
   async PatchAprove(@Param('id') Id: number): Promise<{ message: string }> {
     return this.roomReservationService.aprovReservation(Id);
   }
 
   @Patch('End/:id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async PatchEnd(
     @Param('id') Id: number,
     @Body() updateReserve: UpdateRoomReservationDto,
@@ -75,21 +75,21 @@ export class RoomReservationController {
 
   @Patch('Refuse/:id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async PatchRefuse(@Param('id') Id: number): Promise<{ message: string }> {
     return this.roomReservationService.refuseReservation(Id);
   }
 
   @Patch('Cancel/:id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async PatchCancel(@Param('id') Id: number): Promise<{ message: string }> {
     return this.roomReservationService.cencelReservation(Id);
   }
 
   @Get('count/:userCedula')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente', 'Institucional', 'Externo', 'Recepcion')
+  @Roles('admin', 'asistente', 'institucional', 'external_user', 'recepcion')
   async countReservationsByCedula(
     @Param('userCedula') userCedula: string,
   ): Promise<{ count: number }> {

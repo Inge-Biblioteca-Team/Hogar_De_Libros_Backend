@@ -1,9 +1,8 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty, IsNumber, IsString, IsDateString } from 'class-validator';
+import {  IsNotEmpty, IsNumber, IsString, IsDateString } from 'class-validator';
 
 export class CreateBookLoanDto {
-  
   @ApiProperty({
     example: '2024-09-11',
     description: 'Fecha en la que se recoge el libro',

@@ -33,27 +33,19 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 export class ComputersController {
   constructor(private computerService: ComputersService) {}
 
-  @ApiBearerAuth('access-token')
 
+ // Cambiar a promise message, 
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente')
-  @ApiBody({ type: ComputerDTO })
-  @ApiOperation({ summary: 'Create a new Computer equipment' })
-  @ApiResponse({
-    status: 201,
-    description: 'The Computer equipment has been successfully created.',
-    type: ComputerDTO,
-  })
+  @Roles('admin', 'asistente')
   addComputer(@Body() computerDTO: ComputerDTO): Promise<ComputerDTO> {
     return this.computerService.createComputer(computerDTO);
   }
 
-  @ApiBearerAuth('access-token')
+ 
   @Get(':EquipmentUniqueCode')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente')
-  @ApiProperty({ description: 'Obtiene un equipo de cómputo  por su código' })
+  @Roles('admin', 'asistente')
   async findById(
     @Param('EquipmentUniqueCode') EquipmentUniqueCode: number,
   ): Promise<Computer> {
@@ -68,15 +60,10 @@ export class ComputersController {
     }
   }
 
-  @ApiBearerAuth('access-token')
+ // Cambiar a promise message, 
   @Put(':EquipmentUniqueCode')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
-  @ApiOperation({ summary: 'Modify a Computer equipment' })
-  @ApiResponse({
-    status: 201,
-    description: 'The Computer equipment has been successfully Modifyed.',
-  })
+  @Roles('admin')
   async modifyComputer(
     @Param('EquipmentUniqueCode') EquipmentUniqueCode: number,
     @Body() modifyComputerDTO: ModifyComputerDTO,
@@ -87,15 +74,10 @@ export class ComputersController {
     );
   }
 
-  @ApiBearerAuth('access-token')
+  // Cambiar a promise message, 
   @Patch(':EquipmentUniqueCode')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
-  @ApiOperation({ summary: 'Inactivates a computer equipment ' })
-  @ApiResponse({
-    status: 201,
-    description: 'The Computer equipment has been successfully inactivated.',
-  })
+  @Roles('admin')
   async DisableEquipment(
     @Param('EquipmentUniqueCode') EquipmentUniqueCode: number,
   ) {
@@ -104,33 +86,23 @@ export class ComputersController {
 
   @Get()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente')
-  @ApiOperation({ summary: 'get all equipments and filters' })
-  @ApiResponse({
-    status: 200,
-    description: 'List of equipments computer, filters and pager',
-    type: [Computer],
-  })
+  @Roles('admin', 'asistente')
   async getAllComputers(@Query() paginationDTO: PaginationQueryDTO) {
     return await this.computerService.getAllComputers(paginationDTO);
   }
 
   @Get('workstation/Status')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente', 'Recepcion')
-  @ApiResponse({
-    status: 200,
-    description: 'The WorkStation status has been finded.',
-  })
+  @Roles('admin', 'asistente', 'recepcion')
   async getStatusWorkStation(): Promise<
     { MachineNumber: number; Status: string }[]
   > {
     return await this.computerService.getStatusWorkStation();
   }
-
+// PROMISE MESSAGE y dto parcial
   @Patch(':machineNumber/maintenance')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async setWorkStationToMaintenance(
     @Param('machineNumber') machineNumber: number,
     @Body('location') location: string,
@@ -142,19 +114,19 @@ export class ComputersController {
       userName,
     );
   }
-
+// PROMISE MESSAGE
   @Patch(':machineNumber/available')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async setWorkStationToAvailable(
     @Param('machineNumber') machineNumber: number,
   ): Promise<string> {
     return this.computerService.ResetWorkStation(machineNumber);
   }
-
+// PROMISE MESSAGE
   @Patch(':machineNumber/reactive')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async ReactiveMachine(
     @Param('machineNumber') machineNumber: number,
   ): Promise<string> {

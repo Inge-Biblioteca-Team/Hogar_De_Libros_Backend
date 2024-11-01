@@ -30,23 +30,24 @@ import { Roles } from 'src/auth/decorators/roles.decorators';
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
+  // Cambiar a promise message, 
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente')
+  @Roles('admin', 'asistente')
   async addBook(@Body() createBookDto: CreateBookDto): Promise<CreateBookDto> {
     return this.booksService.addBook(createBookDto);
   }
-
+// Cambiar a promise message, darle promise
   @Patch(':bookCode/disable')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async disableBook(@Param('bookCode') bookCode: number) {
     return await this.booksService.disableBook(bookCode);
   }
-
+// Cambiar a promise message, darle
   @Patch(':bookCode')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async updatePartial(
     @Param('bookCode') bookCode: number,
     @Body() updateBookDto: UpdateBookDto,
@@ -54,9 +55,10 @@ export class BooksController {
     return await this.booksService.update(bookCode, updateBookDto);
   }
 
+  // Cambiar a promise message, 
   @Put(':bookCode/enable')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async enableBook(
     @Param('bookCode') bookCode: number,
     @Body() enableBookDto: EnableBookDto,
@@ -69,9 +71,8 @@ export class BooksController {
     return await this.booksService.getColecction(paginationFilterDto);
   }
 
+// PEDNIENTE DE ELIMINACOIN SI NO SE USA
   @Get(':BookCode')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente', 'Externo' ,'Recepcion', 'Institucional')
   async findById(@Param('BookCode') BookCode: number): Promise<Book> {
     try {
       return await this.booksService.findById(BookCode);
@@ -84,7 +85,7 @@ export class BooksController {
 
   @Get()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin', 'Asistente')
+  @Roles('admin', 'asistente')
   async findAll(@Query() paginationFilterDto: PaginationFilterDto) {
     return await this.booksService.findAll(paginationFilterDto);
   }

@@ -41,7 +41,7 @@ export class CollaboratorController {
 
   @Get()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin','Asistente')
+  @Roles('admin','asistente')
   async getAllCollaborator(
     @Query(ValidationPipe) filterDTO: GetAllCollaboratorFilterDTO,
   ) {
@@ -50,7 +50,7 @@ export class CollaboratorController {
 
   @Patch('aproveCollaborator/:CollaboratorId')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async aproveCollaborator(
     @Param('CollaboratorId') CollaboratorId: number,
   ): Promise<{ message: string }> {
@@ -59,7 +59,7 @@ export class CollaboratorController {
 
   @Patch('denyCollaborator/:id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async denyCollaborator(
     @Param('id') CollaboratorId: number,
     @Body() dto: DenyCollaboratorRequestDTO,
@@ -69,7 +69,7 @@ export class CollaboratorController {
 
   @Patch('cancelCollaborator/:id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('Admin')
+  @Roles('admin')
   async canelCollaborator(
     @Param('id') CollaboratorId: number,
     @Body() dto: DenyCollaboratorRequestDTO,

@@ -22,11 +22,9 @@ import { Roles } from 'src/auth/decorators/roles.decorators';
 @UseGuards(AuthGuard, RolesGuard)
 export class FurnitureController {
   constructor(private readonly furnitureService: FurnitureService) {}
-
+// PROMISE MESSAGE
   @Post()
-  @Roles('Admin', 'Asistente')
-  @ApiOperation({ summary: 'Create a new Furniture' })
-  @ApiBody({ type: CreateFurnitureDto })
+  @Roles('admin', 'asistente')
   async create(
     @Body() createFurnitureDto: CreateFurnitureDto,
   ): Promise<Furniture> {
@@ -34,47 +32,40 @@ export class FurnitureController {
   }
 
   @Get()
-  @Roles('Admin', 'Asistente')
-  @ApiOperation({ summary: 'Get all paginated' })
+  @Roles('admin', 'asistente')
   async findAll(@Query() query: PaginatedDTO) {
     return this.furnitureService.findAll(query);
   }
 
   @Get(':id')
-  @Roles('Admin', 'Asistente')
-  @ApiOperation({ summary: 'Get Furniture by ID for See operation' })
+  @Roles('admin', 'asistente')
   async findOne(@Param('id') id: number): Promise<Furniture> {
     return this.furnitureService.findOne(id);
   }
-
+// PROMISE MESSAGE
   @Patch(':id')
-  @Roles('Admin')
-  @ApiOperation({ summary: 'Edit register' })
-  @ApiBody({ type: CreateFurnitureDto })
+  @Roles('admin')
   async update(
     @Param('id') id: number,
     @Body() updateFurniture: CreateFurnitureDto,
   ): Promise<Furniture> {
     return this.furnitureService.update(id, updateFurniture);
   }
-
+// PROMISE MESSAGE
   @Patch(':id/Down')
-  @Roles('Admin')
-  @ApiOperation({ summary: 'Change Status to Baja' })
+  @Roles('admin')
   async DownFurniture(@Param('id') Id: number) {
     return await this.furnitureService.DowFurniture(Id);
   }
-
+// PROMISE MESSAGE
   @Patch(':id/NA')
-  @Roles('Admin')
-  @ApiOperation({ summary: 'Change Status To N.A.' })
+  @Roles('admin')
   async NAFurniture(@Param('id') Id: number) {
     return await this.furnitureService.NAFurniture(Id);
   }
-
+// PROMISE MESSAGE
   @Patch(':id/SE')
-  @Roles('Admin')
-  @ApiOperation({ summary: 'Change Status To S.E.' })
+  @Roles('admin')
   async SEFurniture(@Param('id') Id: number) {
     return await this.furnitureService.SEFurniture(Id);
   }
