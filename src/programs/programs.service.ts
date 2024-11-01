@@ -15,6 +15,8 @@ import { ProgramDTO } from './DTO/GetPDTO';
 import { ProgramsNames } from './DTO/ProgramNames';
 import { Course } from 'src/course/course.entity';
 import { activities } from './DTO/Programs-Activities.dto';
+import { ActivitiesDTO } from './DTO/Activities.dto';
+import { ActivitiesFilterDTO } from './DTO/ActivitiesFilter.dto';
 
 @Injectable()
 export class ProgramsService {
@@ -170,6 +172,51 @@ export class ProgramsService {
       );
     }
     return program.courses;
+  }
+
+  async getActivitiesByProgram(filterDTO: ActivitiesFilterDTO): Promise<{
+    data: ActivitiesDTO[];
+    count: number;
+  }> {
+    const { month, programID } = filterDTO;
+
+    const date = new Date();
+    const formattedDate = date.toISOString().split('T')[0];
+    const query = this.programsRepository
+      .createQueryBuilder('program')
+      .leftJoinAndSelect('program.courses', 'course')
+      .where('course.Status = :status', { status: 1 })
+      .andWhere('course.date >= :formattedDate', { formattedDate })
+      .orderBy('course.date', 'ASC');
+
+      if(programID){
+        query.where('program.programsId = :programID', { programID })
+      }
+    
+      if (month) {
+        query.andWhere('MONTH(course.date) = :month', { month });
+      }
+      const programs = await query.getMany();
+
+    const activities: ActivitiesDTO[] = [];
+
+    programs.forEach((program) => {
+      program.courses.forEach((course) => {
+        activities.push({
+          id: course.courseId,
+          description:
+            'Curso: ' + course.courseName + '. Realizado en ' + course.location,
+          date: course.date,
+          category: course.courseType,
+          targetAge: course.targetAge,
+          instructor: course.instructor,
+          image: course.image,
+          programName: program.programName,
+        });
+      });
+    });
+
+    return { data: activities, count: activities.length };
   }
 
   async getActivities(
