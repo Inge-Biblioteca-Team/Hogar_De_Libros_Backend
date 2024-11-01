@@ -4,6 +4,7 @@ import { Computer } from './computer.entity';
 import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
 
 @Entity({ name: 'workstations' })
+/// SEPARAR DE COMPUTERS Y CREAR CRUD DE WORKSTATIONS ELIMINANDO totalmente no cambiar estado
 export class WorkStation {
   @PrimaryGeneratedColumn()
   MachineNumber: number;

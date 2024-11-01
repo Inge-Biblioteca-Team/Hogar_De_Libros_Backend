@@ -20,6 +20,7 @@ export class ComputerLoanService {
     private userRepository: Repository<User>,
   ) {}
 
+   // Cambiar a promise message, 
   async CreateComputerLoan(createComputerLoanDto: CreateComputerLoanDto) {
     const workStation = await this.workStationRepository.findOne({
       where: { MachineNumber: createComputerLoanDto.MachineNumber },
@@ -39,7 +40,7 @@ export class ComputerLoanService {
         HttpStatus.BAD_REQUEST,
       );
     }
-
+    /// Quitar user pq el prestamo es para guardar un historial
     const user = await this.userRepository.findOne({
       where: { cedula: createComputerLoanDto.cedula },
     });
@@ -104,6 +105,7 @@ export class ComputerLoanService {
     return { data, count };
   }
 
+   // Cambiar a promise message, 
   async FinishComputerLoanByMachineNumber(
     machineNumber: number,
   ): Promise<string> {

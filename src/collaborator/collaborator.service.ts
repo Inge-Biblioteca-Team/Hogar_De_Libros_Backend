@@ -32,7 +32,7 @@ export class CollaboratorService {
       const User = await this.UserRepository.findOne({
         where: { cedula: dto.UserCedula },
       });
-
+      /// cambiar a variable de entorno el documente path base url
       const documentPaths = documents.map(
         (file) => `http://localhost:3000/uploads/${file.filename}`,
       );
@@ -92,7 +92,7 @@ export class CollaboratorService {
     }
   }
 
-  // provicional, no es la task es solo para ver la data del create
+
   async getAllCollaborator(
     filterDTO: GetAllCollaboratorFilterDTO,
   ): Promise<{ data: Collaborator[]; count: number }> {

@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
@@ -17,6 +18,10 @@ import { CreateCollaboratorDTO } from './DTO/create-collaborator-DTO';
 import { GetAllCollaboratorFilterDTO } from './DTO/get-filter-collaborator-DTO';
 import { ApiTags } from '@nestjs/swagger';
 import { DenyCollaboratorRequestDTO } from './DTO/deny-collaborator-DTO';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+
 
 @ApiTags('collaborator')
 @Controller('collaborator')
@@ -35,6 +40,8 @@ export class CollaboratorController {
   }
 
   @Get()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin','asistente')
   async getAllCollaborator(
     @Query(ValidationPipe) filterDTO: GetAllCollaboratorFilterDTO,
   ) {
@@ -42,6 +49,8 @@ export class CollaboratorController {
   }
 
   @Patch('aproveCollaborator/:CollaboratorId')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   async aproveCollaborator(
     @Param('CollaboratorId') CollaboratorId: number,
   ): Promise<{ message: string }> {
@@ -49,6 +58,8 @@ export class CollaboratorController {
   }
 
   @Patch('denyCollaborator/:id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   async denyCollaborator(
     @Param('id') CollaboratorId: number,
     @Body() dto: DenyCollaboratorRequestDTO,
@@ -57,6 +68,8 @@ export class CollaboratorController {
   }
 
   @Patch('cancelCollaborator/:id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   async canelCollaborator(
     @Param('id') CollaboratorId: number,
     @Body() dto: DenyCollaboratorRequestDTO,

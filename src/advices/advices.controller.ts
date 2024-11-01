@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { AdvicesService } from './advices.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -15,6 +16,10 @@ import { CreateAdviceDto } from './dto/create-advice.dto';
 import { UpdateAdviceDto } from './dto/update-advice.dto';
 import { Paginacion_AdviceDTO } from './dto/Paginacion-Advice.dto';
 import { Advice } from './entities/advice.entity';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+
 
 @ApiTags('Avisos Importantes')
 @Controller('advices')
@@ -22,6 +27,8 @@ export class AdvicesController {
   constructor(private readonly advicesService: AdvicesService) {}
 
   @Post()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'asistente')
   async createAdvice(
     @Body() Dto: CreateAdviceDto,
   ): Promise<{ message: string }> {
@@ -29,6 +36,8 @@ export class AdvicesController {
   }
 
   @Patch('/:id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'asistente')
   async editAdvice(
     @Body() Dto: UpdateAdviceDto,
     @Param('id') id: number,
@@ -37,6 +46,8 @@ export class AdvicesController {
   }
 
   @Delete('/:id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'asistente')
   async deleteAdvice(@Param('id') id: number): Promise<{ message: string }> {
     return this.advicesService.deleteAdvice(id);
   }

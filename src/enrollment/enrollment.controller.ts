@@ -7,17 +7,24 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { EnrollmentService } from 'src/enrollment/enrollment.service';
 import {  ApiTags } from '@nestjs/swagger';
 import { CreateEnrollmentDto } from './DTO/create-enrollment.dto';
 import { PaginationEnrollmentListDto } from './DTO/pagination-enrollmentList.dto';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+
 
 @ApiTags('Enrollments')
 @Controller('enrollments')
+
 export class EnrollmentController {
   constructor(private readonly enrollmentService: EnrollmentService) {}
 
+  
   @Post(':courseId')
   async enrollUser(
     @Body() createEnrollmentDto: CreateEnrollmentDto,
@@ -35,6 +42,7 @@ export class EnrollmentController {
   }
 
   @Get()
+  @UseGuards(AuthGuard)
   async getEnrollmentsListByIdCourse(
     @Query() paginationEnrollmentListDTO: PaginationEnrollmentListDto,
   ) {

@@ -15,12 +15,12 @@ export class BooksService {
     @InjectRepository(Book)
     private bookRepository: Repository<Book>,
   ) {}
-
+ // Cambiar a promise message, 
   async addBook(createBookDto: CreateBookDto): Promise<Book> {
     const newBook = this.bookRepository.create(createBookDto);
     return await this.bookRepository.save(newBook);
   }
-
+ // Cambiar a promise message, 
   async update(bookCode: number, updateBookDto: UpdateBookDto): Promise<Book> {
     const book = await this.bookRepository.findOne({
       where: { BookCode: bookCode },
@@ -36,6 +36,7 @@ export class BooksService {
 
     return this.bookRepository.save(book);
   }
+   // Cambiar a promise message, 
   async enableBook(
     bookCode: number,
     enableBookDto: EnableBookDto,
@@ -54,6 +55,7 @@ export class BooksService {
 
     return await this.bookRepository.save(book);
   }
+   // Cambiar a promise message, 
   async disableBook(bookCode: number): Promise<Book> {
     const book = await this.bookRepository.findOne({
       where: { BookCode: bookCode },
@@ -80,6 +82,7 @@ export class BooksService {
 
     return book;
   }
+  
   async findAll(
     PaginationFilterDto: PaginationFilterDto,
   ): Promise<{ data: Book[]; count: number }> {

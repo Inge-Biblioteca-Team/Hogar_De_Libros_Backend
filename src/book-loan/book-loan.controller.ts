@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { BookLoanService } from './book-loan.service';
 import {  ApiBody, ApiTags } from '@nestjs/swagger';
@@ -17,6 +18,9 @@ import { FinalizeBookLoanDto } from './DTO/finalize-bookloan.dto';
 import { updatedBookLoan } from './DTO/update-bookLoan.dto';
 import { GETResponseDTO } from './DTO/GETSResponse';
 import { BookLoanResponseDTO } from './DTO/RequestDTO';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorators';
 
 @ApiTags('booksLoan')
 @Controller('book-loan')
@@ -24,6 +28,8 @@ export class BookLoanController {
   constructor(private bookLoanService: BookLoanService) {}
 
   @Post()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'asistente')
   @ApiBody({ type: CreateBookLoanDto })
   async createLoan(
     @Body() createBookLoanDto: CreateBookLoanDto,
@@ -31,7 +37,10 @@ export class BookLoanController {
     return this.bookLoanService.createLoan(createBookLoanDto);
   }
 
+  // Corregir la logica no va en el controlador
   @Patch(':id/in-process')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   async setInProcess(@Param('id') bookLoanId: number): Promise<BookLoan> {
     const updatedBookLoan = await this.bookLoanService.setInProcess(bookLoanId);
     if (!updatedBookLoan) {
@@ -42,8 +51,10 @@ export class BookLoanController {
     return updatedBookLoan;
   }
 
-  
+  // Corregir la logica no va en el controlador
   @Patch(':id/finalize')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   async finalizeLoan(
     @Param('id') bookLoanId: number,
     @Body() finalizeBookLoanDto: FinalizeBookLoanDto,
@@ -60,7 +71,10 @@ export class BookLoanController {
     return updatedBookLoan;
   }
 
+  // Corregir la logica no va en el controlador
   @Patch(':id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   async update(
     @Param('id') bookLoanId: number,
     @Body() updatedBookLoanDto: updatedBookLoan,
@@ -79,6 +93,8 @@ export class BookLoanController {
 
 
   @Get('in-progress')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'asistente', 'external_user')
   async getInProgressLoans(
     @Query() paginationDto: GETResponseDTO,
   ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
@@ -87,6 +103,8 @@ export class BookLoanController {
 
 
   @Get('pending')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'asistente' ,'external_user')
   async getPendingLoans(
     @Query() paginationDto: GETResponseDTO,
   ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
@@ -95,6 +113,8 @@ export class BookLoanController {
 
 
   @Get('completed')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'asistente', 'external_user')
   async getCompletedLoans(
     @Query() paginationDto: GETResponseDTO,
   ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {

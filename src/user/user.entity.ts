@@ -12,8 +12,9 @@ import { Collaborator } from 'src/collaborator/collaborator.entity';
 export enum Role {
   ExternalUser = 'external_user', //Puede solicitar libros bajo la política que se le establezca
   Reception = 'reception', // usuario destinado a consultas de libros y demás(Usuario de recepción)
-  Creator = 'creator', // Asistentes pueden crear registros dar asistencia a la colección pero no borrar o dar de baja
+  Asistente = 'asistente', // Asistentes pueden crear registros dar asistencia a la colección pero no borrar o dar de baja
   Admin = 'admin', //Puede incidir en todo
+  Institucional = 'institucional', //Usuario con permiso de reservas de salas
 }
 
 @Entity({ name: 'users' })

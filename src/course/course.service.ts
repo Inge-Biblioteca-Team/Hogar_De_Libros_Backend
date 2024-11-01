@@ -26,8 +26,10 @@ export class CourseService {
   ) {}
 
   //Post
+  // PROMISE MESSAGE
   async createCourse(createCourseDto: CreateCourseDto): Promise<Course> {
     try {
+      // LOGICA DEBE DAR PROGRAM ID = NULL si no existe autmaticamente
       const course = this.courseRepository.create({
         ...createCourseDto,
         programProgramsId:
@@ -55,7 +57,7 @@ export class CourseService {
     }
   }
 
-  //Get
+  
   async findAllCourses(
     filter: GetCoursesDto,
   ): Promise<{ data: CoursesDTO[]; count: number }> {
@@ -127,7 +129,7 @@ export class CourseService {
     return { data: result, count };
   }
 
-  //patch
+// PROMISE MESSAGE
   async updateCourseById(
     courseId: number,
     updateCourseDto: Partial<CreateCourseDto>,
@@ -146,24 +148,21 @@ export class CourseService {
     return await this.courseRepository.save(course);
   }
 
+  // PROMISE MESSAGE
   async disableCourse(courseId: number): Promise<Course> {
-    // Buscar el curso por su ID
     const course = await this.courseRepository.findOne({ where: { courseId } });
 
     if (!course) {
       throw new NotFoundException(`Course with ID ${courseId} not found.`);
     }
-
-    // Cambiar el estado a "false" (deshabilitado)
     course.Status = false;
-
-    // Guardar el curso actualizado
     return await this.courseRepository.save(course);
   }
 
+
   async getActiveCourseById(courseId: number): Promise<Course> {
     const course = await this.courseRepository.findOne({
-      where: { courseId, Status: true }, // Solo cursos activos
+      where: { courseId, Status: true },
     });
 
     if (!course) {
@@ -175,7 +174,6 @@ export class CourseService {
     return course;
   }
 
-  //Get a los siguientes cursos (3 proximos meses y activos)
   async getNextCourses(
     SearchDTO: SearchDTO,
   ): Promise<{ data: NexCorusesDTO[]; count: number }> {

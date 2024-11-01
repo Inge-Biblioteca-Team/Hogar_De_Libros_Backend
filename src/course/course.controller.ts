@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './DTO/create-course.dto';
@@ -19,6 +20,10 @@ import { GetCoursesDto } from './DTO/get.-course.dto';
 import { NexCorusesDTO } from './DTO/NexCoursesDTO';
 import { SearchDTO } from './DTO/SearchDTO';
 import { CoursesDTO } from './DTO/CoursesDTO';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+
 
 @ApiTags('Courses')
 @Controller('courses')
@@ -29,22 +34,10 @@ export class CourseController {
     private readonly courseService: CourseService,
   ) {}
 
-
+// PROMISE MESSAGE
   @Post()
-  @ApiBody({ type: CreateCourseDto })
-  @ApiResponse({
-    status: 201,
-    description: 'Create a new Course',
-    type: Course,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad Request: Datos inválidos',
-  })
-  @ApiResponse({
-    status: 409,
-    description: 'Conflict: Conflicto de datos (ej. curso ya existe)',
-  })
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles('admin', 'asistente')
   async createCourse(
     @Body() createCourseDto: CreateCourseDto,
   ): Promise<Course> {
@@ -62,27 +55,17 @@ export class CourseController {
   }
 
   @Get()
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles('admin', 'asistente')
   async findAllCourses(
     @Query() query: GetCoursesDto,
   ): Promise<{ data: CoursesDTO[]; count: number }> {
     return await this.courseService.findAllCourses(query)
   }
 
+  // PROMISE MESSAGE
   @Patch(':courseId')
-  @ApiBody({ type: PartialType(CreateCourseDto) })
-  @ApiResponse({
-    status: 200,
-    description: 'Course updated successfully',
-    type: Course,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Course not found',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Invalid data',
-  })
+  @UseGuards(AuthGuard)
   async patchCourseById(
     @Param('courseId', ParseIntPipe) courseId: number,
     @Body() updateCourseDto: Partial<CreateCourseDto>,
@@ -102,16 +85,10 @@ export class CourseController {
     }
   }
 
+  // PROMISE MESSAGE
   @Patch(':courseId/disable')
-  @ApiResponse({
-    status: 200,
-    description: 'Course disabled successfully',
-    type: Course,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Course not found',
-  })
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles('admin')
   async disableCourse(
     @Param('courseId', ParseIntPipe) courseId: number,
   ): Promise<Course> {
@@ -127,15 +104,7 @@ export class CourseController {
   }
 
   @Get(':courseId/active')
-  @ApiResponse({
-    status: 200,
-    description: 'Active course found',
-    type: Course,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Active course not found',
-  })
+  @UseGuards(AuthGuard)
   async getActiveCourseById(
     @Param('courseId', ParseIntPipe) courseId: number,
   ): Promise<Course> {
@@ -160,13 +129,16 @@ export class CourseController {
   }
 
   @Get('User_Courses')
+  @UseGuards(AuthGuard)
   async getCoursesByUserCedula(
     @Query() searchDTO: SearchDTO,
   ): Promise<{ data: NexCorusesDTO[]; count: number }> {
     return this.courseService.getCoursesByUserCedula(searchDTO);
   }
 
+
   @Get('CourseList')
+  @UseGuards(AuthGuard)
   async CourseList(@Query('fecha') fecha: Date): Promise<CreateCourseDto[]> {
     return this.courseService.CourseList(fecha);
   }

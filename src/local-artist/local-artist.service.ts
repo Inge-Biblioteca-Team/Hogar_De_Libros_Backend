@@ -12,7 +12,7 @@ export class LocalArtistService {
     @InjectRepository(LocalArtist)
     private localArtistRepository: Repository<LocalArtist>,
   ) {}
-
+// PROMISE MESSAGE
   async create(
     createLocalArtistDto: CreateLocalArtistDTO,
   ): Promise<LocalArtist> {
@@ -65,6 +65,7 @@ export class LocalArtistService {
     return artist;
   }
 
+  // PROMISE MESSAGE
   async update(
     id: number,
     updateLocalArtistDto: CreateLocalArtistDTO,
@@ -73,6 +74,7 @@ export class LocalArtistService {
     Object.assign(artist, updateLocalArtistDto);  
     return this.localArtistRepository.save(artist); 
   }
+  // PROMISE MESSAGE
   async DownArtist(ArtistID: number): Promise<LocalArtist> {
     const Artist = await this.localArtistRepository.findOne({
       where: { ID: ArtistID },

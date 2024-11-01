@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
-
+// CAMBIAR URL DEL GET IMAGE A URL BASE del .env
 @Injectable()
 export class FilesService {
   SaveImage(file: Express.Multer.File, path: string): string {

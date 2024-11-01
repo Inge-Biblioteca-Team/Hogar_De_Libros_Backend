@@ -7,6 +7,7 @@ import {
   Query,
   Param,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { RoomReservationService } from './room-reservation.service';
 import { CreateRoomReservationDto } from './dto/create-room-reservation.dto';
@@ -16,6 +17,10 @@ import { ReservationDTO } from './dto/GetReservationsDTO';
 import { Queque } from './dto/ReservationsQueque';
 import { UpdateRoomReservationDto } from './dto/update-room-reservation.dto';
 import { UserReservationDTO } from './dto/UserReservations';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+
 
 @ApiTags('Reservations')
 @Controller('room-reservation')
@@ -25,6 +30,8 @@ export class RoomReservationController {
   ) {}
 
   @Post()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'asistente', 'institucional')
   create(
     @Body() createRoomReservationDto: CreateRoomReservationDto,
   ): Promise<{ message: string }> {
@@ -32,6 +39,8 @@ export class RoomReservationController {
   }
 
   @Get()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'asistente')
   async getAllReservations(
     @Query() filter: FilterGetDTO,
   ): Promise<{ data: ReservationDTO[]; count: number }> {
@@ -39,32 +48,48 @@ export class RoomReservationController {
   }
 
   @Get('queque')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'asistente')
   async getQuequeReservations(
     @Query() filter: FilterGetDTO,
   ): Promise<Queque[]> {
     return this.roomReservationService.getActiveResertavions(filter);
   }
+
   @Patch('Aprove/:id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin' )
   async PatchAprove(@Param('id') Id: number): Promise<{ message: string }> {
     return this.roomReservationService.aprovReservation(Id);
   }
+
   @Patch('End/:id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   async PatchEnd(
     @Param('id') Id: number,
     @Body() updateReserve: UpdateRoomReservationDto,
   ): Promise<{ message: string }> {
     return this.roomReservationService.finalizeReservation(Id, updateReserve);
   }
+
   @Patch('Refuse/:id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   async PatchRefuse(@Param('id') Id: number): Promise<{ message: string }> {
     return this.roomReservationService.refuseReservation(Id);
   }
+
   @Patch('Cancel/:id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   async PatchCancel(@Param('id') Id: number): Promise<{ message: string }> {
     return this.roomReservationService.cencelReservation(Id);
   }
 
   @Get('count/:userCedula')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'asistente', 'institucional', 'external_user', 'recepcion')
   async countReservationsByCedula(
     @Param('userCedula') userCedula: string,
   ): Promise<{ count: number }> {

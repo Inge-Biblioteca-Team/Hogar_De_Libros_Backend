@@ -126,6 +126,7 @@ export class EventsService {
     }
   }
 
+  // PROMISE MESSAGE
   async updateEjecutionStatus(id: number) {
     try {
       const findEvent = await this.EventsRepository.findOne({
@@ -142,7 +143,7 @@ export class EventsService {
       throw new InternalServerErrorException(errorMessage);
     }
   }
-
+// PROMISE MESSAGE
   async updateFinalizedStatus(id: number) {
     try {
       const findEvent = await this.EventsRepository.findOne({
@@ -159,7 +160,7 @@ export class EventsService {
       throw new InternalServerErrorException(errorMessage);
     }
   }
-
+// PROMISE MESSAGE
   async updatePendientStatus(id: number) {
     try {
       const findEvent = await this.EventsRepository.findOne({
@@ -194,7 +195,7 @@ export class EventsService {
       throw new InternalServerErrorException(errorMessage);
     }
   }
-
+ // BORRAR SI NO SE USO
   async checkAndUpdateEventStatus() {
     const currentDate = new Date();
 
@@ -212,7 +213,6 @@ export class EventsService {
         }
       }
     }
-    console.log('Verificación de estado de eventos completada');
   }
 
   async getNextEventsSchedule(
@@ -282,7 +282,6 @@ export class EventsService {
   }
 
   async updateExpireEvent() {
-    console.log('Job Start');
     const currentDate = new Date();
     await this.EventsRepository.createQueryBuilder()
       .update(events)

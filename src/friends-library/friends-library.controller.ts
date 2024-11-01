@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
@@ -19,6 +20,10 @@ import { CreateFriendDTO } from './DTO/create-friend-library-DTO';
 import { GetAllFriendsFilterDTO } from './DTO/get-filter-friendLibrary.Dto';
 import { DenyFriendRequestDTO } from './DTO/deny-friend-library.Dto';
 import { UpdateFriendDTO } from './DTO/update-friend-library-DTO';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+
 
 @ApiTags('friends-library')
 @Controller('friends-library')
@@ -37,6 +42,8 @@ export class FriendsLibraryController {
   }
 
   @Get()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin','asistente')
   async getAllFriends(
     @Query(ValidationPipe) filterDTO: GetAllFriendsFilterDTO,
   ) {
@@ -44,6 +51,8 @@ export class FriendsLibraryController {
   }
 
   @Patch('aproveFriendLibrary/:FriendID')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   async aproveFriendLibrary(
     @Param('FriendID') FriendID: number,
   ): Promise<{ message: string }> {
@@ -51,6 +60,8 @@ export class FriendsLibraryController {
   }
 
   @Patch('denyFriendLibrary/:FriendID')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   async denyFriendLibrary(
     @Param('FriendID') FriendID: number,
     @Body() dto: DenyFriendRequestDTO,
@@ -59,6 +70,8 @@ export class FriendsLibraryController {
   }
 
   @Patch('downFriendLibrary/:FriendID')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   async downFriendLibrary(
     @Param('FriendID') FriendID: number,
     @Body() dto: DenyFriendRequestDTO,
@@ -67,6 +80,8 @@ export class FriendsLibraryController {
   }
 
   @Patch('Edit-Friend/:FriendID')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   async editFriendLibrary(
     @Param('FriendID') FriendID: number,
     @Body() dto: UpdateFriendDTO,

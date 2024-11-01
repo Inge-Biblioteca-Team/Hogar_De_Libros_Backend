@@ -17,7 +17,7 @@ export class RoomsService {
     @InjectRepository(Rooms)
     private roomRepository: Repository<Rooms>,
   ) {}
-
+// PROMISE MESSAGE
   async create(createRoomDto: CreateRoomDto) {
     try {
       await this.roomRepository.save(createRoomDto);
@@ -58,7 +58,7 @@ export class RoomsService {
     const room = this.roomRepository.findOne({ where: { roomId: id } });
     return room;
   }
-
+// PROMISE MESSAGE
   async update(id: number, updateRoomDto: UpdateRoomDto) {
     try {
       const findroom = await this.roomRepository.findOne({
@@ -77,7 +77,7 @@ export class RoomsService {
       throw new InternalServerErrorException(errorMessage);
     }
   }
-
+// PROMISE MESSAGE
   async updateStatusMaintenance(id: number) {
     try {
       const findroom = await this.roomRepository.findOne({
@@ -97,7 +97,7 @@ export class RoomsService {
       throw new InternalServerErrorException(errorMessage);
     }
   }
-
+// PROMISE MESSAGE
   async updateStatusClosed(id: number) {
     try {
       const findroom = await this.roomRepository.findOne({
@@ -116,7 +116,7 @@ export class RoomsService {
       throw new InternalServerErrorException(errorMessage);
     }
   }
-
+// PROMISE MESSAGE
   async updateStatusAvailable(id: number) {
     try {
       const findroom = await this.roomRepository.findOne({

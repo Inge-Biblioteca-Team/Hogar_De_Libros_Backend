@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
@@ -17,6 +18,10 @@ import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { GetFilterDonationDTO } from './DTO/get-filter-donation-DTO';
 import { ApiTags } from '@nestjs/swagger';
 import { DenyDonationRequestDTO } from './DTO/deny-donation-DTO';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+
 
 @ApiTags('Donation')
 @Controller('donation')
@@ -35,11 +40,15 @@ export class DonationController {
   }
 
   @Get()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin','asistente')
   async getAllDonation(@Query(ValidationPipe) filterDTO: GetFilterDonationDTO) {
     return await this.donationService.getAllDonation(filterDTO);
   }
 
   @Patch('aproveFriendDonation/:DonationID')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   async aproveDonation(
     @Param('DonationID') DonationID: number,
   ): Promise<{ message: string }> {
@@ -47,6 +56,8 @@ export class DonationController {
   }
 
   @Patch('denyDonation/:DonationID')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   async denyDonation(
     @Param('DonationID') DonationID: number,
     @Body() DTO: DenyDonationRequestDTO,
@@ -55,6 +66,8 @@ export class DonationController {
   }
 
   @Patch('confirmDonation/:DonationID')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
   async confirmDonation(
     @Param('DonationID') DonationID: number,
     @Body() DTO: DenyDonationRequestDTO,
