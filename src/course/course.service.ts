@@ -129,7 +129,6 @@ export class CourseService {
     return { data: result, count };
   }
 
-  // PROMISE MESSAGE
   async updateCourseById(
     courseId: number,
     updateCourseDto: Partial<CreateCourseDto>,

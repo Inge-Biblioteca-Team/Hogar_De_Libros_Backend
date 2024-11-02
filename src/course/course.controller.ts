@@ -3,7 +3,6 @@ import {
   Body,
   Controller,
   Get,
-  NotFoundException,
   Param,
   ParseIntPipe,
   Patch,
@@ -69,17 +68,9 @@ export class CourseController {
   async getActiveCourseById(
     @Param('courseId', ParseIntPipe) courseId: number,
   ): Promise<Course> {
-    try {
-      const course = await this.courseService.getActiveCourseById(courseId);
-      return course;
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw new NotFoundException(
-          `Active course with ID ${courseId} not found.`,
-        );
-      }
-      throw new Error('Error retrieving active course.');
-    }
+    
+    return await this.courseService.getActiveCourseById(courseId);
+
   }
 
   @Get('/NextCourtes')
