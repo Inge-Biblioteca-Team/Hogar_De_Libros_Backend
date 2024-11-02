@@ -1,5 +1,9 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { Book } from './book.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,60 +19,87 @@ export class BooksService {
     @InjectRepository(Book)
     private bookRepository: Repository<Book>,
   ) {}
- // Cambiar a promise message, 
-  async addBook(createBookDto: CreateBookDto): Promise<Book> {
-    const newBook = this.bookRepository.create(createBookDto);
-    return await this.bookRepository.save(newBook);
-  }
- // Cambiar a promise message, 
-  async update(bookCode: number, updateBookDto: UpdateBookDto): Promise<Book> {
-    const book = await this.bookRepository.findOne({
-      where: { BookCode: bookCode },
-    });
 
-    if (!book) {
-      throw new NotFoundException(
-        `El libro con código ${bookCode} no fue encontrado`,
-      );
+  async addBook(createBookDto: CreateBookDto): Promise<{ message: string }> {
+    try {
+      const newBook = this.bookRepository.create(createBookDto);
+      await this.bookRepository.save(newBook);
+      return { message: 'Éxito al añadir el libro' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
-
-    Object.assign(book, updateBookDto);
-
-    return this.bookRepository.save(book);
   }
-   // Cambiar a promise message, 
+
+  async update(
+    bookCode: number,
+    updateBookDto: UpdateBookDto,
+  ): Promise<{ message: string }> {
+    try {
+      const book = await this.bookRepository.findOne({
+        where: { BookCode: bookCode },
+      });
+      if (!book) {
+        throw new NotFoundException(
+          `El libro con código ${bookCode} no fue encontrado`,
+        );
+      }
+      Object.assign(book, updateBookDto);
+      this.bookRepository.save(book);
+
+      return { message: 'Éxito al editar el libro' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error durante la edición';
+      throw new InternalServerErrorException(errorMessage);
+    }
+  }
+
   async enableBook(
     bookCode: number,
     enableBookDto: EnableBookDto,
-  ): Promise<Book> {
-    const book = await this.bookRepository.findOne({
-      where: { BookCode: bookCode },
-    });
+  ): Promise<{ message: string }> {
+    try {
+      const book = await this.bookRepository.findOne({
+        where: { BookCode: bookCode },
+      });
 
-    if (!book) {
-      throw new NotFoundException(
-        `El libro con código ${bookCode} no fue encontrado`,
-      );
+      if (!book) {
+        throw new NotFoundException(
+          `El libro con código ${bookCode} no fue encontrado`,
+        );
+      }
+      book.Status = enableBookDto.Status;
+      await this.bookRepository.save(book);
+
+      return;
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
-
-    book.Status = enableBookDto.Status;
-
-    return await this.bookRepository.save(book);
   }
-   // Cambiar a promise message, 
-  async disableBook(bookCode: number): Promise<Book> {
-    const book = await this.bookRepository.findOne({
-      where: { BookCode: bookCode },
-    });
 
-    if (!book) {
-      throw new NotFoundException(
-        `El libro con código ${bookCode} no fue encontrado`,
-      );
+  async disableBook(bookCode: number): Promise<{ message: string }> {
+    try {
+      const book = await this.bookRepository.findOne({
+        where: { BookCode: bookCode },
+      });
+
+      if (!book) {
+        throw new NotFoundException(
+          `El libro con código ${bookCode} no fue encontrado`,
+        );
+      }
+      book.Status = false;
+      this.bookRepository.save(book);
+      return { message: 'Libro dado de baja correctamente' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
-
-    book.Status = false;
-    return this.bookRepository.save(book);
   }
 
   async findById(BookCode: number): Promise<Book> {
@@ -82,7 +113,7 @@ export class BooksService {
 
     return book;
   }
-  
+
   async findAll(
     PaginationFilterDto: PaginationFilterDto,
   ): Promise<{ data: Book[]; count: number }> {

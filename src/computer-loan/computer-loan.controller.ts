@@ -3,7 +3,6 @@ import {
   Body,
   Controller,
   Get,
-  Param,
   Patch,
   Post,
   Query,
@@ -11,13 +10,12 @@ import {
 } from '@nestjs/common';
 import { ComputerLoanService } from './computer-loan.service';
 import { CreateComputerLoanDto } from './DTO/create-computer-loan.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {ApiTags } from '@nestjs/swagger';
 import { PaginationQueryDTO } from './DTO/Pagination-querry.dto';
-import { ComputerLoan } from './computer-loan.entity';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
-import { Role } from 'src/user/user.entity';
+import { UpdateComputerLoanDto } from './DTO/update-computer-loan.dto';
 
 @ApiTags('ComputerLoan')
 @Controller('computer-loan')
@@ -31,6 +29,11 @@ export class ComputerLoanController {
   CreateComputerLoan(@Body() createComputerLoanDto: CreateComputerLoanDto) {
     return this.computerLoanService.CreateComputerLoan(createComputerLoanDto);
   }
+  @Patch()
+  @Roles('admin', 'asistente', 'recepcion')
+  finalizeLoan(@Body() data:UpdateComputerLoanDto) {
+    return this.computerLoanService.FinalizeComputerLoan(data);
+  }
 
   @Get()
   @Roles('admin', 'asistente', 'recepcion')
@@ -40,12 +43,4 @@ export class ComputerLoanController {
     return { data, count };
   }
 
-   // Cambiar a promise message, 
-  @Patch('/finish/:machineNumber')
-  @Roles('admin', 'asistente', 'recepcion')
-  async finish(@Param('machineNumber') machineNumber: number): Promise<string> {
-    return this.computerLoanService.FinishComputerLoanByMachineNumber(
-      machineNumber,
-    );
-  }
 }

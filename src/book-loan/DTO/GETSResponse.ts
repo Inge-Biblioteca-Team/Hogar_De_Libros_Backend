@@ -65,7 +65,13 @@ export class GETResponseDTO {
   @IsString({ message: 'Añada el codigo.' })
   signatureCode?: string;
 
+
   @IsOptional()
   @IsString({message:"Cedula"})
   cedula:string
+
+  @IsOptional()
+  @IsString()
+  Status:string
+
 }

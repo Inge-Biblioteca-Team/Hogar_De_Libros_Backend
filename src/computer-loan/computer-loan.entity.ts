@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { WorkStation } from 'src/computers/WorkStation.entity';
-import { User } from 'src/user/user.entity';
+import { WorkStation } from 'src/work-stations/entities/work-station.entity';
 import {
   Column,
   Entity,
@@ -44,8 +43,4 @@ export class ComputerLoan {
   @ManyToOne(() => WorkStation, (workStation) => workStation.computerLoans)
   @JoinColumn({ name: 'MachineNumber', referencedColumnName: 'MachineNumber' })
   workStation: WorkStation;
-  
-  @ManyToOne(() => User, (user) => user.computerLoan)
-  @JoinColumn({ name: 'cedula', referencedColumnName: 'cedula' })
-  user: User;
 }

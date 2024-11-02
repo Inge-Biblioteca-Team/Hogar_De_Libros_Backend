@@ -13,36 +13,34 @@ import {
 } from '@nestjs/common';
 import { ComputersService } from './computers.service';
 import { ComputerDTO } from './DTO/create-computer.dto';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOperation,
-  ApiProperty,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { ModifyComputerDTO } from './DTO/modify-computer.dto';
 import { Computer } from './computer.entity';
-import { PaginationQueryDTO } from './DTO/pagination-querry.dto';
 import { Roles } from 'src/auth/decorators/roles.decorators';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { PaginationQueryDTO } from './DTO/pagination-querry.dto';
 
 @ApiTags('computers')
 @Controller('computers')
 export class ComputersController {
   constructor(private computerService: ComputersService) {}
 
-
- // Cambiar a promise message, 
+  // Cambiar a promise message,
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin', 'asistente')
-  addComputer(@Body() computerDTO: ComputerDTO): Promise<ComputerDTO> {
+  addComputer(@Body() computerDTO: ComputerDTO): Promise<{ message: string }> {
     return this.computerService.createComputer(computerDTO);
   }
 
- 
+  @Get()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'asistente')
+  async getAllComputers(@Query() paginationDTO: PaginationQueryDTO) {
+    return await this.computerService.getAllComputers(paginationDTO);
+  }
+
   @Get(':EquipmentUniqueCode')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin', 'asistente')
@@ -60,7 +58,7 @@ export class ComputersController {
     }
   }
 
- // Cambiar a promise message, 
+  // Cambiar a promise message,
   @Put(':EquipmentUniqueCode')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
@@ -74,7 +72,7 @@ export class ComputersController {
     );
   }
 
-  // Cambiar a promise message, 
+  // Cambiar a promise message,
   @Patch(':EquipmentUniqueCode')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
@@ -82,54 +80,5 @@ export class ComputersController {
     @Param('EquipmentUniqueCode') EquipmentUniqueCode: number,
   ) {
     return await this.computerService.DisableEquipment(EquipmentUniqueCode);
-  }
-
-  @Get()
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'asistente')
-  async getAllComputers(@Query() paginationDTO: PaginationQueryDTO) {
-    return await this.computerService.getAllComputers(paginationDTO);
-  }
-
-  @Get('workstation/Status')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'asistente', 'recepcion')
-  async getStatusWorkStation(): Promise<
-    { MachineNumber: number; Status: string }[]
-  > {
-    return await this.computerService.getStatusWorkStation();
-  }
-// PROMISE MESSAGE y dto parcial
-  @Patch(':machineNumber/maintenance')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin')
-  async setWorkStationToMaintenance(
-    @Param('machineNumber') machineNumber: number,
-    @Body('location') location: string,
-    @Body('userName') userName: string,
-  ): Promise<string> {
-    return this.computerService.SetWorkStationToMaintenance(
-      machineNumber,
-      location,
-      userName,
-    );
-  }
-// PROMISE MESSAGE
-  @Patch(':machineNumber/available')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin')
-  async setWorkStationToAvailable(
-    @Param('machineNumber') machineNumber: number,
-  ): Promise<string> {
-    return this.computerService.ResetWorkStation(machineNumber);
-  }
-// PROMISE MESSAGE
-  @Patch(':machineNumber/reactive')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin')
-  async ReactiveMachine(
-    @Param('machineNumber') machineNumber: number,
-  ): Promise<string> {
-    return this.computerService.ReactiveMachine(machineNumber);
   }
 }

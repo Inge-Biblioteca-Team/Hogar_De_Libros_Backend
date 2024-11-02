@@ -51,7 +51,7 @@ export class Course {
 
   @ApiProperty({ description: 'Imagen Curso' })
   @Column()
-  image: string;
+  image: string="https://d11cuk1a0j5b57.cloudfront.net/blog/wp-content/uploads/2022/08/18125803/Mejores-plataformas-de-cursos.jpg";
   
   @ApiProperty({description:"Materiales del curso"})
   @Column()

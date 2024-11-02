@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateComputerLoanDto {
@@ -27,4 +27,5 @@ export class CreateComputerLoanDto {
   @IsString()
   @IsNotEmpty({ message: 'El nombre del usuario es obligatorio' })
   UserName: string;
+
 }

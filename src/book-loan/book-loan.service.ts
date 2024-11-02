@@ -9,7 +9,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BookLoan } from './book-loan.entity';
 import { In, Repository } from 'typeorm';
 import { CreateBookLoanDto } from './DTO/create-book-loan.dto';
-import { FinalizeBookLoanDto } from './DTO/finalize-bookloan.dto';
 import { updatedBookLoan } from './DTO/update-bookLoan.dto';
 import { PaginationFilterBookLoanDto } from './DTO/pagination-filter-bookLoan.dto';
 import { Book } from 'src/books/book.entity';
@@ -19,6 +18,7 @@ import { LoanPolicy } from 'src/user/loan-policy';
 import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
 import { NotesService } from 'src/notes/notes.service';
 import { UserService } from 'src/user/user.service';
+import { ChangeLoanStatus } from './DTO/ChangeLoanStatus.dto';
 
 @Injectable()
 export class BookLoanService {
@@ -32,23 +32,15 @@ export class BookLoanService {
     private userService: UserService,
   ) {}
 
-  // Si no hay usuario, usuario = null y guardar info del usuario, 
   async createLoan(
     createBookLoanDto: CreateBookLoanDto,
   ): Promise<{ message: string }> {
     try {
-      const user = await this.userService.findCedula(
-        createBookLoanDto.userCedula,
-      );
-      if (!user) {
-        throw new NotFoundException(
-          `Usuario no encontrado con cédula ${createBookLoanDto.userCedula}`,
-        );
-      }
-
+      //Verifica la info del libro
       const book = await this.bookRepository.findOne({
         where: { BookCode: createBookLoanDto.bookBookCode },
       });
+
       if (!book) {
         throw new NotFoundException(
           `El libro con código ${createBookLoanDto.bookBookCode} no fue encontrado`,
@@ -59,33 +51,46 @@ export class BookLoanService {
           `El libro con código ${book.BookCode} está inactivo y no puede ser prestado.`,
         );
       }
+      const user = await this.userService.findCedula(
+        createBookLoanDto.userCedula,
+      );
 
+      if (!user) {
+        throw new NotFoundException('El usuario no existe');
+      }
+
+      const loan = await this.bookLoanRepository.findOneBy({
+        bookBookCode: createBookLoanDto.bookBookCode,
+        Status: In(['pendiente', 'en progreso']),
+      });
+
+      if (loan) {
+        throw new BadRequestException(
+          `El libro con código ${createBookLoanDto.bookBookCode} ya tiene un préstamo activo y no puede ser prestado nuevamente.`,
+        );
+      }
+      //Verifica al usuario
       const userCurrentLoans = await this.bookLoanRepository.count({
         where: {
           userCedula: createBookLoanDto.userCedula,
           Status: In(['Pendiente', 'En progreso']),
         },
       });
-
       const loanLimits = LoanPolicy.getLoanLimits(
         user.loanPolicy,
         userCurrentLoans,
       );
-
       if (!loanLimits.canLoan) {
         throw new BadRequestException(
           'No puedes realizar mas préstamos en este momento, excediste el máximo de prestamos, puedes cancelar alguna solicitud pendiente o devolver un libro a la biblioteca para realizar una nueva solicitud.',
         );
       }
-
       const newBookLoan = this.bookLoanRepository.create(createBookLoanDto);
       newBookLoan.Status = 'Pendiente';
       newBookLoan.book = book;
-
       await this.bookLoanRepository.save(newBookLoan);
-
       const createNoteDto: CreateNoteDto = {
-        message: `El libro con código ${book.BookCode} ha sido solicitado por el usuario con cédula ${user.cedula}.`,
+        message: `El libro con código ${book.BookCode} ha sido solicitado por el usuario: ${user.name} cédula:${user.cedula}.`,
         type: 'Solicitud de libro',
       };
       await this.noteService.createNote(createNoteDto);
@@ -96,45 +101,109 @@ export class BookLoanService {
       throw new InternalServerErrorException(errorMessage);
     }
   }
-// Cambiar a promise message, 
-  async setInProcess(bookLoanId: number): Promise<BookLoan> {
-    const bookLoan = await this.bookLoanRepository.findOne({
-      where: { BookLoanId: bookLoanId },
-    });
 
-    if (!bookLoan) {
-      throw new NotFoundException(`Book loan with ID ${bookLoanId} not found`);
+  async createAdminLoan(
+    createBookLoanDto: CreateBookLoanDto,
+  ): Promise<{ message: string }> {
+    try {
+      const book = await this.bookRepository.findOne({
+        where: { BookCode: createBookLoanDto.bookBookCode },
+      });
+      if (!book) {
+        throw new NotFoundException(
+          `El libro con código ${createBookLoanDto.bookBookCode} no fue encontrado`,
+        );
+      }
+      if (!book.Status) {
+        throw new BadRequestException(
+          `El libro con código ${book.BookCode} está inactivo y no puede ser prestado.`,
+        );
+      }
+
+      const loan = await this.bookLoanRepository.findOneBy({
+        bookBookCode: createBookLoanDto.bookBookCode,
+        Status: In(['pendiente', 'en progreso']),
+      });
+
+      if (loan) {
+        throw new BadRequestException(
+          `El libro con código ${createBookLoanDto.bookBookCode} ya tiene un préstamo activo y no puede ser prestado nuevamente.`,
+        );
+      }
+
+      const newBookLoan = this.bookLoanRepository.create({
+        ...createBookLoanDto,
+        Status: 'En progreso',
+        book: book,
+      });
+
+      await this.bookLoanRepository.save(newBookLoan);
+
+      const createNoteDto: CreateNoteDto = {
+        message: `El libro con código ${book.BookCode} ha sido prestado por el funcionario: ${createBookLoanDto.aprovedBy}.`,
+        type: 'Préstamo de libro',
+      };
+
+      await this.noteService.createNote(createNoteDto);
+
+      return { message: 'Préstamo generado con éxito' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
+  }
+  async setInProcess(data: ChangeLoanStatus): Promise<{ message: string }> {
+    try {
+      const bookLoan = await this.bookLoanRepository.findOne({
+        where: { BookLoanId: data.LoanID },
+      });
 
-    bookLoan.Status = 'En progreso';
+      if (!bookLoan) {
+        throw new NotFoundException(
+          `Préstamo numero ${data.LoanID} no encontrado`,
+        );
+      }
+      bookLoan.Status = 'En progreso';
+      bookLoan.aprovedBy = data.person;
 
-    return await this.bookLoanRepository.save(bookLoan);
+      await this.bookLoanRepository.save(bookLoan);
+      return { message: 'Aprobado con éxito' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
+    }
   }
 
-  // Cambiar a promise message, 
-  async finalizeLoan(
-    bookLoanId: number,
-    finalizeBookLoanDto: FinalizeBookLoanDto,
-  ): Promise<BookLoan> {
-    const bookLoan = await this.bookLoanRepository.findOne({
-      where: { BookLoanId: bookLoanId },
-    });
+  async finalizeLoan(data: ChangeLoanStatus): Promise<{ message: string }> {
+    try {
+      const bookLoan = await this.bookLoanRepository.findOne({
+        where: { BookLoanId: data.LoanID },
+      });
 
-    if (!bookLoan) {
-      throw new NotFoundException(`Book loan with ID ${bookLoanId} not found`);
+      if (!bookLoan) {
+        throw new NotFoundException(
+          `Préstamo numero ${data.LoanID} no encontrado`,
+        );
+      }
+      bookLoan.Status = 'Finalizado';
+      bookLoan.receivedBy = data.person;
+      bookLoan.Observations = data.Observations;
+
+      await this.bookLoanRepository.save(bookLoan);
+      return { message: 'Éxito al finalizar el préstamo' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
-    bookLoan.Status = 'Finalizado';
-
-    bookLoan.Observations = finalizeBookLoanDto.Observations;
-
-    return await this.bookLoanRepository.save(bookLoan);
   }
 
-  // Cambiar a promise message, 
   async update(
     bookLoanId: number,
     updateBookLoanDto: updatedBookLoan,
-  ): Promise<BookLoan> {
+  ): Promise<{ message: string }> {
     const bookLoan = await this.bookLoanRepository.findOne({
       where: { BookLoanId: bookLoanId },
     });
@@ -147,7 +216,8 @@ export class BookLoanService {
 
     Object.assign(bookLoan, updateBookLoanDto);
 
-    return this.bookLoanRepository.save(bookLoan);
+    this.bookLoanRepository.save(bookLoan);
+    return;
   }
 
   async findBookLoans(
@@ -206,6 +276,7 @@ export class BookLoanService {
     return { data, count };
   }
 
+  // de aquí
   async getInProgressLoans(
     paginationDto: GETResponseDTO,
   ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
@@ -220,10 +291,8 @@ export class BookLoanService {
     const query = this.bookLoanRepository
       .createQueryBuilder('bookLoan')
       .leftJoinAndSelect('bookLoan.book', 'book')
-      .leftJoinAndSelect('bookLoan.user', 'user')
       .where('bookLoan.Status = :status', { status: 'En progreso' })
-      .andWhere('bookLoan.book IS NOT NULL')
-      .andWhere('bookLoan.user IS NOT NULL');
+      .andWhere('bookLoan.book IS NOT NULL');
     if (StartDate) {
       query.andWhere('bookLoan.LoanRequestDate >= :StartDate', {
         StartDate,
@@ -242,7 +311,7 @@ export class BookLoanService {
       });
     }
     if (cedula)
-      query.andWhere('user.cedula LIKE :cedula', {
+      query.andWhere('bookLoan.userCedula LIKE :cedula', {
         cedula: `%${cedula}%`,
       });
 
@@ -258,10 +327,11 @@ export class BookLoanService {
       BookPickUpDate: loan.BookPickUpDate,
       LoanExpirationDate: loan.LoanExpirationDate,
       Observations: loan.Observations,
+
       user: {
-        name: loan.user.name,
-        lastName: loan.user.lastName,
-        cedula: loan.user.cedula,
+        name: loan.userName,
+        lastName: loan.userAddress,
+        cedula: loan.userCedula,
       },
       book: {
         Title: loan.book.Title,
@@ -288,7 +358,6 @@ export class BookLoanService {
     const query = this.bookLoanRepository
       .createQueryBuilder('bookLoan')
       .leftJoinAndSelect('bookLoan.book', 'book')
-      .leftJoinAndSelect('bookLoan.user', 'user')
       .where('bookLoan.Status = :status', { status: 'Pendiente' });
 
     if (StartDate)
@@ -305,7 +374,7 @@ export class BookLoanService {
         },
       );
     if (cedula)
-      query.andWhere('user.cedula LIKE :cedula', {
+      query.andWhere('bookLoan.userCedula LIKE :cedula', {
         cedula: `%${cedula}%`,
       });
 
@@ -321,9 +390,9 @@ export class BookLoanService {
       LoanExpirationDate: loan.LoanExpirationDate,
       Observations: loan.Observations,
       user: {
-        name: loan.user.name,
-        lastName: loan.user.lastName,
-        cedula: loan.user.cedula,
+        name: loan.userName,
+        lastName: loan.userAddress,
+        cedula: loan.userCedula,
       },
       book: {
         Title: loan.book.Title,
@@ -351,7 +420,6 @@ export class BookLoanService {
     const query = this.bookLoanRepository
       .createQueryBuilder('bookLoan')
       .leftJoinAndSelect('bookLoan.book', 'book')
-      .leftJoinAndSelect('bookLoan.user', 'user')
       .where('bookLoan.Status = :status', { status: 'Finalizado' });
 
     if (StartDate)
@@ -361,11 +429,11 @@ export class BookLoanService {
     if (EndDate)
       query.andWhere('Date(bookLoan.LoanRequestDate) <= :EndDate', { EndDate });
     if (name)
-      query.andWhere('user.name LIKE :name', {
+      query.andWhere('bookLoan.userName LIKE :name', {
         name: `%${name}%`,
       });
     if (cedula)
-      query.andWhere('user.cedula LIKE :cedula', {
+      query.andWhere('bookLoan.userCedula LIKE :cedula', {
         cedula: `%${cedula}%`,
       });
     if (signatureCode) {
@@ -384,9 +452,86 @@ export class BookLoanService {
       LoanExpirationDate: loan.LoanExpirationDate,
       Observations: loan.Observations,
       user: {
-        name: loan.user.name,
-        lastName: loan.user.lastName,
-        cedula: loan.user.cedula,
+        name: loan.userName,
+        lastName: loan.userAddress,
+        cedula: loan.userCedula,
+      },
+      book: {
+        Title: loan.book.Title,
+        signatureCode: loan.book.signatureCode,
+        InscriptionCode: loan.book.InscriptionCode,
+        BookCode: loan.book.BookCode,
+      },
+    }));
+
+    return { data: result, count };
+  }
+  // a aquí se eliminaran
+
+  //Solamente se va a usar este, contendrá todos los parámetros
+  async getLoansList(
+    paginationDto: GETResponseDTO,
+  ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
+    const {
+      page = 1,
+      limit = 10,
+      StartDate,
+      name,
+      signatureCode,
+      cedula,
+      Status,
+    } = paginationDto;
+    const query = this.bookLoanRepository
+      .createQueryBuilder('bookLoan')
+      .leftJoinAndSelect('bookLoan.book', 'book')
+      .where('bookLoan.Status = :status', { status: 'Finalizado' });
+
+    if (StartDate)
+      query.andWhere('Date(bookLoan.LoanRequestDate) = :StartDate', {
+        StartDate,
+      });
+
+    if (name)
+      query.andWhere('bookLoan.userName LIKE :name', {
+        name: `%${name}%`,
+      });
+
+    if (cedula)
+      query.andWhere('bookLoan.userCedula LIKE :cedula', {
+        cedula: `%${cedula}%`,
+      });
+
+    if (signatureCode) {
+      query.andWhere('bookLoan.signatureCode LIKE :signatureCode', {
+        signatureCode: `%${signatureCode}%`,
+      });
+    }
+
+    if (Status) {
+      query.andWhere('book.Status = :Status', {
+        Status: `%${signatureCode}%`,
+      });
+    } else {
+      query.andWhere('book.Status NOT IN (:...statuses)', {
+        statuses: ['En progreso', 'Pendiente'],
+      });
+    }
+
+    query.skip((page - 1) * limit).take(limit);
+    query.orderBy('bookLoan.LoanRequestDate', 'DESC');
+
+    const [data, count] = await query.getManyAndCount();
+    const result = data.map((loan) => ({
+      Status: loan.Status,
+      BookLoanId: loan.BookLoanId,
+      LoanRequestDate: loan.LoanRequestDate,
+      BookPickUpDate: loan.BookPickUpDate,
+      LoanExpirationDate: loan.LoanExpirationDate,
+      Observations: loan.Observations,
+      user: {
+        name: loan.userName,
+        lastName: loan.userAddress,
+        cedula: loan.userCedula,
       },
       book: {
         Title: loan.book.Title,

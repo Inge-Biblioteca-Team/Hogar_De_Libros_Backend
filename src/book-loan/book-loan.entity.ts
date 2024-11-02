@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { Book } from 'src/books/book.entity';
-import { User } from 'src/user/user.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'book_loans' })
@@ -37,10 +36,26 @@ export class BookLoan {
   @Column()
   userCedula: string;
 
+  @Column()
+  userPhone: string;
+
+  @Column()
+  userAddress: string;
+
+  @Column()
+  userName: string;
+
+  @Column({ nullable: true })
+  aprovedBy: string;
+
+  @Column({ nullable: true })
+  receivedBy: string;
+
   // Relaciones
   @ManyToOne(() => Book, (book) => book.bookLoans, { eager: true })
   book: Book;
 
-  @ManyToOne(() => User, (user) => user.bookLoans, { eager: true })
-  user: User;
+  //por el motivo que los prestamos administrativos no son con Cedula de usuario se añadió lo siguiente
+  //Se elimino la relación para evitar errores de referencia
+  //Se incluyo aproado y recibido por
 }

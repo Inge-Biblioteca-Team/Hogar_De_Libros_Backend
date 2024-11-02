@@ -3,7 +3,6 @@ import {
   Body,
   Controller,
   Get,
-  NotFoundException,
   Param,
   Patch,
   Post,
@@ -11,16 +10,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BookLoanService } from './book-loan.service';
-import {  ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { CreateBookLoanDto } from './DTO/create-book-loan.dto';
-import { BookLoan } from './book-loan.entity';
-import { FinalizeBookLoanDto } from './DTO/finalize-bookloan.dto';
 import { updatedBookLoan } from './DTO/update-bookLoan.dto';
 import { GETResponseDTO } from './DTO/GETSResponse';
 import { BookLoanResponseDTO } from './DTO/RequestDTO';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
+import { ChangeLoanStatus } from './DTO/ChangeLoanStatus.dto';
 
 @ApiTags('booksLoan')
 @Controller('book-loan')
@@ -33,42 +31,37 @@ export class BookLoanController {
   @ApiBody({ type: CreateBookLoanDto })
   async createLoan(
     @Body() createBookLoanDto: CreateBookLoanDto,
-  ): Promise<{message:string}> {
+  ): Promise<{ message: string }> {
     return this.bookLoanService.createLoan(createBookLoanDto);
   }
-
-  // Corregir la logica no va en el controlador
-  @Patch(':id/in-process')
+  @Post("/AdminLoan")
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin')
-  async setInProcess(@Param('id') bookLoanId: number): Promise<BookLoan> {
-    const updatedBookLoan = await this.bookLoanService.setInProcess(bookLoanId);
-    if (!updatedBookLoan) {
-      throw new NotFoundException(
-        `Préstamo de libro con ID ${bookLoanId} no encontrado`,
-      );
-    }
-    return updatedBookLoan;
+  @Roles('admin', 'asistente')
+  @ApiBody({ type: CreateBookLoanDto })
+  async createAdminLoan(
+    @Body() createBookLoanDto: CreateBookLoanDto,
+  ): Promise<{ message: string }> {
+    return this.bookLoanService.createAdminLoan(createBookLoanDto);
   }
 
   // Corregir la logica no va en el controlador
-  @Patch(':id/finalize')
+  @Patch('/in-process')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
+  async setInProcess(
+    @Body() data: ChangeLoanStatus,
+  ): Promise<{ message: string }> {
+    return await this.bookLoanService.setInProcess(data);
+  }
+
+  // Corregir la logica no va en el controlador
+  @Patch('/finalize')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
   async finalizeLoan(
-    @Param('id') bookLoanId: number,
-    @Body() finalizeBookLoanDto: FinalizeBookLoanDto,
-  ): Promise<BookLoan> {
-    const updatedBookLoan = await this.bookLoanService.finalizeLoan(
-      bookLoanId,
-      finalizeBookLoanDto,
-    );
-    if (!updatedBookLoan) {
-      throw new NotFoundException(
-        `Préstamo de libro con ID ${bookLoanId} no encontrado`,
-      );
-    }
-    return updatedBookLoan;
+    @Body() data: ChangeLoanStatus,
+  ): Promise<{ message: string }> {
+    return await this.bookLoanService.finalizeLoan(data);
   }
 
   // Corregir la logica no va en el controlador
@@ -78,19 +71,9 @@ export class BookLoanController {
   async update(
     @Param('id') bookLoanId: number,
     @Body() updatedBookLoanDto: updatedBookLoan,
-  ): Promise<BookLoan> {
-    const updatedBookLoan = await this.bookLoanService.update(
-      bookLoanId,
-      updatedBookLoanDto,
-    );
-    if (!updatedBookLoan) {
-      throw new NotFoundException(
-        `Préstamo de libro con ID ${bookLoanId} no encontrado`,
-      );
-    }
-    return updatedBookLoan;
+  ): Promise<{ message: string }> {
+    return await this.bookLoanService.update(bookLoanId, updatedBookLoanDto);
   }
-
 
   @Get('in-progress')
   @UseGuards(AuthGuard, RolesGuard)
@@ -101,16 +84,14 @@ export class BookLoanController {
     return this.bookLoanService.getInProgressLoans(paginationDto);
   }
 
-
   @Get('pending')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'asistente' ,'external_user')
+  @Roles('admin', 'asistente', 'external_user')
   async getPendingLoans(
     @Query() paginationDto: GETResponseDTO,
   ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
     return this.bookLoanService.getPendingLoans(paginationDto);
   }
-
 
   @Get('completed')
   @UseGuards(AuthGuard, RolesGuard)
@@ -120,4 +101,16 @@ export class BookLoanController {
   ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
     return this.bookLoanService.getCompletedLoans(paginationDto);
   }
+
+  // Este endpoint espera el estado del prestado
+  @Get('Loan-List')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'asistente', 'external_user')
+  async getLoansList(
+    @Query() paginationDto: GETResponseDTO,
+  ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
+    return this.bookLoanService.getLoansList(paginationDto);
+  }
+
+
 }
