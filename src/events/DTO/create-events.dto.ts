@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsString,
   IsOptional,
+  IsNumber,
 } from 'class-validator';
 
 export class CreateEventsDTO {
@@ -55,4 +56,9 @@ export class CreateEventsDTO {
   @IsString()
   @IsNotEmpty({ message: 'InchargePerson es un campo obligatorio' })
   InchargePerson: string;
+
+  @ApiProperty({ description: 'ID del programa', default: null })
+  @IsNumber()
+  @IsOptional()
+  programProgramsId?: number;
 }

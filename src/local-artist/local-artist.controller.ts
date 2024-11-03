@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { LocalArtistService } from './local-artist.service';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { PaginatedQueryDTO } from './DTO/Paginated-Query';
 import { CreateLocalArtistDTO } from './DTO/create-local-artist.dto';
 import { LocalArtist } from './local-artist.entity';
@@ -22,13 +22,13 @@ import { Roles } from 'src/auth/decorators/roles.decorators';
 export class LocalArtistController {
   constructor(private readonly localArtistService: LocalArtistService) {}
 
-// PROMISE MESSAGE
+
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin', 'asistente')
   async create(
     @Body() createLocalArtistDto: CreateLocalArtistDTO,
-  ): Promise<LocalArtist> {
+  ): Promise<{message: string}> {
     return this.localArtistService.create(createLocalArtistDto);
   }
 
@@ -44,22 +44,21 @@ export class LocalArtistController {
     return this.localArtistService.findOne(id);
   }
 
-// PROMISE MESSAGE
+
   @Patch(':id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
   async update(
     @Param('id') id: number,
     @Body() updateLocalArtistDto: CreateLocalArtistDTO,
-  ): Promise<LocalArtist> {
+  ): Promise<{message: string}> {
     return this.localArtistService.update(id, updateLocalArtistDto);
   }
 
- // PROMISE MESSAGE
   @Patch(':id/Down')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
-  async DisableArtist(@Param('id') ArtistID: number) {
+  async DisableArtist(@Param('id') ArtistID: number): Promise <{message: string}> {
     return await this.localArtistService.DownArtist(ArtistID);
   }
 }

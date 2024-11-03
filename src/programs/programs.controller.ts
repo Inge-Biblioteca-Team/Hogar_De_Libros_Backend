@@ -71,17 +71,17 @@ export class ProgramsController {
   @Roles('admin', 'asistente')
   async createProgram(
     @Body() createProgramDto: CreateProgramDto,
-  ): Promise<Programs> {
+  ): Promise<{message : string}> {
     return await this.programService.createProgramns(createProgramDto);
   }
-  // PROMISE MESSAGE
+ 
   @Patch(':id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
   async updateProgram(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateProgramDto: UpdateProgramsDto,
-  ): Promise<Programs> {
+  ): Promise<{message : string}> {
     return await this.programService.updatePrograms(id, updateProgramDto);
   }
 
