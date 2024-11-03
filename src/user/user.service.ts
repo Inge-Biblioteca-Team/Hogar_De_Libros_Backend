@@ -109,44 +109,68 @@ export class UserService {
       throw new InternalServerErrorException(errorMessage);
     }
   }
-// PROMISE MESSAGE
-  async update(cedula: string, updateUserDto: UpdateUserDto) {
-    const user = await this.UserRepository.findOneBy({ cedula });
-    if (!user)
-      throw new HttpException(
-        `Area with cedula ${cedula} not found`,
-        HttpStatus.NOT_FOUND,
-      );
-    await this.UserRepository.update(cedula, updateUserDto);
-    return await this.UserRepository.findOneBy({ cedula });
-  }
 
-  // PROMISE MESSAGE
-  async changeStatus(cedula: string) {
-    const user = await this.UserRepository.findOneBy({ cedula });
-
-    if (!user) {
-      throw new HttpException(
-        `user with cedula ${cedula} not found`,
-        HttpStatus.NOT_FOUND,
-      );
+  async update(
+    cedula: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<{ message: string }> {
+    try {
+      const user = await this.UserRepository.findOneBy({ cedula });
+      if (!user)
+        throw new HttpException(
+          `Usuario con cedula ${cedula} no encontrado`,
+          HttpStatus.NOT_FOUND,
+        );
+      await this.UserRepository.update(cedula, updateUserDto);
+      await this.UserRepository.findOneBy({ cedula });
+      return { message: 'El usuario ha sido actualizado con éxito' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al actualizar el usuario';
+      throw new InternalServerErrorException(errorMessage);
     }
-
-    user.status = !user.status;
-    return await this.UserRepository.save(user);
   }
+
+  async changeStatus(cedula: string): Promise<{ message: string }> {
+    try {
+      const user = await this.UserRepository.findOneBy({ cedula });
+
+      if (!user) {
+        throw new HttpException(
+          `user with cedula ${cedula} not found`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      user.status = !user.status;
+      await this.UserRepository.save(user);
+      return { message: 'El estado del usuario ha sido actualizado con éxito' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al actualizar el estado del usuario';
+      throw new InternalServerErrorException(errorMessage);
+    }
+  }
+
   async UPStatus(cedula: string) {
-    const user = await this.UserRepository.findOneBy({ cedula });
+    try {
+      const user = await this.UserRepository.findOneBy({ cedula });
 
-    if (!user) {
-      throw new HttpException(
-        `user with cedula ${cedula} not found`,
-        HttpStatus.NOT_FOUND,
-      );
+      if (!user) {
+        throw new HttpException(
+          `Usuario con cedula ${cedula} no encontrado`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      user.status = user.status = true;
+      await this.UserRepository.save(user);
+      return { message: 'El el usuario ha sido habilitado con éxito' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al habilitar el usuario';
+      throw new InternalServerErrorException(errorMessage);
     }
-
-    user.status = user.status = true;
-    return await this.UserRepository.save(user);
   }
 
   async getUserByCedula(cedula: string): Promise<User> {
@@ -162,25 +186,30 @@ export class UserService {
     return user;
   }
 
-  // PROMISE MESSAGE
   async updatePassword(
     updatePasswordDto: UpdatePasswordDto,
   ): Promise<{ message: string }> {
-    const cedula = updatePasswordDto.cedula;
+    try {
+      const cedula = updatePasswordDto.cedula;
 
-    const user = await this.UserRepository.findOne({ where: { cedula } });
+      const user = await this.UserRepository.findOne({ where: { cedula } });
 
-    if (!user) {
-      throw new HttpException('Usuario no encontrado.', HttpStatus.NOT_FOUND);
+      if (!user) {
+        throw new HttpException('Usuario no encontrado.', HttpStatus.NOT_FOUND);
+      }
+
+      const password = updatePasswordDto.newPassword;
+
+      const saltOrRounds = 10;
+      const hash = await bcrypt.hash(password, saltOrRounds);
+      user.password = hash;
+      await this.UserRepository.save(user);
+
+      return { message: 'Contraseña actualizada con éxito' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al actualizar la contraseña';
+      throw new InternalServerErrorException(errorMessage);
     }
-
-    const password = updatePasswordDto.newPassword;
-
-    const saltOrRounds = 10;
-    const hash = await bcrypt.hash(password, saltOrRounds);
-    user.password = hash;
-    await this.UserRepository.save(user);
-
-    return { message: 'Contraseña actualizada con éxito' };
   }
 }

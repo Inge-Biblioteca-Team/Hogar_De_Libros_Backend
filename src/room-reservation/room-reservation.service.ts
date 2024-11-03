@@ -185,7 +185,9 @@ export class RoomReservationService {
       });
 
       if (!reservation) {
-        throw new NotFoundException('No se encontró la reservacion.');
+        throw new NotFoundException({
+          message: 'No se encontró la reservacion.',
+        });
       }
       reservation.reserveStatus = 'Finalizado';
 
@@ -209,7 +211,9 @@ export class RoomReservationService {
       });
 
       if (!reservation) {
-        throw new NotFoundException('No se encontró la reservacion.');
+        throw new NotFoundException({
+          message: 'No se encontró la reservacion.',
+        });
       }
       reservation.reserveStatus = 'Finalizado';
 
@@ -233,7 +237,9 @@ export class RoomReservationService {
       });
 
       if (!reservation) {
-        throw new NotFoundException('No se encontró la reservacion.');
+        throw new NotFoundException({
+          message: 'No se encontró la reservacion.',
+        });
       }
       reservation.reserveStatus = 'Finalizado';
 
@@ -257,7 +263,9 @@ export class RoomReservationService {
       });
 
       if (!reservation) {
-        throw new NotFoundException(`No se encontro la reservacion`);
+        throw new NotFoundException({
+          message: `No se encontro la reservacion`,
+        });
       }
       reservation.reserveStatus = 'Aprobado';
 

@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayNotEmpty,
   IsArray,
+  isNotEmpty,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -38,7 +39,7 @@ export class CreateRoomDto {
   observations?: string;
 
   @IsArray()
-  @ArrayNotEmpty()
+  @IsNotEmpty()
   @ApiProperty({ example: ['URL de la imagen de la sala'] })
   image?: string[];
 

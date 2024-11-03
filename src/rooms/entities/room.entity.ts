@@ -32,7 +32,8 @@ export class Rooms {
   observations: string;
 
   @Column({ type: 'simple-array', nullable: true })
-  image?: string[];
+  @ApiProperty()
+  image: string[];
   @Column()
   @ApiProperty()
   location: string;

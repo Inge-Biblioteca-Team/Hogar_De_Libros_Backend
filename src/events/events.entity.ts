@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
+import { Programs } from 'src/programs/programs.entity';
 import { RoomReservation } from 'src/room-reservation/entities/room-reservation.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'events' })
 export class events {
@@ -49,7 +50,15 @@ export class events {
   @ApiProperty({ description: 'Persona encargada del evento' })
   InchargePerson: string;
 
+  @ApiProperty({ description: 'Id Programa', nullable: true  })
+  @Column({ nullable: true, default:null })
+  programProgramsId: number;
+
+  
   @OneToMany(() => RoomReservation, (roomReservation) => roomReservation.events)
   roomReservations: RoomReservation[]; 
+
+  @ManyToOne(() => Programs, (program) => program.courses, { nullable: true})
+  program: Programs;
 
 }
