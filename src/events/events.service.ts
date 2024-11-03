@@ -25,10 +25,15 @@ export class EventsService {
 
   async createEvent(
     createEventsDTO: CreateEventsDTO,
-  ): Promise<{ message: string}> {
+  ): Promise<{ message: string }> {
     try {
-      const event = this.EventsRepository.create(createEventsDTO);
-      console.log(event);
+      const event = this.EventsRepository.create({
+        ...createEventsDTO,
+        programProgramsId:
+          createEventsDTO.programProgramsId == 0
+            ? null
+            : createEventsDTO.programProgramsId,
+      });
       await this.EventsRepository.save(event);
 
       const adviceData: CreateAdviceDto = {
@@ -117,6 +122,9 @@ export class EventsService {
       if (!findEvent) {
         return { message: 'No se encontró el evento' };
       }
+      if (updateEvetsDTO.programProgramsId === 0) {
+        updateEvetsDTO.programProgramsId = null;
+      }
       await this.EventsRepository.update(id, updateEvetsDTO);
       return { message: 'Se actualizó el evento correctamente' };
     } catch (error) {
@@ -126,7 +134,6 @@ export class EventsService {
     }
   }
 
-  
   async updateEjecutionStatus(id: number): Promise<{ message: string }> {
     try {
       const findEvent = await this.EventsRepository.findOne({
@@ -139,11 +146,11 @@ export class EventsService {
       return { message: 'Se cambió el estado a en ejecución exitosamente' };
     } catch (error) {
       const errorMessage =
-        (error as Error).message || 'Error al cambiar el estado del evento a en ejecución';
+        (error as Error).message ||
+        'Error al cambiar el estado del evento a en ejecución';
       throw new InternalServerErrorException(errorMessage);
     }
   }
-
 
   async updateFinalizedStatus(id: number): Promise<{ message: string }> {
     try {
@@ -157,11 +164,11 @@ export class EventsService {
       return { message: 'Se cambió el estado a finalizado exitosamente' };
     } catch (error) {
       const errorMessage =
-        (error as Error).message || 'Error al cambiar el estado del evento a finalizado';
+        (error as Error).message ||
+        'Error al cambiar el estado del evento a finalizado';
       throw new InternalServerErrorException(errorMessage);
     }
   }
-
 
   async updatePendientStatus(id: number): Promise<{ message: string }> {
     try {
@@ -175,7 +182,8 @@ export class EventsService {
       return { message: 'Se cambió el estado a pendiente exitosamente' };
     } catch (error) {
       const errorMessage =
-        (error as Error).message || 'Error al cambiar el estado del evento a pendiente';
+        (error as Error).message ||
+        'Error al cambiar el estado del evento a pendiente';
       throw new InternalServerErrorException(errorMessage);
     }
   }
