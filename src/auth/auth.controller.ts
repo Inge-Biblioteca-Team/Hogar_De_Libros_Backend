@@ -78,7 +78,7 @@ export class AuthController {
       res.cookie('access_token', result.accessToken, {
         httpOnly: true,
         secure: true,
-        maxAge: 3600000,
+        maxAge: 86400000,
       });
       return res.status(200).json({
         user: result.user,
