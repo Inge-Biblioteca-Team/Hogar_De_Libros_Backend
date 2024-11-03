@@ -14,8 +14,6 @@ import {  ApiTags } from '@nestjs/swagger';
 import { CreateEnrollmentDto } from './DTO/create-enrollment.dto';
 import { PaginationEnrollmentListDto } from './DTO/pagination-enrollmentList.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Roles } from 'src/auth/decorators/roles.decorators';
 
 
 @ApiTags('Enrollments')

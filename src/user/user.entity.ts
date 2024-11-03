@@ -1,7 +1,5 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { BookLoan } from 'src/book-loan/book-loan.entity';
-import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
 import { FriendsLibrary } from 'src/friends-library/friend-library.entity';
 import { RoomReservation } from 'src/room-reservation/entities/room-reservation.entity';
 
@@ -84,12 +82,6 @@ export class User {
   })
   role: Role;
 
-  // Relaciones
-  @OneToMany(() => BookLoan, (bookLoan) => bookLoan.user)
-  bookLoans: BookLoan[];
-
-  @OneToMany(() => ComputerLoan, (computerLoan) => computerLoan.user)
-  computerLoan: ComputerLoan[];
 
   @OneToMany(() => RoomReservation, (roomReservation) => roomReservation.user)
   roomReservations: RoomReservation[];

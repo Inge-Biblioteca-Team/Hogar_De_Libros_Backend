@@ -1,13 +1,16 @@
 /* eslint-disable prettier/prettier */
-import { ApiProperty } from '@nestjs/swagger';
-import {  IsNotEmpty, IsNumber, IsString, IsDateString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber, IsString, IsDateString, IsOptional } from 'class-validator';
 
 export class CreateBookLoanDto {
   @ApiProperty({
     example: '2024-09-11',
     description: 'Fecha en la que se recoge el libro',
   })
-  @IsDateString({}, { message: 'BookPickUpDate debe estar en formato de fecha válido' })
+  @IsDateString(
+    {},
+    { message: 'BookPickUpDate debe estar en formato de fecha válido' },
+  )
   @IsNotEmpty({ message: 'Fecha de devolucion  es un campo obligatorio' })
   BookPickUpDate: string;
 
@@ -15,8 +18,13 @@ export class CreateBookLoanDto {
     example: '2024-09-18',
     description: 'Fecha en la que se debe devolver el libro',
   })
-  @IsDateString({}, { message: 'LoanExpirationDate debe estar en formato de fecha válido' })
-  @IsNotEmpty({ message: 'La fecha de expiracion del prestamo es un campo obligatorio' })
+  @IsDateString(
+    {},
+    { message: 'LoanExpirationDate debe estar en formato de fecha válido' },
+  )
+  @IsNotEmpty({
+    message: 'La fecha de expiracion del prestamo es un campo obligatorio',
+  })
   LoanExpirationDate: string;
 
   @ApiProperty({
@@ -34,4 +42,33 @@ export class CreateBookLoanDto {
   @IsString()
   @IsNotEmpty({ message: 'Cedula es un campo obligatorio' })
   userCedula: string;
+
+  @ApiProperty({
+    example: '12345678',
+    description: 'Info de prestamos administrativos',
+  })
+  @IsString()
+  userPhone: string;
+
+  @ApiProperty({
+    example: '12345678',
+    description: 'Info de prestamos administrativos',
+  })
+  @IsString()
+  userAddress: string;
+
+  @ApiProperty({
+    example: '12345678',
+    description: 'Info de usuarios en prestamos administrativos',
+  })
+  @IsString()
+  userName: string;
+
+  @ApiPropertyOptional({
+    example: '12345678',
+    description: 'aprobado por',
+  })
+  @IsOptional()
+  aprovedBy?: string;
+
 }

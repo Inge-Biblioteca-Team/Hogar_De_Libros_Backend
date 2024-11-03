@@ -25,22 +25,22 @@ export class CourseService {
     private adviceService: AdvicesService,
   ) {}
 
-  //Post
-  // PROMISE MESSAGE
-  async createCourse(createCourseDto: CreateCourseDto): Promise<Course> {
+  async createCourse(
+    createCourseDto: CreateCourseDto,
+  ): Promise<{ message: string }> {
     try {
-      // LOGICA DEBE DAR PROGRAM ID = NULL si no existe autmaticamente
       const course = this.courseRepository.create({
         ...createCourseDto,
         programProgramsId:
-          createCourseDto.programProgramsId == 0
+          createCourseDto.programProgramsId == null ||
+          createCourseDto.programProgramsId === 0
             ? null
             : createCourseDto.programProgramsId,
       });
       const savedCourse = await this.courseRepository.save(course);
 
       const adviceData: CreateAdviceDto = {
-        reason: `Proximo curso: ${savedCourse.courseName}`,
+        reason: `Próximo curso: ${savedCourse.courseName}`,
         date: savedCourse.date,
         image: savedCourse.image,
         extraInfo: `Realizado en ${savedCourse.location}. Impartido por: ${savedCourse.instructor}. 
@@ -49,7 +49,8 @@ export class CourseService {
       };
 
       await this.adviceService.createNewAdvice(adviceData);
-      return savedCourse;
+
+      return { message: 'Éxito al añadir el curso' };
     } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
@@ -57,7 +58,6 @@ export class CourseService {
     }
   }
 
-  
   async findAllCourses(
     filter: GetCoursesDto,
   ): Promise<{ data: CoursesDTO[]; count: number }> {
@@ -129,36 +129,46 @@ export class CourseService {
     return { data: result, count };
   }
 
-// PROMISE MESSAGE
   async updateCourseById(
     courseId: number,
     updateCourseDto: Partial<CreateCourseDto>,
-  ): Promise<Course> {
-    const course = await this.courseRepository.findOne({ where: { courseId } });
+  ): Promise<{ message: string }> {
+    try {
+      const course = await this.courseRepository.findOne({
+        where: { courseId },
+      });
 
-    if (!course) {
-      throw new NotFoundException(`Course with ID ${courseId} not found.`);
+      if (!course) {
+        throw new NotFoundException(`Curso no encontrado`);
+      }
+      if (
+        updateCourseDto.programProgramsId == null ||
+        updateCourseDto.programProgramsId === 0
+      ) {
+        updateCourseDto.programProgramsId = null;
+      }
+
+      Object.assign(course, updateCourseDto);
+      await this.courseRepository.save(course);
+
+      return { message: 'Éxito al editar el curso' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
-    if (updateCourseDto.programProgramsId === 0) {
-      updateCourseDto.programProgramsId = null;
-    }
-
-    Object.assign(course, updateCourseDto);
-
-    return await this.courseRepository.save(course);
   }
 
-  // PROMISE MESSAGE
-  async disableCourse(courseId: number): Promise<Course> {
+  async disableCourse(courseId: number): Promise<{ message: string }> {
     const course = await this.courseRepository.findOne({ where: { courseId } });
 
     if (!course) {
-      throw new NotFoundException(`Course with ID ${courseId} not found.`);
+      throw new NotFoundException(`No se encontró el curso.`);
     }
     course.Status = false;
-    return await this.courseRepository.save(course);
+    await this.courseRepository.save(course);
+    return { message: 'Curso cancelado con éxito' };
   }
-
 
   async getActiveCourseById(courseId: number): Promise<Course> {
     const course = await this.courseRepository.findOne({
@@ -236,7 +246,6 @@ export class CourseService {
     return { data: result, count };
   }
 
-  //Get a los cursos de un usuario solamente activos y proximos
   async getCoursesByUserCedula(
     searchDTO: SearchDTO,
   ): Promise<{ data: NexCorusesDTO[]; count: number }> {

@@ -1,70 +1,97 @@
 /* eslint-disable prettier/prettier */
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ComputerLoan } from './computer-loan.entity';
 import { Repository } from 'typeorm';
 import { CreateComputerLoanDto } from './DTO/create-computer-loan.dto';
-import { WorkStation } from 'src/computers/WorkStation.entity';
 import { PaginationQueryDTO } from './DTO/Pagination-querry.dto';
-import { User } from 'src/user/user.entity';
 import { ResponseHistoryDto } from './DTO/response-history.dto';
+import { WorkStationsService } from 'src/work-stations/work-stations.service';
+import { UpdateComputerLoanDto } from './DTO/update-computer-loan.dto';
 
 @Injectable()
 export class ComputerLoanService {
   constructor(
     @InjectRepository(ComputerLoan)
     private computerLoanRepository: Repository<ComputerLoan>,
-    @InjectRepository(WorkStation)
-    private workStationRepository: Repository<WorkStation>,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private WsService: WorkStationsService,
   ) {}
 
-   // Cambiar a promise message, 
-  async CreateComputerLoan(createComputerLoanDto: CreateComputerLoanDto) {
-    const workStation = await this.workStationRepository.findOne({
-      where: { MachineNumber: createComputerLoanDto.MachineNumber },
-      relations: ['computers', 'computerLoans'],
-    });
-
-    if (!workStation) {
-      throw new HttpException(
-        'No se encontró la máquina',
-        HttpStatus.NOT_FOUND,
+  async CreateComputerLoan(
+    createComputerLoanDto: CreateComputerLoanDto,
+  ): Promise<{ message: string }> {
+    try {
+      const workStation = await this.WsService.getByNumberMachine(
+        createComputerLoanDto.MachineNumber,
       );
-    }
 
-    if (workStation.Status !== 'Disponible') {
-      throw new HttpException(
-        'La máquina no está disponible para préstamo',
-        HttpStatus.BAD_REQUEST,
+      if (!workStation) {
+        throw new HttpException(
+          'No se encontró la máquina',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      if (workStation.Status !== 'Disponible') {
+        throw new HttpException(
+          'La máquina no está disponible para préstamo',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const computerLoan = {
+        ...createComputerLoanDto,
+        Status: 'En curso',
+        LoanStartDate: new Date(),
+      };
+
+      await this.computerLoanRepository.save(computerLoan);
+
+      await this.WsService.changeMachineStatus(
+        createComputerLoanDto.MachineNumber,
+        'En Uso',
       );
+      return { message: 'Exito al general el prestamo' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
-    /// Quitar user pq el prestamo es para guardar un historial
-    const user = await this.userRepository.findOne({
-      where: { cedula: createComputerLoanDto.cedula },
-    });
+  }
 
-    if (!user) {
-      throw new HttpException(
-        'La cedula no corresponde a un administrador',
-        HttpStatus.NOT_FOUND,
+  async FinalizeComputerLoan(
+    loan: UpdateComputerLoanDto,
+  ): Promise<{ message: string }> {
+    try {
+      console.log(loan);
+      const computerLoan = await this.computerLoanRepository.findOne({
+        where: { ComputerLoanId: loan.ComputerLoanId },
+      });
+      if (!computerLoan) {
+        throw new HttpException(
+          'No se encontró un préstamo asociado a esta máquina',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      computerLoan.LoanExpireDate = new Date();
+      computerLoan.Status = 'Finalizado';
+      await this.computerLoanRepository.save(computerLoan);
+
+      await this.WsService.changeMachineStatus(
+        loan.MachineNumber,
+        'Disponible',
       );
+      return { message: 'Exito al finalizar el prestamo' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
-
-    const computerLoan = new ComputerLoan();
-    computerLoan.UserName = createComputerLoanDto.UserName;
-    computerLoan.user = user;
-    computerLoan.workStation = workStation;
-    computerLoan.LoanStartDate = new Date();
-    computerLoan.Status = 'En curso';
-
-    workStation.Status = 'En Uso';
-    await this.workStationRepository.save(workStation);
-
-    const savedLoan = await this.computerLoanRepository.save(computerLoan);
-
-    return { success: true, loanId: savedLoan.ComputerLoanId };
   }
 
   async getAllComputerLoans(
@@ -75,7 +102,6 @@ export class ComputerLoanService {
     const query = this.computerLoanRepository
       .createQueryBuilder('computerLoan')
       .leftJoinAndSelect('computerLoan.workStation', 'workStation')
-      .leftJoinAndSelect('computerLoan.user', 'user')
       .orderBy('computerLoan.LoanStartDate', 'DESC')
       .skip((Page - 1) * Limit)
       .take(Limit);
@@ -86,7 +112,7 @@ export class ComputerLoanService {
       });
 
     if (MachineNumber) {
-      query.andWhere('computerLoan.MachineNumber = :MachineNumber',{
+      query.andWhere('computerLoan.MachineNumber = :MachineNumber', {
         MachineNumber,
       });
     }
@@ -96,40 +122,12 @@ export class ComputerLoanService {
       ComputerLoanId: loan.ComputerLoanId,
       workStation: loan.MachineNumber,
       UserName: loan.UserName,
-      AdminName: loan.user.name,
+      AdminName: loan.UserName,
       LoanStartDate: loan.LoanStartDate,
       LoanExpireDate: loan.LoanExpireDate,
       Status: loan.Status,
     }));
 
     return { data, count };
-  }
-
-   // Cambiar a promise message, 
-  async FinishComputerLoanByMachineNumber(
-    machineNumber: number,
-  ): Promise<string> {
-    const computerLoan = await this.computerLoanRepository.findOne({
-      where: {
-        workStation: { MachineNumber: machineNumber },
-        Status: 'En curso',
-      },
-      relations: ['workStation'],
-    });
-
-    if (!computerLoan) {
-      return 'No se encontró un préstamo activo para esta máquina';
-    }
-
-    computerLoan.LoanExpireDate = new Date();
-    computerLoan.Status = 'Finalizado';
-
-    const workStation = computerLoan.workStation;
-    workStation.Status = 'Disponible';
-    await this.workStationRepository.save(workStation);
-
-    await this.computerLoanRepository.save(computerLoan);
-
-    return 'Préstamo finalizado';
   }
 }

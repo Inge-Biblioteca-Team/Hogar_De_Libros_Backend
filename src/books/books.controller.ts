@@ -30,18 +30,17 @@ import { Roles } from 'src/auth/decorators/roles.decorators';
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
-  // Cambiar a promise message, 
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin', 'asistente')
-  async addBook(@Body() createBookDto: CreateBookDto): Promise<CreateBookDto> {
+  async addBook(@Body() createBookDto: CreateBookDto): Promise<{message:string}> {
     return this.booksService.addBook(createBookDto);
   }
 // Cambiar a promise message, darle promise
   @Patch(':bookCode/disable')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
-  async disableBook(@Param('bookCode') bookCode: number) {
+  async disableBook(@Param('bookCode') bookCode: number):Promise<{message:string}> {
     return await this.booksService.disableBook(bookCode);
   }
 // Cambiar a promise message, darle
@@ -51,7 +50,7 @@ export class BooksController {
   async updatePartial(
     @Param('bookCode') bookCode: number,
     @Body() updateBookDto: UpdateBookDto,
-  ) {
+  ):Promise<{message:string}> {
     return await this.booksService.update(bookCode, updateBookDto);
   }
 
@@ -62,7 +61,7 @@ export class BooksController {
   async enableBook(
     @Param('bookCode') bookCode: number,
     @Body() enableBookDto: EnableBookDto,
-  ): Promise<Book> {
+  ):Promise<{message:string}> {
     return await this.booksService.enableBook(bookCode, enableBookDto);
   }
 

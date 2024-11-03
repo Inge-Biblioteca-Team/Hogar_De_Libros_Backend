@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
+import { WorkStation } from 'src/work-stations/entities/work-station.entity';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { WorkStation } from './WorkStation.entity';
+
 
 @Entity({ name: 'computers' })
 export class Computer {

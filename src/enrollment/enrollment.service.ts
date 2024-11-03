@@ -66,7 +66,7 @@ export class EnrollmentService {
 
       await this.enrollmentRepository.save(enrollment);
 
-      return { message: 'Matrícula creada con éxito' };
+      return { message: 'Matrícula registrada con éxito' };
     } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';

@@ -50,4 +50,6 @@ export class BookLoanResponseDTO {
 
   @ApiProperty({ description: 'Datos del libro' })
   book: BookInfoDTO;
+
+  
 }
