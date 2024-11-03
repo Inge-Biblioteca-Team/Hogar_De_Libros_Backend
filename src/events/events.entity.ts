@@ -34,7 +34,7 @@ export class events {
   @ApiProperty({ description: 'Hora del evento' })
   Time: string;
 
-  @Column()
+  @Column({default: 'https://img.freepik.com/vector-premium/signo-pregunta-negro-fondo-dorado_1181070-80.jpg'})
   @ApiProperty({ description: 'Imagen del evento' })
   Image: string;
 

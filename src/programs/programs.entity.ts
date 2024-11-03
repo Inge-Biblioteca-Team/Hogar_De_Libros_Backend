@@ -20,7 +20,7 @@ export class Programs {
   description: string;
 
   @ApiProperty({ description: 'Imagen del programa' })
-  @Column()
+  @Column({default: 'https://img.freepik.com/vector-premium/signo-pregunta-negro-fondo-dorado_1181070-80.jpg'})
   image: string;
 
   @ApiProperty({ description: 'Estado' ,default:true})

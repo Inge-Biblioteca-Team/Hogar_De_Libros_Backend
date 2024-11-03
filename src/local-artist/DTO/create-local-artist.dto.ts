@@ -17,7 +17,6 @@ export class CreateLocalArtistDTO {
   @IsOptional()
   @ApiPropertyOptional({ description: 'URL de la imagen de portada del artista', example: 'http://example.com/image.jpg' })
   @IsString()
-  @IsUrl({}, { message: ' URL de la imagen de portada del artista debe ser una URL válida' })
   Cover: string;
 
   @IsOptional()

@@ -38,8 +38,8 @@ export class CreateRoomDto {
   })
   observations?: string;
 
-  @IsArray()
-  @IsNotEmpty()
+  @IsArray({message: 'Debe de enviar al menos una imagen'})
+  @IsNotEmpty({message: 'Debe de enviar al menos una imagen'})
   @ApiProperty({ example: ['URL de la imagen de la sala'] })
   image?: string[];
 

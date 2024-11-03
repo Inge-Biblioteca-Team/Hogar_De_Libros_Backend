@@ -17,6 +17,5 @@ export class CreateProgramDto {
   @ApiProperty({ description: 'URL de la imagen del programa', example: 'http://example.com/image.jpg' })
   @IsOptional()
   @IsString()
-  @IsUrl({}, { message: 'image debe ser una URL válida' })
   image?: string;
 }

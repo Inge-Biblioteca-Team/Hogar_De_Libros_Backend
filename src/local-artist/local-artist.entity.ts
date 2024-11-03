@@ -16,7 +16,7 @@ export class LocalArtist {
   @ApiProperty({ description: 'Profecion Pintor Cantante o otro' })
   ArtisProfession: string;
 
-  @Column()
+  @Column({default : 'https://img.freepik.com/vector-premium/signo-pregunta-negro-fondo-dorado_1181070-80.jpg'})
   @ApiProperty({ description: 'URL de la foto' })
   Cover: string;
 
