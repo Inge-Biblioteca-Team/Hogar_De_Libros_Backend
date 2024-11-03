@@ -22,7 +22,6 @@ import { Furniture } from './furniture/furniture.entity';
 import { LocalArtistModule } from './local-artist/local-artist.module';
 import { FurnitureModule } from './furniture/furniture.module';
 import { AuthModule } from './auth/auth.module';
-import { WorkStation } from './computers/WorkStation.entity';
 import { CourseModule } from './course/course.module';
 import { EnrollmentModule } from './enrollment/enrollment.module';
 import { ProgramsModule } from './programs/programs.module';
@@ -45,6 +44,8 @@ import { Donation } from './donation/donation.entity';
 import { Collaborator } from './collaborator/collaborator.entity';
 import { DonationModule } from './donation/donation.module';
 import { CollaboratorModule } from './collaborator/collaborator.module';
+import { WorkStationsModule } from './work-stations/work-stations.module';
+import { WorkStation } from './work-stations/entities/work-station.entity';
 
 dotenv.config();
 
@@ -101,7 +102,8 @@ dotenv.config();
     FriendsLibraryModule,
     NotesModule,
     DonationModule,
-    CollaboratorModule
+    CollaboratorModule,
+    WorkStationsModule
   ],
   controllers: [AppController],
   providers: [AppService],

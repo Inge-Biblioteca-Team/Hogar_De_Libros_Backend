@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Enrollment } from 'src/enrollment/enrollment.entity';
 import { Programs } from 'src/programs/programs.entity';
 import { RoomReservation } from 'src/room-reservation/entities/room-reservation.entity';
@@ -49,9 +49,9 @@ export class Course {
   @Column({ default: true })
   Status: boolean ;
 
-  @ApiProperty({ description: 'Imagen Curso' })
+  @ApiPropertyOptional({ description: 'Imagen Curso' })
   @Column()
-  image: string;
+  image: string="https://d11cuk1a0j5b57.cloudfront.net/blog/wp-content/uploads/2022/08/18125803/Mejores-plataformas-de-cursos.jpg";
   
   @ApiProperty({description:"Materiales del curso"})
   @Column()

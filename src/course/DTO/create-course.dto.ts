@@ -52,7 +52,6 @@ export class CreateCourseDto {
   capacity: number;
 
   @ApiProperty({ description: 'Imagen representativa del curso' })
-  @IsString({ message: 'grega el url' })
   @IsOptional()
   image?: string;
 

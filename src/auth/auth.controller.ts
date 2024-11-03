@@ -6,12 +6,15 @@ import {
   HttpCode,
   HttpStatus,
   Res,
+  Req,
+  Get,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import { SignInDto } from './dto/sign-in.dto';
 import { SendPasswordResetDto } from './dto/password-reset.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -60,5 +63,31 @@ export class AuthController {
       sameSite: 'strict',
     });
     res.status(200).send({ message: 'Éxito al cerrar sesión' });
+  }
+
+  @Get('Profile')
+  async loginWithToken(@Req() req: Request, @Res() res: Response) {
+    const token = req.cookies['access_token'];
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: 'No se encontró un token de autenticación' });
+    }
+    try {
+      const result = await this.authService.getProfileWhitToken(token);
+      res.cookie('access_token', result.accessToken, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 86400000,
+      });
+      return res.status(200).json({
+        user: result.user,
+        message: result.message,
+      });
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
+    }
   }
 }

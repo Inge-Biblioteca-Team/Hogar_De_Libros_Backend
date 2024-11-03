@@ -1,5 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+/* eslint-disable prettier/prettier */
+import { ApiProperty } from '@nestjs/swagger';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'books-children' })
 export class BooksChildren {
@@ -33,7 +34,7 @@ export class BooksChildren {
 
   @Column()
   @ApiProperty({ description: 'URL de la portada del libro' })
-  Cover: string;
+  Cover: string="https://i.pinimg.com/474x/f8/42/e5/f842e5de7b3f890a427671edc02484a5.jpg";
 
   @Column()
   @ApiProperty({ description: 'Calificación de la condición del libro' })
@@ -62,5 +63,5 @@ export class BooksChildren {
   // relaciones
 
   //@ManyToOne(() => BookLoan, (bookLoan) => bookLoan.Books)
- // bookLoan: BookLoan;
+  // bookLoan: BookLoan;
 }
