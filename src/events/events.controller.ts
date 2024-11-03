@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventsDTO } from './DTO/create-events.dto';
-import {  ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { PaginationEventsDTO } from './DTO/pagination-events.dto';
 import { UpdateEventsDTO } from './DTO/update-events.dto';
 import { SeachDTO } from './DTO/SeachDTO';
@@ -23,19 +23,19 @@ import { Roles } from 'src/auth/decorators/roles.decorators';
 @Controller('events')
 export class EventsController {
   constructor(private eventsService: EventsService) {}
-// Quitar el ID
+
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin','asistente')
+  @Roles('admin', 'asistente')
   async createEvent(
     @Body() createEventsDTO: CreateEventsDTO,
-  ): Promise<{ message: string; eventId?: number }> {
+  ): Promise<{ message: string }> {
     return this.eventsService.createEvent(createEventsDTO);
   }
 
   @Get()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin','asistente')
+  @Roles('admin', 'asistente')
   getAllEvents(@Query() paginationEventsDTO: PaginationEventsDTO) {
     return this.eventsService.getAllEvents(paginationEventsDTO);
   }
@@ -50,18 +50,17 @@ export class EventsController {
     return this.eventsService.updateEvent(updateEvetsDTO, id);
   }
 
-// PROMISE MESSAGE
   @Patch('ejecution-status')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
-  updateEjecutionStatus(@Query('id') id: number) {
+  updateEjecutionStatus(@Query('id') id: number): Promise<{ message: string }> {
     return this.eventsService.updateEjecutionStatus(id);
   }
-// PROMISE MESSAGE
+
   @Patch('finalized-status')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
-  updateFinalizedStatus(@Query('id') id: number) {
+  updateFinalizedStatus(@Query('id') id: number): Promise<{ message: string }> {
     return this.eventsService.updateFinalizedStatus(id);
   }
 
@@ -79,7 +78,7 @@ export class EventsController {
   }
 
   @Get('EventList')
-  async EventList(@Query('date') date: Date): Promise< CreateEventsDTO[] > {
+  async EventList(@Query('date') date: Date): Promise<CreateEventsDTO[]> {
     return this.eventsService.EventList(date);
   }
 }

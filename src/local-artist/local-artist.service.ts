@@ -1,5 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PaginatedQueryDTO } from './DTO/Paginated-Query';
@@ -12,12 +17,19 @@ export class LocalArtistService {
     @InjectRepository(LocalArtist)
     private localArtistRepository: Repository<LocalArtist>,
   ) {}
-// PROMISE MESSAGE
+
   async create(
     createLocalArtistDto: CreateLocalArtistDTO,
-  ): Promise<LocalArtist> {
-    const newArtist = this.localArtistRepository.create(createLocalArtistDto);
-    return this.localArtistRepository.save(newArtist);
+  ): Promise<{ message: string }> {
+    try {
+      const newArtist = this.localArtistRepository.create(createLocalArtistDto);
+      this.localArtistRepository.save(newArtist);
+      return { message: 'Artista creado con éxito' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
+    }
   }
 
   async findAll(
@@ -65,27 +77,45 @@ export class LocalArtistService {
     return artist;
   }
 
-  // PROMISE MESSAGE
   async update(
     id: number,
     updateLocalArtistDto: CreateLocalArtistDTO,
-  ): Promise<LocalArtist> {
-    const artist = await this.findOne(id);  
-    Object.assign(artist, updateLocalArtistDto);  
-    return this.localArtistRepository.save(artist); 
+  ): Promise<{ message: string }> {
+    try {
+      const artist = await this.findOne(id);
+      Object.assign(artist, updateLocalArtistDto);
+      this.localArtistRepository.save(artist);
+      return { message: 'Artista actualizado con éxito' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
+    }
   }
-  // PROMISE MESSAGE
-  async DownArtist(ArtistID: number): Promise<LocalArtist> {
-    const Artist = await this.localArtistRepository.findOne({
-      where: { ID: ArtistID },
-    });
-    if (!Artist) {
-      throw new NotFoundException('No existe el artista');
+
+
+  async DownArtist(ArtistID: number): Promise<{ message: string }> {
+    try {
+      const Artist = await this.localArtistRepository.findOne({
+        where: { ID: ArtistID },
+      });
+      if (!Artist) {
+        throw new NotFoundException({
+          message: 'No existe el artista',
+        });
+      }
+      if (!Artist.Actived) {
+        throw new BadRequestException({
+          message: 'No existe el artista',
+        });
+      }
+      Artist.Actived = false;
+      this.localArtistRepository.save(Artist);
+      return { message: 'Artista dado de baja con éxito' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
     }
-    if (!Artist.Actived) {
-      throw new BadRequestException('El artista ya está inactivo');
-    }
-    Artist.Actived = false;
-    return this.localArtistRepository.save(Artist);
   }
 }

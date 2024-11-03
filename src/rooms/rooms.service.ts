@@ -17,8 +17,8 @@ export class RoomsService {
     @InjectRepository(Rooms)
     private roomRepository: Repository<Rooms>,
   ) {}
-// PROMISE MESSAGE
-  async create(createRoomDto: CreateRoomDto) {
+
+  async create(createRoomDto: CreateRoomDto): Promise<{ message: string }> {
     try {
       await this.roomRepository.save(createRoomDto);
       return {
@@ -59,13 +59,15 @@ export class RoomsService {
     return room;
   }
 // PROMISE MESSAGE
-  async update(id: number, updateRoomDto: UpdateRoomDto) {
+  async update(id: number, updateRoomDto: UpdateRoomDto): Promise<{ message: string }> {
     try {
       const findroom = await this.roomRepository.findOne({
         where: { roomId: id },
       });
       if (!findroom) {
-        throw new NotFoundException('No se encontró la sala.');
+        throw new NotFoundException({
+          message : 'No se encontró la sala.'
+        });
       }
       await this.roomRepository.update(id, updateRoomDto);
       return {
@@ -77,14 +79,16 @@ export class RoomsService {
       throw new InternalServerErrorException(errorMessage);
     }
   }
-// PROMISE MESSAGE
-  async updateStatusMaintenance(id: number) {
+
+  async updateStatusMaintenance(id: number): Promise<{ message: string }> {
     try {
       const findroom = await this.roomRepository.findOne({
         where: { roomId: id },
       });
       if (!findroom) {
-        throw new NotFoundException('No se encontró la sala.');
+        throw new NotFoundException({
+          message: 'No se encontró la sala.'
+        });
       }
       await this.roomRepository.update(id, { status: 'M' });
       return {
@@ -97,14 +101,16 @@ export class RoomsService {
       throw new InternalServerErrorException(errorMessage);
     }
   }
-// PROMISE MESSAGE
-  async updateStatusClosed(id: number) {
+
+  async updateStatusClosed(id: number): Promise<{ message: string }> {
     try {
       const findroom = await this.roomRepository.findOne({
         where: { roomId: id },
       });
       if (!findroom) {
-        throw new NotFoundException('No se encontró la sala.');
+        throw new NotFoundException({
+          message : 'No se encontró la sala.'
+        });
       }
       await this.roomRepository.update(id, { status: 'C' });
       return {
@@ -116,14 +122,16 @@ export class RoomsService {
       throw new InternalServerErrorException(errorMessage);
     }
   }
-// PROMISE MESSAGE
-  async updateStatusAvailable(id: number) {
+
+  async updateStatusAvailable(id: number): Promise <{message : string}> {
     try {
       const findroom = await this.roomRepository.findOne({
         where: { roomId: id },
       });
       if (!findroom) {
-        throw new NotFoundException('No se encontró la sala.');
+        throw new NotFoundException({
+          message : 'No se encontró la sala.'
+        });
       }
       await this.roomRepository.update(id, { status: 'D' });
       return {

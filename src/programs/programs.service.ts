@@ -77,12 +77,13 @@ export class ProgramsService {
       throw new BadRequestException('Error al obtener el programa.');
     }
   }
-  // PROMISE MESSAGE
-  async createProgramns(createProgramDto: CreateProgramDto): Promise<Programs> {
+ 
+  async createProgramns(createProgramDto: CreateProgramDto): Promise<{message : string}> {
     try {
       const program = this.programsRepository.create(createProgramDto);
 
-      return await this.programsRepository.save(program);
+      await this.programsRepository.save(program);
+      return { message: 'Programa creado correctamente.' };
     } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
@@ -90,23 +91,26 @@ export class ProgramsService {
     }
   }
 
-  // PROMISE MESSAGE
   async updatePrograms(
     id: number,
     updateProgramDto: UpdateProgramsDto,
-  ): Promise<Programs> {
+  ): Promise<{message: string}> {
     try {
       const program = await this.programsRepository.findOne({
         where: { programsId: id },
       });
 
       if (!program) {
-        throw new NotFoundException(`El programa con ID ${id} no existe.`);
+        throw new NotFoundException({
+          message: `El programa con ID ${id} no existe.`,
+        });
       }
 
       Object.assign(program, updateProgramDto);
 
-      return await this.programsRepository.save(program);
+      await this.programsRepository.save(program);
+      return { message: `El programa con ID ${id} ha sido actualizado.` };
+
     } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
@@ -121,12 +125,16 @@ export class ProgramsService {
       });
 
       if (!program) {
-        throw new NotFoundException(`El programa con ID ${id} no existe.`);
+        throw new NotFoundException({
+          message: `El programa con ID ${id} no existe.`,
+        });
       }
 
       if (program.status === false) {
         throw new BadRequestException(
-          `El programa con ID ${id} ya está deshabilitado.`,
+          {
+            message: `El programa con ID ${id} ya está deshabilitado.`,
+          }
         );
       }
 
@@ -138,7 +146,9 @@ export class ProgramsService {
         message: `El programa con ID ${id} ha sido deshabilitado correctamente.`,
       };
     } catch (error) {
-      throw new BadRequestException('Error al deshabilitar el programa.');
+      const errorMessage =
+        (error as Error).message || 'Error al deshabilitar el programa.';
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 

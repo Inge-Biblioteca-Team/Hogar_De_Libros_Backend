@@ -3,8 +3,6 @@ import {
   Body,
   Controller,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   Patch,
   Post,
@@ -43,27 +41,27 @@ export class UserController {
   async getUserByCedula(@Param('cedula') cedula: string) {
     return await this.userService.getUserByCedula(cedula);
   }
-  // PROMISE MESSAGE
+
   @Patch('update/:cedula')
   @UseGuards(AuthGuard)
   async updateUser(
     @Param('cedula') cedula: string,
     @Body() updateUserDto: UpdateUserDto,
-  ) {
+  ): Promise<{message : string}> {
     return await this.userService.update(cedula, updateUserDto);
   }
-  // PROMISE MESSAGE
+
   @Patch('change-status/:cedula')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
-  async changeUserStatus(@Param('cedula') cedula: string) {
+  async changeUserStatus(@Param('cedula') cedula: string): Promise<{ message: string }> {
     return await this.userService.changeStatus(cedula);
   }
-  // PROMISE MESSAGE
+ 
   @Patch('UP-status/:cedula')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
-  async changeUserStatusUP(@Param('cedula') cedula: string) {
+  async changeUserStatusUP(@Param('cedula') cedula: string): Promise<{ message: string }> {
     return await this.userService.UPStatus(cedula);
   }
 
