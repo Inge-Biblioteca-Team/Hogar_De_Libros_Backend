@@ -21,7 +21,7 @@ export class Programs {
 
   @ApiProperty({ description: 'Imagen del programa' })
   @Column()
-  image: string;
+  image: string='https://www.comunidadbaratz.com/wp-content/uploads/Todas-las-personas-deberian-ir-a-la-biblioteca-al-menos-una-vez-a-la-semana.jpg';
 
   @ApiProperty({ description: 'Estado' ,default:true})
   @Column({ default: true })
@@ -31,5 +31,5 @@ export class Programs {
   courses: Course[];
 
   @OneToMany(() => events, (event) => event.program)
-  event: events[];
+  events: events[];
 }

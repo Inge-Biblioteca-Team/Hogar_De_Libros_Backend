@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Patch,
   Post,
   Put,
@@ -44,29 +45,14 @@ export class EventsController {
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
   updateEvent(
-    @Body() updateEvetsDTO: UpdateEventsDTO,
-    @Query('id') id: number,
+    @Body() updateEvetsDTO: UpdateEventsDTO
   ): Promise<{ message: string }> {
-    return this.eventsService.updateEvent(updateEvetsDTO, id);
+    return this.eventsService.updateEvent(updateEvetsDTO);
   }
 
-  @Patch('ejecution-status')
-  @UseGuards(AuthGuard, RolesGuard)
+  @Patch('Cancel/:id')
   @Roles('admin')
-  updateEjecutionStatus(@Query('id') id: number): Promise<{ message: string }> {
-    return this.eventsService.updateEjecutionStatus(id);
-  }
-
-  @Patch('finalized-status')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin')
-  updateFinalizedStatus(@Query('id') id: number): Promise<{ message: string }> {
-    return this.eventsService.updateFinalizedStatus(id);
-  }
-
-  @Patch('CancelEvent')
-  @Roles('admin')
-  updatePendientStatus(@Query('id') id: number): Promise<{ message: string }> {
+  updatePendientStatus(@Param('id') id: number): Promise<{ message: string }> {
     return this.eventsService.cancelEvent(id);
   }
 

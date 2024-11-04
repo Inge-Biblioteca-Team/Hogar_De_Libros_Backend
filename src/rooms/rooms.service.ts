@@ -20,7 +20,19 @@ export class RoomsService {
 
   async create(createRoomDto: CreateRoomDto): Promise<{ message: string }> {
     try {
-      await this.roomRepository.save(createRoomDto);
+      const room = await this.roomRepository.findOneBy({
+        roomNumber: createRoomDto.roomNumber,
+      });
+
+      if (room) {
+        throw new NotFoundException({
+          message: `Ya existe una sala con el numero de sala${createRoomDto.roomNumber}.`,
+        });
+      }
+
+      const newRoom = this.roomRepository.create(createRoomDto)
+
+      await this.roomRepository.save(newRoom);
       return {
         message: 'Se creó la sala correctamente',
       };
@@ -58,15 +70,18 @@ export class RoomsService {
     const room = this.roomRepository.findOne({ where: { roomId: id } });
     return room;
   }
-// PROMISE MESSAGE
-  async update(id: number, updateRoomDto: UpdateRoomDto): Promise<{ message: string }> {
+  // PROMISE MESSAGE
+  async update(
+    id: number,
+    updateRoomDto: UpdateRoomDto,
+  ): Promise<{ message: string }> {
     try {
       const findroom = await this.roomRepository.findOne({
         where: { roomId: id },
       });
       if (!findroom) {
         throw new NotFoundException({
-          message : 'No se encontró la sala.'
+          message: 'No se encontró la sala.',
         });
       }
       await this.roomRepository.update(id, updateRoomDto);
@@ -87,7 +102,7 @@ export class RoomsService {
       });
       if (!findroom) {
         throw new NotFoundException({
-          message: 'No se encontró la sala.'
+          message: 'No se encontró la sala.',
         });
       }
       await this.roomRepository.update(id, { status: 'M' });
@@ -109,7 +124,7 @@ export class RoomsService {
       });
       if (!findroom) {
         throw new NotFoundException({
-          message : 'No se encontró la sala.'
+          message: 'No se encontró la sala.',
         });
       }
       await this.roomRepository.update(id, { status: 'C' });
@@ -123,14 +138,14 @@ export class RoomsService {
     }
   }
 
-  async updateStatusAvailable(id: number): Promise <{message : string}> {
+  async updateStatusAvailable(id: number): Promise<{ message: string }> {
     try {
       const findroom = await this.roomRepository.findOne({
         where: { roomId: id },
       });
       if (!findroom) {
         throw new NotFoundException({
-          message : 'No se encontró la sala.'
+          message: 'No se encontró la sala.',
         });
       }
       await this.roomRepository.update(id, { status: 'D' });

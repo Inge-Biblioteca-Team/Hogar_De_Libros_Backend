@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateBookChildrenDto {
   @ApiProperty({ example: 'Lazarillo de Tormes' })
@@ -13,43 +13,49 @@ export class CreateBookChildrenDto {
   @IsNotEmpty()
   Author: string;
 
-  @ApiProperty({ example: 'Editorial Universitaria Centroamericana Educa' })
+  @IsOptional()
+  @ApiPropertyOptional({ example: 'Editorial Universitaria Centroamericana Educa' })
   @IsString()
   Editorial: string;
 
-  @ApiProperty({ example: '1997' })
+
+  @ApiPropertyOptional({ example: '1997' })
   @IsNumber()
   PublishedYear: number;
 
-  @ApiProperty({ example: '9977-30-347-9' })
+  @IsOptional()
+  @ApiPropertyOptional({ example: '9977-30-347-9' })
   @IsString()
-  ISBN: string;
+  ISBN?: string;
 
   @ApiProperty({ example: 'Obras Literarias' })
   @IsString()
   ShelfCategory: string;
 
-  @ApiProperty({ example: 'URL o Direccion Local' })
-  @IsString()
-  Cover: string;
+  @ApiPropertyOptional({ example: 'URL o Direccion Local' })
+  @IsOptional()
+  Cover?: string;
 
   @ApiProperty({ example: '8' })
   @IsNumber()
   BookConditionRating: number;
-
-  @ApiProperty({ example: '4' })
+ 
+  @IsOptional()
+  @ApiPropertyOptional({ description: 'Código de firma' })
   @IsString()
-  SignatureCode: string;
-
-  @ApiProperty({ example: '683251' })
+  SignatureCode?: string;
+  
+  @IsOptional()
+  @ApiPropertyOptional({ example: '683251' })
   @IsString()
-  InscriptionCode: string;
+  InscriptionCode?: string;
 
   @ApiProperty({ example: '1 o 0 ' })
   @IsBoolean()
   ReserveBook: boolean;
 
-  @ApiProperty({ example: 'N/A ' })
+  @IsOptional()
+  @ApiPropertyOptional({ example: 'N/A ' })
   @IsString()
-  Observations: string;
+  Observations?: string;
 }

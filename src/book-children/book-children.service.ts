@@ -49,7 +49,7 @@ export class BookChildrenService {
 
       Object.assign(book, updateBookChildrenDto);
 
-      this.bookChildrenRepository.save(book);
+     await this.bookChildrenRepository.save(book);
       return { message: 'Éxito al editar el libro' };
     } catch (error) {
       const errorMessage =
@@ -94,7 +94,7 @@ export class BookChildrenService {
       }
 
       book.Status = false;
-      this.bookChildrenRepository.save(book);
+      await  this.bookChildrenRepository.save(book);
       return { message: 'Se dio de baja al libro correctamente' };
     } catch (error) {
       const errorMessage =

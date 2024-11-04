@@ -44,4 +44,9 @@ export class PaginatedDTO {
   @IsOptional()
   @ApiPropertyOptional({ description: 'SE NA o BAJA' })
   Status?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({ description: 'SE NA o BAJA' })
+  LicenseNumber: string;
 }

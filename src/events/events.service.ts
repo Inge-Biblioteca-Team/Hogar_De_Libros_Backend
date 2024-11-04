@@ -111,79 +111,22 @@ export class EventsService {
     return { data, count };
   }
 
-  async updateEvent(
-    updateEvetsDTO: UpdateEventsDTO,
-    id: number,
-  ): Promise<{ message: string }> {
+  async updateEvent(data: UpdateEventsDTO): Promise<{ message: string }> {
     try {
       const findEvent = await this.EventsRepository.findOne({
-        where: { EventId: id },
+        where: { EventId: data.EventId },
       });
       if (!findEvent) {
         return { message: 'No se encontró el evento' };
       }
-      if (updateEvetsDTO.programProgramsId === 0) {
-        updateEvetsDTO.programProgramsId = null;
+      if (data.programProgramsId === 0) {
+        data.programProgramsId = null;
       }
-      await this.EventsRepository.update(id, updateEvetsDTO);
+      await this.EventsRepository.update(data.EventId, data);
       return { message: 'Se actualizó el evento correctamente' };
     } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al actualizar el evento';
-      throw new InternalServerErrorException(errorMessage);
-    }
-  }
-
-  async updateEjecutionStatus(id: number): Promise<{ message: string }> {
-    try {
-      const findEvent = await this.EventsRepository.findOne({
-        where: { EventId: id },
-      });
-      if (!findEvent) {
-        return { message: 'No se encontró el evento' };
-      }
-      await this.EventsRepository.update(id, { Status: 'E' });
-      return { message: 'Se cambió el estado a en ejecución exitosamente' };
-    } catch (error) {
-      const errorMessage =
-        (error as Error).message ||
-        'Error al cambiar el estado del evento a en ejecución';
-      throw new InternalServerErrorException(errorMessage);
-    }
-  }
-
-  async updateFinalizedStatus(id: number): Promise<{ message: string }> {
-    try {
-      const findEvent = await this.EventsRepository.findOne({
-        where: { EventId: id },
-      });
-      if (!findEvent) {
-        return { message: 'No se encontró el evento' };
-      }
-      await this.EventsRepository.update(id, { Status: 'F' });
-      return { message: 'Se cambió el estado a finalizado exitosamente' };
-    } catch (error) {
-      const errorMessage =
-        (error as Error).message ||
-        'Error al cambiar el estado del evento a finalizado';
-      throw new InternalServerErrorException(errorMessage);
-    }
-  }
-
-  async updatePendientStatus(id: number): Promise<{ message: string }> {
-    try {
-      const findEvent = await this.EventsRepository.findOne({
-        where: { EventId: id },
-      });
-      if (!findEvent) {
-        return { message: 'No se encontró el evento' };
-      }
-      await this.EventsRepository.update(id, { Status: 'P' });
-      return { message: 'Se cambió el estado a pendiente exitosamente' };
-    } catch (error) {
-      const errorMessage =
-        (error as Error).message ||
-        'Error al cambiar el estado del evento a pendiente';
       throw new InternalServerErrorException(errorMessage);
     }
   }
@@ -197,7 +140,7 @@ export class EventsService {
       if (!findEvent) {
         throw new NotFoundException('El evento no existe');
       }
-      await this.EventsRepository.update(id, { Status: 'C' });
+      await this.EventsRepository.update(id, { Status: 'Cancelado' });
       return { message: 'Se cancelo el evento exitosamente' };
     } catch (error) {
       const errorMessage =
