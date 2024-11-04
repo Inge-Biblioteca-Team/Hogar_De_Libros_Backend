@@ -10,7 +10,6 @@ import { Repository } from 'typeorm';
 import { PaginatedQueryDTO } from './DTO/Paginated-Query';
 import { LocalArtist } from './local-artist.entity';
 import { CreateLocalArtistDTO } from './DTO/create-local-artist.dto';
-
 @Injectable()
 export class LocalArtistService {
   constructor(
@@ -21,9 +20,14 @@ export class LocalArtistService {
   async create(
     createLocalArtistDto: CreateLocalArtistDTO,
   ): Promise<{ message: string }> {
+    const baseUrl = process.env.BASE_URL;
     try {
+      if (!createLocalArtistDto.Cover) {
+        createLocalArtistDto.Cover = `${baseUrl}/assets/Artistas/${createLocalArtistDto.ArtisProfession}.jpg`;
+      }
+
       const newArtist = this.localArtistRepository.create(createLocalArtistDto);
-      this.localArtistRepository.save(newArtist);
+      await this.localArtistRepository.save(newArtist);
       return { message: 'Artista creado con éxito' };
     } catch (error) {
       const errorMessage =
@@ -84,7 +88,7 @@ export class LocalArtistService {
     try {
       const artist = await this.findOne(id);
       Object.assign(artist, updateLocalArtistDto);
-      this.localArtistRepository.save(artist);
+      await this.localArtistRepository.save(artist);
       return { message: 'Artista actualizado con éxito' };
     } catch (error) {
       const errorMessage =
@@ -92,7 +96,6 @@ export class LocalArtistService {
       throw new InternalServerErrorException(errorMessage);
     }
   }
-
 
   async DownArtist(ArtistID: number): Promise<{ message: string }> {
     try {
@@ -110,7 +113,7 @@ export class LocalArtistService {
         });
       }
       Artist.Actived = false;
-      this.localArtistRepository.save(Artist);
+      await this.localArtistRepository.save(Artist);
       return { message: 'Artista dado de baja con éxito' };
     } catch (error) {
       const errorMessage =

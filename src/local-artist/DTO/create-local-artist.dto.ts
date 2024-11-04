@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsUrl, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateLocalArtistDTO {
   
@@ -15,10 +15,9 @@ export class CreateLocalArtistDTO {
   ArtisProfession: string;
 
   @IsOptional()
-  @ApiPropertyOptional({ description: 'URL de la imagen de portada del artista', example: 'http://example.com/image.jpg' })
+  @ApiPropertyOptional({ description: 'URL de la imagen de portada del artista' })
   @IsString()
-  @IsUrl({}, { message: ' URL de la imagen de portada del artista debe ser una URL válida' })
-  Cover: string;
+  Cover?: string;
 
   @IsOptional()
   @ApiPropertyOptional({ description: 'Menciones y otra información adicional sobre el artista' })

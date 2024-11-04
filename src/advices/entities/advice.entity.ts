@@ -16,7 +16,8 @@ export class Advice {
   GenerateDate: Date = new Date();
 
   @Column()
-  image: string;
+  image: string =
+    'https://eduread.in/wp-content/uploads/2022/02/GettyImages-1184318171_441701_zhqy9j.jpg';
 
   @Column()
   extraInfo: string;

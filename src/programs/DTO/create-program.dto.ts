@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsNotEmpty, IsUrl } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty} from 'class-validator';
 
 export class CreateProgramDto {
   
@@ -17,6 +17,5 @@ export class CreateProgramDto {
   @ApiProperty({ description: 'URL de la imagen del programa', example: 'http://example.com/image.jpg' })
   @IsOptional()
   @IsString()
-  @IsUrl({}, { message: 'image debe ser una URL válida' })
   image?: string;
 }

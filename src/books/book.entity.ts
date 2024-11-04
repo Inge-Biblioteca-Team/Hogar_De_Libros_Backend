@@ -2,7 +2,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BookLoan } from 'src/book-loan/book-loan.entity';
 
-
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'books' })
@@ -37,14 +36,14 @@ export class Book {
 
   @Column()
   @ApiProperty({ description: 'URL de la portada del libro' })
-  Cover: string="https://img.freepik.com/free-vector/hand-drawn-flat-design-stack-books-illustration_23-2149330605.jpg?w=360";
+  Cover: string =
+    'https://img.freepik.com/free-vector/hand-drawn-flat-design-stack-books-illustration_23-2149330605.jpg?w=360';
 
   @Column()
   @ApiProperty({ description: 'Calificación de la condición del libro' })
   BookConditionRating: number;
 
   @Column()
- 
   @ApiProperty({ description: 'Código de firma' })
   signatureCode: string;
 
@@ -65,9 +64,6 @@ export class Book {
   Status: boolean = true;
 
   // relaciones
-  @OneToMany(() => BookLoan, bookLoan => bookLoan.book)
+  @OneToMany(() => BookLoan, (bookLoan) => bookLoan.book)
   bookLoans: BookLoan[];
-
-  
- 
 }

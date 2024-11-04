@@ -33,7 +33,7 @@ export class CourseService {
         ...createCourseDto,
         programProgramsId:
           createCourseDto.programProgramsId == null ||
-          createCourseDto.programProgramsId === 0
+          createCourseDto.programProgramsId == 0
             ? null
             : createCourseDto.programProgramsId,
       });
@@ -131,7 +131,7 @@ export class CourseService {
 
   async updateCourseById(
     courseId: number,
-    updateCourseDto: Partial<CreateCourseDto>,
+    data: Partial<CreateCourseDto>,
   ): Promise<{ message: string }> {
     try {
       const course = await this.courseRepository.findOne({
@@ -141,15 +141,14 @@ export class CourseService {
       if (!course) {
         throw new NotFoundException(`Curso no encontrado`);
       }
-      if (
-        updateCourseDto.programProgramsId == null ||
-        updateCourseDto.programProgramsId === 0
-      ) {
-        updateCourseDto.programProgramsId = null;
-      }
 
-      Object.assign(course, updateCourseDto);
-      await this.courseRepository.save(course);
+      await this.courseRepository.update(course.courseId, {
+        ...data,
+        programProgramsId:
+          data.programProgramsId == null || data.programProgramsId == 0
+            ? null
+            : data.programProgramsId,
+      });
 
       return { message: 'Éxito al editar el curso' };
     } catch (error) {

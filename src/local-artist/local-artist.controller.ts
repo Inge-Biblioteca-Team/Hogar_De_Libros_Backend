@@ -29,19 +29,19 @@ export class LocalArtistController {
   async create(
     @Body() createLocalArtistDto: CreateLocalArtistDTO,
   ): Promise<{message: string}> {
-    return this.localArtistService.create(createLocalArtistDto);
+    return await this.localArtistService.create(createLocalArtistDto);
   }
 
   @Get()
   async findAll(
     @Query() query: PaginatedQueryDTO,
   ): Promise<{ data: LocalArtist[]; count: number }> {
-    return this.localArtistService.findAll(query);
+    return await this.localArtistService.findAll(query);
   }
 
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<LocalArtist> {
-    return this.localArtistService.findOne(id);
+    return await this.localArtistService.findOne(id);
   }
 
 
@@ -52,7 +52,7 @@ export class LocalArtistController {
     @Param('id') id: number,
     @Body() updateLocalArtistDto: CreateLocalArtistDTO,
   ): Promise<{message: string}> {
-    return this.localArtistService.update(id, updateLocalArtistDto);
+    return await this.localArtistService.update(id, updateLocalArtistDto);
   }
 
   @Patch(':id/Down')

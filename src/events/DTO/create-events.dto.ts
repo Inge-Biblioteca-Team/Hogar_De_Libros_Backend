@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsDate,
   IsNotEmpty,
@@ -42,7 +42,7 @@ export class CreateEventsDTO {
   @IsNotEmpty({ message: 'Time es un campo obligatorio' })
   Time: string;
 
-  @ApiProperty({ example: 'URL de la imagen del evento' })
+  @ApiPropertyOptional({ example: 'URL de la imagen del evento' })
   @IsOptional()
   @IsString()
   Image?: string;

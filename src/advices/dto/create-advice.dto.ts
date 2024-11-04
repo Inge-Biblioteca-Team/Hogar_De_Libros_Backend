@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsDate, IsOptional, IsString } from 'class-validator';
 
@@ -21,13 +21,13 @@ export class CreateAdviceDto {
   @IsDate()
   date: Date;
 
+  @IsOptional()
   @IsString()
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Imagen del aviso',
     example: 'https://ejemplo.com/imagen.jpg',
   })
-  @IsNotEmpty({ message: 'La imagen no puede estar vacía.' })
-  image: string;
+  image?: string;
 
   @IsString()
   @ApiProperty({

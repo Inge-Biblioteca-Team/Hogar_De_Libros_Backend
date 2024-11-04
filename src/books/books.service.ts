@@ -21,6 +21,7 @@ export class BooksService {
   ) {}
 
   async addBook(createBookDto: CreateBookDto): Promise<{ message: string }> {
+    console.log(createBookDto)
     try {
       const newBook = this.bookRepository.create(createBookDto);
       await this.bookRepository.save(newBook);

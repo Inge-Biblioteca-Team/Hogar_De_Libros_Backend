@@ -13,17 +13,20 @@ export class CreateBookDto {
   @IsNotEmpty()
   Author: string;
 
-  @ApiProperty({ example: 'Editorial Universitaria Centroamericana Educa' })
+  @IsOptional()
+  @ApiPropertyOptional({ example: 'Editorial Universitaria Centroamericana Educa' })
   @IsString()
   Editorial: string;
 
-  @ApiProperty({ example: '1997' })
+
+  @ApiPropertyOptional({ example: '1997' })
   @IsNumber()
   PublishedYear: number;
 
-  @ApiProperty({ example: '9977-30-347-9' })
+  @IsOptional()
+  @ApiPropertyOptional({ example: '9977-30-347-9' })
   @IsString()
-  ISBN: string;
+  ISBN?: string;
 
   @ApiProperty({ example: 'Obras Literarias' })
   @IsString()
@@ -37,19 +40,22 @@ export class CreateBookDto {
   @IsNumber()
   BookConditionRating: number;
  
-  @ApiProperty({ description: 'Código de firma' })
+  @IsOptional()
+  @ApiPropertyOptional({ description: 'Código de firma' })
   @IsString()
-  signatureCode: string;
+  signatureCode?: string;
   
-  @ApiProperty({ example: '683251' })
+  @IsOptional()
+  @ApiPropertyOptional({ example: '683251' })
   @IsString()
-  InscriptionCode: string;
+  InscriptionCode?: string;
 
   @ApiProperty({ example: '1 o 0 ' })
   @IsBoolean()
   ReserveBook: boolean;
 
-  @ApiProperty({ example: 'N/A ' })
+  @IsOptional()
+  @ApiPropertyOptional({ example: 'N/A ' })
   @IsString()
-  Observations: string;
+  Observations?: string;
 }
