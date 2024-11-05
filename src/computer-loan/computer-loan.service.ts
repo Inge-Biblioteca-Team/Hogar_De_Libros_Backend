@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ComputerLoan } from './computer-loan.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { CreateComputerLoanDto } from './DTO/create-computer-loan.dto';
 import { PaginationQueryDTO } from './DTO/Pagination-querry.dto';
 import { ResponseHistoryDto } from './DTO/response-history.dto';
@@ -70,7 +70,10 @@ export class ComputerLoanService {
     try {
       console.log(loan);
       const computerLoan = await this.computerLoanRepository.findOne({
-        where: { ComputerLoanId: loan.ComputerLoanId },
+        where: {
+          MachineNumber: loan.MachineNumber,
+          LoanExpireDate: IsNull(),
+        },
       });
       if (!computerLoan) {
         throw new HttpException(
@@ -86,7 +89,7 @@ export class ComputerLoanService {
         loan.MachineNumber,
         'Disponible',
       );
-      return { message: 'Exito al finalizar el prestamo' };
+      return { message: 'Éxito al finalizar el préstamo' };
     } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
@@ -122,7 +125,7 @@ export class ComputerLoanService {
       ComputerLoanId: loan.ComputerLoanId,
       workStation: loan.MachineNumber,
       UserName: loan.UserName,
-      AdminName: loan.UserName,
+      cedula: loan.cedula,
       LoanStartDate: loan.LoanStartDate,
       LoanExpireDate: loan.LoanExpireDate,
       Status: loan.Status,

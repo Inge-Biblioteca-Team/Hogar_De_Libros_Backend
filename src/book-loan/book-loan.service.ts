@@ -200,6 +200,54 @@ export class BookLoanService {
     }
   }
 
+  async cancelLoan(data: ChangeLoanStatus): Promise<{ message: string }> {
+    try {
+      const bookLoan = await this.bookLoanRepository.findOne({
+        where: { BookLoanId: data.LoanID },
+      });
+
+      if (!bookLoan) {
+        throw new NotFoundException(
+          `Préstamo numero ${data.LoanID} no encontrado`,
+        );
+      }
+      bookLoan.Status = 'Cancelado';
+      bookLoan.receivedBy = data.person;
+      bookLoan.Observations = data.Observations;
+
+      await this.bookLoanRepository.save(bookLoan);
+      return { message: 'Éxito al finalizar el préstamo' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
+    }
+  }
+
+  async refuseLoan(data: ChangeLoanStatus): Promise<{ message: string }> {
+    try {
+      const bookLoan = await this.bookLoanRepository.findOne({
+        where: { BookLoanId: data.LoanID },
+      });
+
+      if (!bookLoan) {
+        throw new NotFoundException(
+          `Préstamo numero ${data.LoanID} no encontrado`,
+        );
+      }
+      bookLoan.Status = 'Rechazado';
+      bookLoan.aprovedBy = data.person;
+      bookLoan.Observations = data.Observations;
+
+      await this.bookLoanRepository.save(bookLoan);
+      return { message: 'Éxito al rechazar el préstamo' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
+    }
+  }
+
   async update(
     bookLoanId: number,
     updateBookLoanDto: updatedBookLoan,
@@ -216,7 +264,7 @@ export class BookLoanService {
 
     Object.assign(bookLoan, updateBookLoanDto);
 
-    this.bookLoanRepository.save(bookLoan);
+    await this.bookLoanRepository.save(bookLoan);
     return;
   }
 
@@ -420,7 +468,7 @@ export class BookLoanService {
     const query = this.bookLoanRepository
       .createQueryBuilder('bookLoan')
       .leftJoinAndSelect('bookLoan.book', 'book')
-      .where('bookLoan.Status = :status', { status: 'Finalizado' });
+      .where('bookLoan.Status NOT IN (:...statuses)', { statuses: ['En progreso', 'Pendiente'] });
 
     if (StartDate)
       query.andWhere('Date(bookLoan.LoanRequestDate) >= :StartDate', {

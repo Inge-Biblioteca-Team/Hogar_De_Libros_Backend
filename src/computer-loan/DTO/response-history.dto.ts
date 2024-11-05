@@ -11,8 +11,8 @@ export class ResponseHistoryDto {
   @ApiProperty({ description: 'Nombre del usuario' })
   UserName: string;
 
-  @ApiProperty({ description: 'Nombre del administrador que autorizó el uso' })
-  AdminName: string;
+  @ApiProperty({description:"Cedula del usuario"})
+  cedula:string
 
   @ApiProperty({ description: 'Fecha y hora de inicio del uso' })
   LoanStartDate: Date;
