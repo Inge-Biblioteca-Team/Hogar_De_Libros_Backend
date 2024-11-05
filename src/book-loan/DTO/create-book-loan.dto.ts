@@ -11,7 +11,7 @@ export class CreateBookLoanDto {
     {},
     { message: 'BookPickUpDate debe estar en formato de fecha válido' },
   )
-  @IsNotEmpty({ message: 'Fecha de devolucion  es un campo obligatorio' })
+  @IsNotEmpty({ message: 'Fecha de devolución  es un campo obligatorio' })
   BookPickUpDate: string;
 
   @ApiProperty({

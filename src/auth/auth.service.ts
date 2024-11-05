@@ -98,14 +98,11 @@ export class AuthService {
       const decoded = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });
-      console.log(decoded);
       const email = decoded.email;
       const user = await this.usersService.findOne(email);
-      console.log(user);
       if (!user) {
         throw new UnauthorizedException('Usuario no encontrado');
       }
-
       const userProfile: UserProfile = {
         cedula: user.cedula,
         email: user.email,

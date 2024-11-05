@@ -34,6 +34,7 @@ export class AuthController {
         httpOnly: true,
         secure: true,
         maxAge: 86400000,
+        sameSite:'none'
       });
       return res.json({
         user: result.user,
@@ -60,7 +61,7 @@ export class AuthController {
     res.clearCookie('access_token', {
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite:'none',
     });
     res.status(200).send({ message: 'Éxito al cerrar sesión' });
   }
@@ -79,6 +80,7 @@ export class AuthController {
         httpOnly: true,
         secure: true,
         maxAge: 86400000,
+        sameSite:'none'
       });
       return res.status(200).json({
         user: result.user,

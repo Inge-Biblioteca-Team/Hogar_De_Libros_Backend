@@ -23,8 +23,6 @@ export class WorkStationsController {
   constructor(private WsService: WorkStationsService) {}
 
   @Get('workstation/Status')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'asistente', 'recepcion')
   async getStatusWorkStation(): Promise<
     { MachineNumber: number; Status: string }[]
   > {
