@@ -23,7 +23,6 @@ import { activities } from './DTO/Programs-Activities.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
-import { ActivitiesDTO } from './DTO/Activities.dto';
 import { ActivitiesFilterDTO } from './DTO/ActivitiesFilter.dto';
 
 @ApiTags('Programs')
@@ -49,8 +48,15 @@ export class ProgramsController {
   @Get('Program/Activities')
   async getActivitiesByPrograms(
     @Query() filters:ActivitiesFilterDTO ,
-  ): Promise<{ data: ActivitiesDTO[]; count: number }> {
-    return this.programService.getActivitiesByProgram(filters);
+  ): Promise<{ data: activities[]; count: number }> {
+    return this.programService.getActivities(filters);
+  }
+
+  @Get('Program/:id/Related')
+  async getRelatedPrograms(
+    @Param('id') id:number
+  ): Promise<{ data: activities[]; count: number }> {
+    return this.programService.getRelatedByProgram(id);
   }
 
   @Get('Actived')

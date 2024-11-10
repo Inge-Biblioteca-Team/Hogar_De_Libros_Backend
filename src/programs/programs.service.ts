@@ -15,8 +15,6 @@ import { ProgramDTO } from './DTO/GetPDTO';
 import { ProgramsNames } from './DTO/ProgramNames';
 import { Course } from 'src/course/course.entity';
 import { activities } from './DTO/Programs-Activities.dto';
-import { ActivitiesDTO } from './DTO/Activities.dto';
-import { ActivitiesFilterDTO } from './DTO/ActivitiesFilter.dto';
 
 @Injectable()
 export class ProgramsService {
@@ -77,8 +75,10 @@ export class ProgramsService {
       throw new BadRequestException('Error al obtener el programa.');
     }
   }
- 
-  async createProgramns(createProgramDto: CreateProgramDto): Promise<{message : string}> {
+
+  async createProgramns(
+    createProgramDto: CreateProgramDto,
+  ): Promise<{ message: string }> {
     try {
       const program = this.programsRepository.create(createProgramDto);
 
@@ -94,7 +94,7 @@ export class ProgramsService {
   async updatePrograms(
     id: number,
     updateProgramDto: UpdateProgramsDto,
-  ): Promise<{message: string}> {
+  ): Promise<{ message: string }> {
     try {
       const program = await this.programsRepository.findOne({
         where: { programsId: id },
@@ -110,7 +110,6 @@ export class ProgramsService {
 
       await this.programsRepository.save(program);
       return { message: `El programa con ID ${id} ha sido actualizado.` };
-
     } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
@@ -131,11 +130,9 @@ export class ProgramsService {
       }
 
       if (program.status === false) {
-        throw new BadRequestException(
-          {
-            message: `El programa con ID ${id} ya está deshabilitado.`,
-          }
-        );
+        throw new BadRequestException({
+          message: `El programa con ID ${id} ya está deshabilitado.`,
+        });
       }
 
       program.status = false;
@@ -184,47 +181,40 @@ export class ProgramsService {
     return program.courses;
   }
 
-  async getActivitiesByProgram(filterDTO: ActivitiesFilterDTO): Promise<{
-    data: ActivitiesDTO[];
+  //El admin debe poder ver todas las actividades
+  async getRelatedByProgram(id: number): Promise<{
+    data: activities[];
     count: number;
   }> {
-    const { month, programID } = filterDTO;
-
-    const date = new Date();
-    const formattedDate = date.toISOString().split('T')[0];
     const query = this.programsRepository
       .createQueryBuilder('program')
+      .andWhere('program.programsId = :programsId', { programsId: id })
+      .leftJoinAndSelect('program.events', 'events')
       .leftJoinAndSelect('program.courses', 'course')
-      .where('course.Status = :status', { status: 1 })
-      .andWhere('course.date >= :formattedDate', { formattedDate })
-      .orderBy('course.date', 'ASC');
+      .orderBy('program.programsId', 'ASC');
 
-      if(programID){
-        query.where('program.programsId = :programID', { programID })
-      }
-    
-      if (month) {
-        query.andWhere('MONTH(course.date) = :month', { month });
-      }
-      const programs = await query.getMany();
+    const [programData] = await query.getManyAndCount();
 
-    const activities: ActivitiesDTO[] = [];
-
-    programs.forEach((program) => {
-      program.courses.forEach((course) => {
-        activities.push({
-          id: course.courseId,
-          description:
-            'Curso: ' + course.courseName + '. Realizado en ' + course.location,
-          date: course.date,
-          category: course.courseType,
-          targetAge: course.targetAge,
-          instructor: course.instructor,
-          image: course.image,
-          programName: program.programName,
-        });
-      });
-    });
+    const activities: activities[] = programData.flatMap((program) => [
+      ...program.courses.map((course) => ({
+        activitieID: 'C' + course.courseId,
+        programName: program.programName,
+        activitieName: course.courseName,
+        description: course.courseType,
+        activitiDate: course.date,
+        image: course.image,
+        activityType: 'Curso',
+      })),
+      ...program.events.map((event) => ({
+        activitieID: 'E' + event.EventId,
+        programName: program.programName,
+        activitieName: event.Title,
+        description: event.Details,
+        activitiDate: event.Date,
+        image: event.Image,
+        activityType: 'Evento',
+      })),
+    ]);
 
     return { data: activities, count: activities.length };
   }
@@ -244,7 +234,8 @@ export class ProgramsService {
       .where('course.date > :currentDate', { currentDate })
       .andWhere('course.date <= :threeMonthsLater', { threeMonthsLater })
       .andWhere('course.Status = :status', { status: 1 })
-      .orderBy('course.date', 'ASC');
+      .leftJoinAndSelect('program.events', 'events')
+      .orderBy('program.programName', 'ASC');
 
     if (programName) {
       query.andWhere('program.programName LIKE :programName', {
@@ -257,10 +248,10 @@ export class ProgramsService {
 
     query.skip((page - 1) * limit).take(limit);
 
-    const [programData, count] = await query.getManyAndCount();
+    const [programData] = await query.getManyAndCount();
 
-    const activities: activities[] = programData.flatMap((program) =>
-      program.courses.map((course) => ({
+    const activities: activities[] = programData.flatMap((program) => [
+      ...program.courses.map((course) => ({
         activitieID: 'C' + course.courseId,
         programName: program.programName,
         activitieName: course.courseName,
@@ -269,8 +260,17 @@ export class ProgramsService {
         image: course.image,
         activityType: 'Curso',
       })),
-    );
+      ...program.events.map((event) => ({
+        activitieID: 'E' + event.EventId,
+        programName: program.programName,
+        activitieName: event.Title,
+        description: event.Details,
+        activitiDate: event.Date,
+        image: event.Image,
+        activityType: 'Evento',
+      })),
+    ]);
 
-    return { data: activities, count };
+    return { data: activities, count: activities.length };
   }
 }

@@ -61,8 +61,8 @@ export class CreateCourseDto {
   duration?: string;
 
   @ApiProperty({ description: 'Fecha final del curso' })
-  @IsDate({ message: 'Fecha de finalizacion debe ser una fecha válida (DD-MM-YYYY)' })
-  @IsNotEmpty({ message: 'Fecha de finalizacion es obligatorio' })
+  @IsDate({ message: 'Fecha de finalización debe ser una fecha válida (DD-MM-YYYY)' })
+  @IsNotEmpty({ message: 'Fecha de finalización es obligatorio' })
   endDate: Date;
 
   @ApiProperty({ description: 'ID del programa', default: null })

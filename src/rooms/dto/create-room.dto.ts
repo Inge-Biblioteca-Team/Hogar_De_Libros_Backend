@@ -1,9 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  ArrayNotEmpty,
-  IsArray,
-  isNotEmpty,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -38,8 +35,7 @@ export class CreateRoomDto {
   })
   observations?: string;
 
-  @IsArray({message: 'Debe de enviar al menos una imagen'})
-  @IsNotEmpty({message: 'Debe de enviar al menos una imagen'})
+  @IsNotEmpty({message:"Por favor añadir por lo menos una imagen de la sala"})
   @ApiProperty({ example: ['URL de la imagen de la sala'] })
   image?: string[];
 

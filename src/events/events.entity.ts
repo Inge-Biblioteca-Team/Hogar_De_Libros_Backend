@@ -36,13 +36,13 @@ export class events {
 
   @Column({default: 'https://img.freepik.com/vector-premium/signo-pregunta-negro-fondo-dorado_1181070-80.jpg'})
   @ApiProperty({ description: 'Imagen del evento' })
-  Image: string;
+  Image: string ='https://static.vecteezy.com/system/resources/previews/012/710/072/non_2x/event-planner-template-hand-drawn-cartoon-flat-illustration-with-planning-schedule-time-management-business-agenda-and-calendar-concept-vector.jpg';
 
   @Column()
   @ApiProperty({ description: 'Público objetivo del evento' })
   TargetAudience: string;
 
-  @Column({ type: 'char', length: 1, default: 'P' })
+  @Column({default: 'Pendiente de ejecución' })
   @ApiProperty({ description: 'Estado del evento' })
   Status: string;
 

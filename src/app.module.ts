@@ -46,6 +46,7 @@ import { DonationModule } from './donation/donation.module';
 import { CollaboratorModule } from './collaborator/collaborator.module';
 import { WorkStationsModule } from './work-stations/work-stations.module';
 import { WorkStation } from './work-stations/entities/work-station.entity';
+import { StatsModule } from './stats/stats.module';
 
 dotenv.config();
 
@@ -103,7 +104,8 @@ dotenv.config();
     NotesModule,
     DonationModule,
     CollaboratorModule,
-    WorkStationsModule
+    WorkStationsModule,
+    StatsModule
   ],
   controllers: [AppController],
   providers: [AppService],

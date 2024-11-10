@@ -20,8 +20,8 @@ export class Programs {
   description: string;
 
   @ApiProperty({ description: 'Imagen del programa' })
-  @Column({default: 'https://img.freepik.com/vector-premium/signo-pregunta-negro-fondo-dorado_1181070-80.jpg'})
-  image: string;
+  @Column()
+  image: string='https://www.comunidadbaratz.com/wp-content/uploads/Todas-las-personas-deberian-ir-a-la-biblioteca-al-menos-una-vez-a-la-semana.jpg';
 
   @ApiProperty({ description: 'Estado' ,default:true})
   @Column({ default: true })
@@ -31,5 +31,5 @@ export class Programs {
   courses: Course[];
 
   @OneToMany(() => events, (event) => event.program)
-  event: events[];
+  events: events[];
 }

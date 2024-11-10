@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsNotEmpty, IsUrl } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty} from 'class-validator';
 
 export class CreateProgramDto {
   
