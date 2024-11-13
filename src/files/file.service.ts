@@ -28,10 +28,11 @@ export class FilesService {
 
   //Imagen unica, Posiblemente no se use
   getImageUrl(category: string, fileName: string): string {
+    const baseUrl = process.env.BASE_URL;
     const filePath = path.join('./assets', category, fileName);
 
     if (fs.existsSync(filePath)) {
-      return `http://localhost:3000/assets/${category}/${fileName}`;
+      return `${baseUrl}/assets/${category}/${fileName}`;
     } else {
       throw new NotFoundException('Archivos no encontrados');
     }

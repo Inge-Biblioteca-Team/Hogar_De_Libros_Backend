@@ -198,7 +198,6 @@ export class CourseService {
 
     try {
       query
-        .where('courses.date > :currentDate', { currentDate })
         .andWhere('courses.date <= :threeMonthsLater', { threeMonthsLater });
 
       if (month) {
