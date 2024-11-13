@@ -7,7 +7,6 @@ import {
   HttpStatus,
   Res,
   Req,
-  Get,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -34,7 +33,8 @@ export class AuthController {
         httpOnly: true,
         secure: true,
         maxAge: 86400000,
-        sameSite:'none'
+        sameSite: 'none',
+        domain: '.vercel.com',
       });
       return res.json({
         user: result.user,
@@ -61,12 +61,12 @@ export class AuthController {
     res.clearCookie('access_token', {
       httpOnly: true,
       secure: true,
-      sameSite:'none',
+      sameSite: 'none',
     });
     res.status(200).send({ message: 'Éxito al cerrar sesión' });
   }
 
-  @Get('Profile')
+  @Post('Profile')
   async loginWithToken(@Req() req: Request, @Res() res: Response) {
     const token = req.cookies['access_token'];
     if (!token) {
@@ -80,13 +80,14 @@ export class AuthController {
         httpOnly: true,
         secure: true,
         maxAge: 86400000,
-        sameSite:'none'
+        sameSite: 'none',
       });
       return res.status(200).json({
         user: result.user,
         message: result.message,
       });
     } catch (error) {
+      res.clearCookie['access_token']
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
       throw new InternalServerErrorException(errorMessage);

@@ -28,13 +28,14 @@ export class CollaboratorService {
     dto: CreateCollaboratorDTO,
     documents: Express.Multer.File[],
   ): Promise<{ message: string }> {
+    const baseUrl = process.env.BASE_URL;
     try {
       const User = await this.UserRepository.findOne({
         where: { cedula: dto.UserCedula },
       });
       /// cambiar a variable de entorno el documente path base url
       const documentPaths = documents.map(
-        (file) => `http://localhost:3000/uploads/${file.filename}`,
+        (file) => `${baseUrl}/uploads/${file.filename}`,
       );
 
       let newCollaborator: Collaborator;
@@ -85,13 +86,12 @@ export class CollaboratorService {
       await this.noteService.createNote(createNoteDto);
       await this.collaboratorRepository.save(newCollaborator);
       return { message: 'Solicitud de colaborador enviada correctamente.' };
-    }  catch (error) {
+    } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
       throw new InternalServerErrorException(errorMessage);
     }
   }
-
 
   async getAllCollaborator(
     filterDTO: GetAllCollaboratorFilterDTO,
@@ -160,7 +160,7 @@ export class CollaboratorService {
 
       await this.collaboratorRepository.save(CollaboratorFounded);
       return { message: 'Solicitud de colaborador aprobada correctamente' };
-    }  catch (error) {
+    } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
       throw new InternalServerErrorException(errorMessage);
@@ -188,7 +188,7 @@ export class CollaboratorService {
       await this.collaboratorRepository.save(CollaboratorFounded);
 
       return { message: 'Solicitud de colaborador rechazada correctamente' };
-    }  catch (error) {
+    } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
       throw new InternalServerErrorException(errorMessage);
@@ -216,7 +216,7 @@ export class CollaboratorService {
       await this.collaboratorRepository.save(CollaboratorFounded);
 
       return { message: 'Solicitud de colaborador cancelada correctamente' };
-    }  catch (error) {
+    } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
       throw new InternalServerErrorException(errorMessage);
