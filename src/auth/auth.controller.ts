@@ -33,8 +33,7 @@ export class AuthController {
         httpOnly: true,
         secure: true,
         maxAge: 86400000,
-        sameSite: 'none',
-        domain: '.vercel.com',
+        sameSite: 'none'
       });
       return res.json({
         user: result.user,

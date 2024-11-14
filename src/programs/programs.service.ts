@@ -222,7 +222,7 @@ export class ProgramsService {
   async getActivities(
     filters: SearchPDTO,
   ): Promise<{ data: activities[]; count: number }> {
-    const { page = 1, limit = 5, programName, month } = filters;
+    const { page = 1, limit = 5, programsId, month } = filters;
 
     const currentDate = new Date();
     const threeMonthsLater = new Date();
@@ -237,11 +237,11 @@ export class ProgramsService {
       .leftJoinAndSelect('program.events', 'events')
       .orderBy('program.programName', 'ASC');
 
-    if (programName) {
-      query.andWhere('program.programName LIKE :programName', {
-        programName: `%${programName}%`,
-      });
-    }
+      if (programsId) {
+        query.andWhere('programs.programsId = :programsId', {
+          programsId: programsId,
+        });
+      }
     if (month) {
       query.andWhere('MONTH(course.date) = :month', { month });
     }
