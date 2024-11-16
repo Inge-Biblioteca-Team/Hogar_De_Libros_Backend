@@ -6,9 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Course } from 'src/course/course.entity';
 import { BookLoan } from 'src/book-loan/book-loan.entity';
 import { events } from 'src/events/events.entity';
+import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
+import { Book } from 'src/books/book.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([events, Course, BookLoan])],
+  imports: [TypeOrmModule.forFeature([events, Course, BookLoan,ComputerLoan,Book])],
   controllers: [StatsController],
   providers: [StatsService],
 })
