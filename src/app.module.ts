@@ -81,7 +81,6 @@ dotenv.config();
         Donation,
         Collaborator
       ],
-      synchronize: true,
     }),
     BooksModule,
     ComputersModule,

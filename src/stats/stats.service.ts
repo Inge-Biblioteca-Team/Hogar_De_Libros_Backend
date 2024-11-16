@@ -6,6 +6,8 @@ import { Course } from 'src/course/course.entity';
 import { events } from 'src/events/events.entity';
 import { Repository } from 'typeorm';
 import { StatsDto } from './dto/StatsDto';
+import { Book } from 'src/books/book.entity';
+import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
 
 @Injectable()
 export class StatsService {
@@ -16,6 +18,10 @@ export class StatsService {
     private courseRepository: Repository<Course>,
     @InjectRepository(BookLoan)
     private loanRepository: Repository<BookLoan>,
+    @InjectRepository(Book)
+    private bookRepository: Repository<Book>,
+    @InjectRepository(ComputerLoan)
+    private ComputerLoanRepository: Repository<ComputerLoan>,
   ) {}
 
   async getStats(): Promise<StatsDto[]> {
@@ -75,4 +81,70 @@ export class StatsService {
 
     return Array.from(statsMap.values());
   }
+
+  async getGeneralCounts() {
+    const eventCount = await this.eventRepository
+      .createQueryBuilder('events')
+      .getCount();
+  
+    const courseCount = await this.courseRepository
+      .createQueryBuilder('courses')
+      .getCount();
+  
+    const loanCount = await this.loanRepository
+      .createQueryBuilder('bookLoan')
+      .getCount();
+  
+    const bookCount = await this.bookRepository
+      .createQueryBuilder('books')
+      .getCount();
+  
+    const computerLoanCount = await this.ComputerLoanRepository
+      .createQueryBuilder('ComputerLoans')
+      .getCount();
+  
+    return {
+      Eventos: eventCount,
+      Cursos: courseCount,
+      Prestamos: loanCount,
+      Libros: bookCount,
+      Equipos: computerLoanCount,
+    };
+    
+    }
+  async getSuccessfulCountsCurrentYear() {
+    const currentYear = new Date().getFullYear(); 
+  
+    const eventCount = await this.eventRepository
+      .createQueryBuilder('events')
+      .where('events.status = :status', { status: 'Cancelado' })
+      .andWhere('YEAR(events.Date) = :year', { year: currentYear }) 
+      .getCount();
+  
+    const courseCount = await this.courseRepository
+      .createQueryBuilder('courses')
+      .where('courses.status = :status', { status: 'Cancelado' })
+      .andWhere('YEAR(courses.date) = :year', { year: currentYear }) 
+      .getCount();
+  
+    const loanCount = await this.loanRepository
+      .createQueryBuilder('bookLoan')
+      .where('bookLoan.status = :status', { status: 'Finalizado' })
+      .andWhere('YEAR(bookLoan.LoanRequestDate) = :year', { year: currentYear }) 
+      .getCount();
+  
+    const computerLoanCount = await this.ComputerLoanRepository
+      .createQueryBuilder('ComputerLoans')
+      .where('ComputerLoans.status = :status', { status: 'Finalizado' })
+      .andWhere('YEAR(ComputerLoans.LoanExpireDate) = :year', { year: currentYear }) 
+      .getCount();
+  
+    return {
+      EventosExitosos: eventCount,
+      CursosExitosos: courseCount,
+      PrestamosExitosos: loanCount,
+      EquiposExitosos: computerLoanCount,
+    };
+  }
+  
 }

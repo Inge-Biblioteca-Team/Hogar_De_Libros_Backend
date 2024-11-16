@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { StatsService } from './stats.service';
 import { ApiTags } from '@nestjs/swagger';
 import { StatsDto } from './dto/StatsDto';
@@ -13,4 +13,15 @@ export class StatsController {
   async getMonthlyStats(): Promise<StatsDto[]> {
     return this.statsService.getStats();
   }
+  
+  @Get('/successful-counts/current-year')
+  async getSuccessfulCountsCurrentYear() {
+    return this.statsService.getSuccessfulCountsCurrentYear();
+  }
+
+  @Get('/general-counts')
+  async getGeneralCounts() {
+    return this.statsService.getGeneralCounts();
+  }
+
 }
