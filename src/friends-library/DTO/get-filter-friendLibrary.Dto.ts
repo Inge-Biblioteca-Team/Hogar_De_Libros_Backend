@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString, IsDateString } from 'class-validator';
 
 export class GetAllFriendsFilterDTO {
@@ -30,7 +30,7 @@ export class GetAllFriendsFilterDTO {
   @IsOptional()
   limit?: number;
 
-  @ApiProperty({description:"Tipo de experiencia", example:"Informática"})
+  @ApiPropertyOptional({description:"Tipo de experiencia", example:"Informática"})
   @IsOptional()
-  Exp:string
+  Exp?:string
 }
