@@ -26,6 +26,13 @@ export class SearchPDTO {
   @ApiPropertyOptional({ description: 'Cedula Del Usuario' })
   programName?: string;
 
+  @ApiPropertyOptional({
+    description: 'Resultados Por pagina',
+  })
+  @IsOptional()
+  @ApiPropertyOptional({ description: 'Cedula Del Usuario' })
+  programsId?: number;
+
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({ description: 'Estado Del Curso' })

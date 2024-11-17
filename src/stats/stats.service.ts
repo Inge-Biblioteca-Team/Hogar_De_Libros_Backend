@@ -8,6 +8,8 @@ import { Repository } from 'typeorm';
 import { StatsDto } from './dto/StatsDto';
 import { Book } from 'src/books/book.entity';
 import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
+import { User } from 'src/user/user.entity';
+import { FriendsLibrary } from 'src/friends-library/friend-library.entity';
 
 @Injectable()
 export class StatsService {
@@ -22,6 +24,10 @@ export class StatsService {
     private bookRepository: Repository<Book>,
     @InjectRepository(ComputerLoan)
     private ComputerLoanRepository: Repository<ComputerLoan>,
+    @InjectRepository(User)
+    private UserRepository: Repository<User>,
+    @InjectRepository(FriendsLibrary)
+    private FriendRepository: Repository<FriendsLibrary>,
   ) {}
 
   async getStats(): Promise<StatsDto[]> {
@@ -82,63 +88,117 @@ export class StatsService {
     return Array.from(statsMap.values());
   }
 
+  async getCalendarItems(): Promise<{ title: string; date: string }[]> {
+    const getStartAndEndOfNext7Days = (date: Date) => {
+      const startOfPeriod = new Date(date);
+      const endOfPeriod = new Date(date);
+      startOfPeriod.setHours(0, 0, 0, 0);
+      endOfPeriod.setDate(date.getDate() + 7);
+      endOfPeriod.setHours(23, 59, 59, 999);
+      return { startOfPeriod, endOfPeriod };
+    };
+
+    const today = new Date();
+    const { startOfPeriod, endOfPeriod } = getStartAndEndOfNext7Days(today);
+    const events = await this.eventRepository
+      .createQueryBuilder('event')
+      .select(['event.Title', 'event.Date', 'event.Time'])
+      .where('event.Date >= :startOfPeriod', { startOfPeriod })
+      .andWhere('event.Date <= :endOfPeriod', { endOfPeriod })
+      .getMany();
+
+    const courses = await this.courseRepository
+      .createQueryBuilder('course')
+      .select(['course.courseName', 'course.date', 'course.courseTime'])
+      .where('course.date >= :startOfPeriod', { startOfPeriod })
+      .andWhere('course.date <= :endOfPeriod', { endOfPeriod })
+      .getMany();
+
+    const formattedCourses = courses.map((course) => ({
+      title: course.courseName,
+      date: `${course.date}T${course.courseTime}`,
+    }));
+
+    const formattedEvents = events.map((event) => ({
+      title: event.Title,
+      date: `${event.Date}T${event.Time}`,
+    }));
+
+    return [...formattedEvents, ...formattedCourses];
+  }
+
   async getGeneralCounts() {
     const eventCount = await this.eventRepository
       .createQueryBuilder('events')
       .getCount();
-  
+
     const courseCount = await this.courseRepository
       .createQueryBuilder('courses')
       .getCount();
-  
+
     const loanCount = await this.loanRepository
       .createQueryBuilder('bookLoan')
       .getCount();
-  
+
     const bookCount = await this.bookRepository
       .createQueryBuilder('books')
+      .andWhere('books.status= :status', { status: 1 })
       .getCount();
-  
-    const computerLoanCount = await this.ComputerLoanRepository
-      .createQueryBuilder('ComputerLoans')
+
+    const computerLoanCount =
+      await this.ComputerLoanRepository.createQueryBuilder(
+        'ComputerLoans',
+      ).getCount();
+
+    const FriendCount = await this.FriendRepository.createQueryBuilder(
+      'FriendsLibrary',
+    )
+      .andWhere('FriendsLibrary.Status = :status', { status: 'Aprobado' })
       .getCount();
-  
+
+    const UsersCount = await this.UserRepository.createQueryBuilder('Users')
+      .andWhere('Users.status = :status', { status: 1 })
+      .getCount();
+
     return {
       Eventos: eventCount,
       Cursos: courseCount,
       Prestamos: loanCount,
       Libros: bookCount,
       Equipos: computerLoanCount,
+      Amigos: FriendCount,
+      Usuarios: UsersCount,
     };
-    
-    }
+  }
   async getSuccessfulCountsCurrentYear() {
-    const currentYear = new Date().getFullYear(); 
-  
+    const currentYear = new Date().getFullYear();
+
     const eventCount = await this.eventRepository
       .createQueryBuilder('events')
       .where('events.status = :status', { status: 'Cancelado' })
-      .andWhere('YEAR(events.Date) = :year', { year: currentYear }) 
+      .andWhere('YEAR(events.Date) = :year', { year: currentYear })
       .getCount();
-  
+
     const courseCount = await this.courseRepository
       .createQueryBuilder('courses')
       .where('courses.status = :status', { status: 'Cancelado' })
-      .andWhere('YEAR(courses.date) = :year', { year: currentYear }) 
+      .andWhere('YEAR(courses.date) = :year', { year: currentYear })
       .getCount();
-  
+
     const loanCount = await this.loanRepository
       .createQueryBuilder('bookLoan')
       .where('bookLoan.status = :status', { status: 'Finalizado' })
-      .andWhere('YEAR(bookLoan.LoanRequestDate) = :year', { year: currentYear }) 
+      .andWhere('YEAR(bookLoan.LoanRequestDate) = :year', { year: currentYear })
       .getCount();
-  
-    const computerLoanCount = await this.ComputerLoanRepository
-      .createQueryBuilder('ComputerLoans')
-      .where('ComputerLoans.status = :status', { status: 'Finalizado' })
-      .andWhere('YEAR(ComputerLoans.LoanExpireDate) = :year', { year: currentYear }) 
-      .getCount();
-  
+
+    const computerLoanCount =
+      await this.ComputerLoanRepository.createQueryBuilder('ComputerLoans')
+        .where('ComputerLoans.status = :status', { status: 'Finalizado' })
+        .andWhere('YEAR(ComputerLoans.LoanExpireDate) = :year', {
+          year: currentYear,
+        })
+        .getCount();
+
     return {
       EventosExitosos: eventCount,
       CursosExitosos: courseCount,
@@ -146,5 +206,4 @@ export class StatsService {
       EquiposExitosos: computerLoanCount,
     };
   }
-  
 }
