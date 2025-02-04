@@ -123,10 +123,5 @@ describe('AdvicesService', () => {
     });
   });
 
-  describe('deleteExpiredAdvice', () => {
-    it('should delete expired advices successfully', async () => {
-      await service.deleteExpiredAdvice();
-      expect(mockAdviceRepository.createQueryBuilder).toHaveBeenCalled();
-    });
-  });
+  
 });

@@ -121,4 +121,5 @@ export class LocalArtistService {
       throw new InternalServerErrorException(errorMessage);
     }
   }
+  
 }

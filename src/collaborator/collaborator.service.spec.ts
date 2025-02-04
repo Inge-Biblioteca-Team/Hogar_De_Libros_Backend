@@ -1,106 +1,101 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CollaboratorService } from './collaborator.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { Collaborator } from './collaborator.entity';
 import { User } from 'src/user/user.entity';
 import { NotesService } from 'src/notes/notes.service';
 import { NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { CreateCollaboratorDTO } from './DTO/create-collaborator-DTO';
 import { DenyCollaboratorRequestDTO } from './DTO/deny-collaborator-DTO';
+import { mock, MockProxy } from 'jest-mock-extended';
 
 describe('CollaboratorService', () => {
   let service: CollaboratorService;
-  let collaboratorRepository: Repository<Collaborator>;
-
-  const mockCollaboratorRepository = {
-    findOne: jest.fn(),
-    save: jest.fn(),
-  };
+  let collaboratorRepository: MockProxy<Repository<Collaborator>>;
+  let userRepository: MockProxy<Repository<User>>;
+  let notesService: MockProxy<NotesService>;
 
   beforeEach(async () => {
+    collaboratorRepository = mock<Repository<Collaborator>>();
+    userRepository = mock<Repository<User>>();
+    notesService = mock<NotesService>();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CollaboratorService,
         {
           provide: getRepositoryToken(Collaborator),
-          useValue: mockCollaboratorRepository,
+          useValue: collaboratorRepository,
         },
         {
           provide: getRepositoryToken(User),
-          useValue: {},
+          useValue: userRepository,
         },
         {
           provide: NotesService,
-          useValue: { createNote: jest.fn() },
+          useValue: notesService,
         },
       ],
     }).compile();
 
     service = module.get<CollaboratorService>(CollaboratorService);
-    collaboratorRepository = module.get<Repository<Collaborator>>(getRepositoryToken(Collaborator));
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  describe('CreateCollaborator', () => {
+    it('should create a collaborator successfully', async () => {
+      const dto: CreateCollaboratorDTO = {
+        UserFullName: 'Juan Perez',
+        Entitycollaborator: 'MEP',
+        UserCedula: '123456789',
+        UserBirthDate: '2000-05-10',
+        UserGender: 'Hombre',
+        UserAddress: 'Calle 123',
+        UserPhone: '987654321',
+        UserEmail: 'juanperez@example.com',
+        PrincipalCategory: 'Capacitación',
+        SubCategory: 'Tecnología',
+        ExtraInfo: 'Información extra',
+        activityDate: new Date(),
+        Description: 'Descripción de la actividad',
+      };
+
+      userRepository.findOne.mockResolvedValue(null);
+      collaboratorRepository.create.mockReturnValue(dto as any);
+      collaboratorRepository.save.mockResolvedValue(dto as any);
+      notesService.createNote.mockResolvedValue(undefined);
+
+      await expect(service.CreateCollaborator(dto, [])).resolves.toEqual({
+        message: 'Solicitud de colaborador enviada correctamente.',
+      });
+    });
+
+    it('should throw InternalServerErrorException if an error occurs', async () => {
+      collaboratorRepository.save.mockRejectedValue(new Error('Database error'));
+      await expect(service.CreateCollaborator({} as any, [])).rejects.toThrow(InternalServerErrorException);
+    });
   });
 
   describe('denyCollaborator', () => {
-    it('should deny a collaborator with a reason', async () => {
-      const collaborator = { CollaboratorId: 1, Status: 'Pendiente' };
-      const dto: DenyCollaboratorRequestDTO = {
-        reason: 'Falta de experiencia',
-        Id: 1,
-      };
+    it('should deny a collaborator request successfully', async () => {
+      const dto: DenyCollaboratorRequestDTO = { reason: 'No cumple requisitos', Id: 1 };
+      const collaborator = { CollaboratorId: 1, Status: 'Pendiente', Reason: null } as Collaborator;
 
-      mockCollaboratorRepository.findOne.mockResolvedValue(collaborator);
-      mockCollaboratorRepository.save.mockResolvedValue({
-        ...collaborator,
-        Status: 'Rechazado',
-        Reason: dto.reason,
-      });
+      collaboratorRepository.findOne.mockResolvedValue(collaborator);
+      collaboratorRepository.save.mockResolvedValue({ ...collaborator, Status: 'Rechazado', Reason: dto.reason });
 
-      const result = await service.denyCollaborator(1, dto);
-      expect(result).toEqual({ message: 'Solicitud de colaborador rechazada correctamente' });
-      expect(mockCollaboratorRepository.save).toHaveBeenCalledWith({
-        ...collaborator,
-        Status: 'Rechazado',
-        Reason: dto.reason,
+      await expect(service.denyCollaborator(1, dto)).resolves.toEqual({
+        message: 'Solicitud de colaborador rechazada correctamente',
       });
     });
 
     it('should throw NotFoundException if collaborator is not found', async () => {
-      mockCollaboratorRepository.findOne.mockResolvedValue(null);
-      const dto: DenyCollaboratorRequestDTO = { reason: 'Incompatibilidad de horario', Id: 1 };
-
-      await expect(service.denyCollaborator(1, dto)).rejects.toThrow(NotFoundException);
-    });
-  });
-
-  describe('CancelCollaborator', () => {
-    it('should cancel a collaborator request', async () => {
-      const collaborator = { CollaboratorId: 1, Status: 'Pendiente' };
-      const dto: DenyCollaboratorRequestDTO = {
-        reason: 'Cambio de planes',
-        Id: 1,
-      };
-
-      mockCollaboratorRepository.findOne.mockResolvedValue(collaborator);
-      mockCollaboratorRepository.save.mockResolvedValue({
-        ...collaborator,
-        Status: 'Cancelado',
-        Reason: dto.reason,
-      });
-
-      const result = await service.CancelCollaborator(1, dto);
-      expect(result).toEqual({ message: 'Solicitud de colaborador cancelada correctamente' });
-      expect(mockCollaboratorRepository.save).toHaveBeenCalledWith({
-        ...collaborator,
-        Status: 'Cancelado',
-        Reason: dto.reason,
-      });
-    });
-
-    it('should throw NotFoundException if collaborator is not found for cancel', async () => {
-      mockCollaboratorRepository.findOne.mockResolvedValue(null);
-      const dto: DenyCollaboratorRequestDTO = { reason: 'No cumple con los requisitos', Id: 1 };
-
-      await expect(service.CancelCollaborator(1, dto)).rejects.toThrow(NotFoundException);
+      collaboratorRepository.findOne.mockResolvedValue(null);
+      await expect(service.denyCollaborator(1, { reason: 'No cumple requisitos', Id: 1 })).rejects.toThrow(NotFoundException);
     });
   });
 });

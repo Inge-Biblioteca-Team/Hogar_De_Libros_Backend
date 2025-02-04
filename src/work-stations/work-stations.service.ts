@@ -32,7 +32,7 @@ export class WorkStationsService {
         );
       }
       const Ws = this.workStationRepository.create(data);
-      this.workStationRepository.save(Ws);
+      await  this.workStationRepository.save(Ws);
       return { message: 'Exito al crear equipo' };
     } catch (error) {
       const errorMessage =
