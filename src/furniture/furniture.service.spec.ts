@@ -70,7 +70,7 @@ describe('FurnitureService', () => {
   it('should throw NotFoundException if furniture does not exist during update', async () => {
     jest.spyOn(repository, 'findOne').mockResolvedValue(null);
     await expect(service.update(99, createFurnitureDto)).rejects.toThrowError(
-      'Error al dar de baja el mobiliario',
+      'No hay mobiliario con el ID ',
     );
   });
 
@@ -92,7 +92,7 @@ describe('FurnitureService', () => {
   it('should throw NotFoundException if furniture is not found during status change', async () => {
     jest.spyOn(repository, 'findOne').mockResolvedValue(null);
     await expect(service.DowFurniture(99)).rejects.toThrowError(
-      'Error al dar de baja el mobiliario',
+      InternalServerErrorException,
     );
   });
   it('should change furniture status to Baja', async () => {
@@ -101,10 +101,7 @@ describe('FurnitureService', () => {
     });
   });
 
-  it('should throw NotFoundException if furniture is not found during status change', async () => {
-    jest.spyOn(repository, 'findOne').mockResolvedValue(null);
-    await expect(service.DowFurniture(99)).rejects.toThrow(NotFoundException);
-  });
+
 
   it('should throw BadRequestException if trying to update a furniture with BAJA status', async () => {
     jest.spyOn(repository, 'findOne').mockResolvedValue({

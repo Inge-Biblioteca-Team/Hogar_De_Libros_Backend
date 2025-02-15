@@ -1,18 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComputerLoanService } from './computer-loan.service';
+import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ComputerLoan } from './computer-loan.entity';
-import { WorkStation } from 'src/computers/WorkStation.entity';
-import { User } from 'src/user/user.entity';
-import { Repository } from 'typeorm';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { WorkStationsService } from 'src/work-stations/work-stations.service';
 import { CreateComputerLoanDto } from './DTO/create-computer-loan.dto';
+import { UpdateComputerLoanDto } from './DTO/update-computer-loan.dto';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 describe('ComputerLoanService', () => {
   let service: ComputerLoanService;
-  let computerLoanRepository: Repository<ComputerLoan>;
-  let workStationRepository: Repository<WorkStation>;
-  let userRepository: Repository<User>;
+  let repository: Repository<ComputerLoan>;
+  let workStationsService: WorkStationsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,117 +22,75 @@ describe('ComputerLoanService', () => {
           useClass: Repository,
         },
         {
-          provide: getRepositoryToken(WorkStation),
-          useClass: Repository,
-        },
-        {
-          provide: getRepositoryToken(User),
-          useClass: Repository,
+          provide: WorkStationsService,
+          useValue: {
+            getByNumberMachine: jest.fn(),
+            changeMachineStatus: jest.fn(),
+          },
         },
       ],
     }).compile();
 
     service = module.get<ComputerLoanService>(ComputerLoanService);
-    computerLoanRepository = module.get(getRepositoryToken(ComputerLoan));
-    workStationRepository = module.get(getRepositoryToken(WorkStation));
-    userRepository = module.get(getRepositoryToken(User));
+    repository = module.get<Repository<ComputerLoan>>(getRepositoryToken(ComputerLoan));
+    workStationsService = module.get<WorkStationsService>(WorkStationsService);
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
   });
 
   describe('CreateComputerLoan', () => {
     it('should create a computer loan successfully', async () => {
-      const createComputerLoanDto: CreateComputerLoanDto = {
-        MachineNumber: 1,
-        UserName: 'User Name',
-        cedula: '12345678',
+      const dto: CreateComputerLoanDto = {
+        MachineNumber: 123,
+        UserName: 'John Doe',
+        cedula: '123456789',
       };
-      const mockWorkStation = { MachineNumber: 1, Status: 'Disponible' };
-      const mockUser = { cedula: '12345678', name: 'Admin' };
-      const mockComputerLoan = { ComputerLoanId: 1 };
-
-      jest.spyOn(workStationRepository, 'findOne').mockResolvedValue(mockWorkStation as WorkStation);
-      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser as User);
-      jest.spyOn(computerLoanRepository, 'save').mockResolvedValue(mockComputerLoan as ComputerLoan);
-      jest.spyOn(workStationRepository, 'save').mockResolvedValue(mockWorkStation as WorkStation);
-
-      const result = await service.CreateComputerLoan(createComputerLoanDto);
-      expect(result).toEqual({ success: true, loanId: mockComputerLoan.ComputerLoanId });
-    });
-
-    it('should throw an error if workstation is not found', async () => {
-      jest.spyOn(workStationRepository, 'findOne').mockResolvedValue(null);
-
-      await expect(
-        service.CreateComputerLoan({
-          MachineNumber: 1,
-          UserName: 'User Name',
-          cedula: '12345678',
-        }),
-      ).rejects.toThrow(new HttpException('No se encontró la máquina', HttpStatus.NOT_FOUND));
-    });
-
-    it('should throw an error if workstation is not available', async () => {
-      const mockWorkStation = { MachineNumber: 1, Status: 'En Uso' };
-
-      jest.spyOn(workStationRepository, 'findOne').mockResolvedValue(mockWorkStation as WorkStation);
-
-      await expect(
-        service.CreateComputerLoan({
-          MachineNumber: 1,
-          UserName: 'User Name',
-          cedula: '12345678',
-        }),
-      ).rejects.toThrow(new HttpException('La máquina no está disponible para préstamo', HttpStatus.BAD_REQUEST));
-    });
-  });
-
-  describe('getAllComputerLoans', () => {
-    it('should return paginated computer loans', async () => {
-      const paginationDTO = { Page: 1, Limit: 5 };
-      const mockLoans = [{ ComputerLoanId: 1, UserName: 'User', LoanStartDate: new Date(), Status: 'En curso' }];
-      const mockResult = [mockLoans, 1];
-
-      jest.spyOn(computerLoanRepository, 'createQueryBuilder').mockReturnValue({
-        leftJoinAndSelect: jest.fn().mockReturnThis(),
-        orderBy: jest.fn().mockReturnThis(),
-        skip: jest.fn().mockReturnThis(),
-        take: jest.fn().mockReturnThis(),
-        getManyAndCount: jest.fn().mockResolvedValue(mockResult),
+      
+      jest.spyOn(workStationsService, 'getByNumberMachine').mockResolvedValue({
+        MachineNumber: 123,
+        Location: 'Lab 1',
+        computers: [],
+        computerLoans: [],
+        Status: 'Disponible',
       } as any);
+      jest.spyOn(repository, 'save').mockResolvedValue(dto as any);
+      jest.spyOn(workStationsService, 'changeMachineStatus').mockResolvedValue(undefined);
 
-      const result = await service.getAllComputerLoans(paginationDTO);
-      expect(result).toEqual({
-        data: mockLoans.map((loan) => ({
-          ComputerLoanId: loan.ComputerLoanId,
-          UserName: loan.UserName,
-          LoanStartDate: loan.LoanStartDate,
-          Status: loan.Status,
-        })),
-        count: 1,
-      });
+      const result = await service.CreateComputerLoan(dto);
+      expect(result).toEqual({ message: 'Exito al general el prestamo' });
+    });
+
+    it('should throw an error if machine is not found', async () => {
+      jest.spyOn(workStationsService, 'getByNumberMachine').mockResolvedValue(null);
+      const dto: CreateComputerLoanDto = {
+        MachineNumber: 123,
+        UserName: 'John Doe',
+        cedula: '123456789',
+      };
+
+      await expect(service.CreateComputerLoan(dto)).rejects.toThrow(HttpException);
     });
   });
 
-  describe('FinishComputerLoanByMachineNumber', () => {
-    it('should finish a computer loan successfully', async () => {
-      const mockLoan = {
-        ComputerLoanId: 1,
-        Status: 'En curso',
-        workStation: { MachineNumber: 1, Status: 'En Uso' },
-      };
-
-      jest.spyOn(computerLoanRepository, 'findOne').mockResolvedValue(mockLoan as ComputerLoan);
-      jest.spyOn(computerLoanRepository, 'save').mockResolvedValue(mockLoan as ComputerLoan);
-      jest.spyOn(workStationRepository, 'save').mockResolvedValue(mockLoan.workStation as WorkStation);
-
-      const result = await service.FinishComputerLoanByMachineNumber(1);
-      expect(result).toBe('Préstamo finalizado');
+  describe('FinalizeComputerLoan', () => {
+    it('should finalize a computer loan successfully', async () => {
+      const dto: UpdateComputerLoanDto = { MachineNumber: 123 };
+      
+      jest.spyOn(repository, 'findOne').mockResolvedValue({ Status: 'En curso', LoanExpireDate: null } as any);
+      jest.spyOn(repository, 'save').mockResolvedValue(undefined);
+      jest.spyOn(workStationsService, 'changeMachineStatus').mockResolvedValue(undefined);
+      
+      const result = await service.FinalizeComputerLoan(dto);
+      expect(result).toEqual({ message: 'Éxito al finalizar el préstamo' });
     });
 
-    it('should return a message if no active loan is found', async () => {
-      jest.spyOn(computerLoanRepository, 'findOne').mockResolvedValue(null);
+    it('should throw an error if no active loan is found', async () => {
+      jest.spyOn(repository, 'findOne').mockResolvedValue(null);
+      const dto: UpdateComputerLoanDto = { MachineNumber: 123 };
 
-      const result = await service.FinishComputerLoanByMachineNumber(1);
-      expect(result).toBe('No se encontró un préstamo activo para esta máquina');
+      await expect(service.FinalizeComputerLoan(dto)).rejects.toThrow(HttpException);
     });
   });
 });

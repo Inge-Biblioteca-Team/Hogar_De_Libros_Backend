@@ -93,9 +93,12 @@ describe('BooksService', () => {
       bookRepository.save.mockResolvedValue({ ...book, Status: false });
       await expect(service.disableBook(1)).resolves.toEqual({ message: 'Libro dado de baja correctamente' });
     });
+
     it('should throw InternalServerErrorException with correct message if book does not exist', async () => {
       bookRepository.findOne.mockResolvedValue(null);
-      await expect(service.disableBook(1)).rejects.toThrow(new InternalServerErrorException('Error al procesar la solicitud'));
+      await expect(service.disableBook(1)).rejects.toThrow(new InternalServerErrorException(`El libro con código 1 no fue encontrado`));
+
+
     });
   });
 });

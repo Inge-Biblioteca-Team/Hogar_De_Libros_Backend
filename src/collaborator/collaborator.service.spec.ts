@@ -95,7 +95,7 @@ describe('CollaboratorService', () => {
 
     it('should throw NotFoundException if collaborator is not found', async () => {
       collaboratorRepository.findOne.mockResolvedValue(null);
-      await expect(service.denyCollaborator(1, { reason: 'No cumple requisitos', Id: 1 })).rejects.toThrow(NotFoundException);
+      await expect(service.denyCollaborator(1, { reason: 'No cumple requisitos', Id: 1 })).rejects.toThrow('Solicitud de colaborador no encontrada');
     });
   });
 });

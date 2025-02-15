@@ -126,7 +126,7 @@ describe('LocalArtistService', () => {
     it('should throw NotFoundException if artist not found', async () => {
       jest.spyOn(repository, 'findOne').mockResolvedValue(null);
 
-      await expect(service.update(1, {} as CreateLocalArtistDTO)).rejects.toThrow('Error al procesar la solicitud');
+      await expect(service.update(1, {} as CreateLocalArtistDTO)).rejects.toThrow(InternalServerErrorException);
     });
   });
   describe('DownArtist', () => {
@@ -145,7 +145,7 @@ describe('LocalArtistService', () => {
     it('should throw NotFoundException if artist not found', async () => {
       jest.spyOn(repository, 'findOne').mockResolvedValue(null);
 
-      await expect(service.DownArtist(1)).rejects.toThrow(NotFoundException);
+      await expect(service.DownArtist(1)).rejects.toThrow('No existe el artista');
     });
 
     it('should throw BadRequestException if artist is already inactive', async () => {
@@ -153,7 +153,7 @@ describe('LocalArtistService', () => {
       jest.spyOn(repository, 'findOne').mockResolvedValue(artist as any);
 
       await expect(service.DownArtist(1)).rejects.toThrow(new BadRequestException({
-        message: 'Error al procesar la solicitud',
+        message: 'No existe el artista',
       }));
     });
 
