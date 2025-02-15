@@ -70,6 +70,11 @@ export class BooksController {
     return await this.booksService.getColecction(paginationFilterDto);
   }
 
+  @Get('/Categories')
+  async getCategoriesNames(){
+    return await this.booksService.getCategoriesNames()
+  }
+
 // PEDNIENTE DE ELIMINACOIN SI NO SE USA
   @Get(':BookCode')
   async findById(@Param('BookCode') BookCode: number): Promise<Book> {
@@ -88,4 +93,6 @@ export class BooksController {
   async findAll(@Query() paginationFilterDto: PaginationFilterDto) {
     return await this.booksService.findAll(paginationFilterDto);
   }
+
+  
 }
