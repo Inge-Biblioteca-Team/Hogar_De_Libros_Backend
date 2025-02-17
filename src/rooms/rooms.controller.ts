@@ -8,6 +8,7 @@ import {
   Param,
   Query,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { RoomsService } from './rooms.service';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -86,5 +87,12 @@ export class RoomsController {
     @Param('id') id: string,
   ): Promise<{ message: string }> {
     return this.roomsService.updateStatusAvailable(+id);
+  }
+
+  @Delete('Delete/:id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
+  async deleteRoom(@Param('id') id: string): Promise<{ message: string }> {
+    return this.roomsService.DeleteRoom(id);
   }
 }

@@ -170,4 +170,17 @@ export class RoomsService {
 
     return sortedRooms;
   }
+
+  async DeleteRoom(id: string): Promise<{ message: string }> {
+    try{
+      const resultado = await this.roomRepository.createQueryBuilder().delete().from(Rooms).where('roomId = :id', {id}).execute();
+
+      if (resultado.affected === 0) {
+        throw new NotFoundException('No se encontró la sala');
+      }
+      return { message: 'Se eliminó la sala correctamente' };
+    } catch (error) {
+      throw new InternalServerErrorException('Error al eliminar la sala');
+    }
+  } 
 }
