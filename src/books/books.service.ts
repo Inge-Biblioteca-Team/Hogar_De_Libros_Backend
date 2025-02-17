@@ -181,6 +181,14 @@ export class BooksService {
     };
   }
 
+  async getCategoriesNames(): Promise<string[]> {
+    const categories = await this.bookRepository
+      .createQueryBuilder("book")
+      .select("DISTINCT book.ShelfCategory", "category")
+      .getRawMany();
+    return categories.map((c) => c.category);
+  }
+  
   async getColecction(
     PaginationFilterDto: PaginationFilterDto,
   ): Promise<{ data: Book[]; count: number }> {
@@ -255,4 +263,7 @@ export class BooksService {
       count,
     };
   }
+
+
+ 
 }

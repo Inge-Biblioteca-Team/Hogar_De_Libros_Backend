@@ -28,13 +28,14 @@ export class DonationService {
     dto: CreateDonationDTO,
     documents: Express.Multer.File[],
   ): Promise<{ message: string }> {
+    const baseUrl = process.env.BASE_URL;
     try {
       const User = await this.UserRepository.findOne({
         where: { cedula: dto.UserCedula },
       });
 
       const documentPaths = documents.map(
-        (file) => `http://localhost:3000/uploads/${file.filename}`,
+        (file) => `${baseUrl}/uploads/${file.filename}`,
       );
 
       let newDonation: Donation;

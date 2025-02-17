@@ -15,35 +15,37 @@ describe('RoomsService', () => {
     save: jest.fn(),
     findOne: jest.fn(),
     update: jest.fn(),
+    find: jest.fn(),
+    findOneBy: jest.fn(),
+    create: jest.fn(), 
     createQueryBuilder: jest.fn().mockReturnValue({
       andWhere: jest.fn().mockReturnThis(),
       skip: jest.fn().mockReturnThis(),
       take: jest.fn().mockReturnThis(),
       getManyAndCount: jest.fn().mockReturnValue([[{}, {}], 2]),
     }),
-    find: jest.fn(),
+    
   };
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        RoomsService,
-        {
-          provide: getRepositoryToken(Rooms),
-          useValue: mockRoomRepository,
-        },
-      ],
-    }).compile();
+  
+beforeEach(async () => {
+  const module: TestingModule = await Test.createTestingModule({
+    providers: [
+      RoomsService,
+      {
+        provide: getRepositoryToken(Rooms),
+        useValue: mockRoomRepository,
+      },
+    ],
+  }).compile();
 
-    service = module.get<RoomsService>(RoomsService);
-    repository = module.get<Repository<Rooms>>(getRepositoryToken(Rooms));
-  });
+  service = module.get<RoomsService>(RoomsService);
+  repository = module.get(getRepositoryToken(Rooms));
+});
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
- 
   describe('create', () => {
     it('should create a room successfully', async () => {
       const createRoomDto = {
@@ -53,30 +55,36 @@ describe('RoomsService', () => {
         capacity: 50,
         location: 'Biblioteca',
       };
-
-      mockRoomRepository.save.mockResolvedValueOnce(createRoomDto);
+  
+      // Simula que `create` y `save` funcionan correctamente
+      mockRoomRepository.create.mockReturnValue(createRoomDto);
+      mockRoomRepository.save.mockResolvedValue(createRoomDto);
+  
       const result = await service.create(createRoomDto);
+  
       expect(result).toEqual({ message: 'Se creó la sala correctamente' });
       expect(mockRoomRepository.save).toHaveBeenCalledWith(createRoomDto);
     });
-
+  
     it('should throw an error if room creation fails', async () => {
       const createRoomDto = {
-        roomNumber: '101',
-        name: 'Sala de conferencias',
-        area: 100,
-        capacity: 50,
-        location: 'Biblioteca',
+        roomNumber: '102',
+        name: 'Sala de juntas',
+        area: 50,
+        capacity: 20,
+        location: 'Edificio A',
       };
-
-      mockRoomRepository.save.mockRejectedValueOnce(new Error('Error creating room'));
+  
+      // Simula un error al guardar la sala
+      mockRoomRepository.create.mockReturnValue(createRoomDto); // Asegura que create devuelve el DTO correctamente
+      mockRoomRepository.save.mockRejectedValue(new Error('Error al procesar la solicitud'));
+  
+      // Verifica que el error sea lanzado
       await expect(service.create(createRoomDto)).rejects.toThrow(
-        new InternalServerErrorException('Error creating room'),
+        new InternalServerErrorException('Error al procesar la solicitud')
       );
     });
   });
-
-
   describe('findAllRooms', () => {
     it('should return paginated list of rooms', async () => {
       const filter = { page: 1, limit: 2 };

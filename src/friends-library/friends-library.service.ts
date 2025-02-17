@@ -29,13 +29,14 @@ export class FriendsLibraryService {
     dto: CreateFriendDTO,
     documents: Express.Multer.File[],
   ): Promise<{ message: string }> {
+    const baseUrl = process.env.BASE_URL;
     try {
       const User = await this.UserRepository.findOne({
         where: { cedula: dto.UserCedula },
       });
 
       const documentPaths = documents.map(
-        (file) => `http://localhost:3000/uploads/${file.filename}`,
+        (file) => `${baseUrl}/uploads/${file.filename}`,
       );
 
       let newFriend: FriendsLibrary;
@@ -80,7 +81,7 @@ export class FriendsLibraryService {
       await this.noteService.createNote(createNoteDto);
       await this.FriendRepositoy.save(newFriend);
       return { message: 'Solicitud de amigo enviada correctamente.' };
-    }  catch (error) {
+    } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
       throw new InternalServerErrorException(errorMessage);
@@ -158,7 +159,7 @@ export class FriendsLibraryService {
 
       await this.FriendRepositoy.save(FriendFounded);
       return { message: 'Solicitud de amigo aprobada correctamente' };
-    }  catch (error) {
+    } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
       throw new InternalServerErrorException(errorMessage);
@@ -186,7 +187,7 @@ export class FriendsLibraryService {
       await this.FriendRepositoy.save(FriendFounded);
 
       return { message: 'Solicitud de amigo rechazada correctamente' };
-    }  catch (error) {
+    } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
       throw new InternalServerErrorException(errorMessage);
@@ -212,7 +213,7 @@ export class FriendsLibraryService {
       await this.FriendRepositoy.save(FriendFounded);
 
       return { message: 'Amigo dado de baja correctamente' };
-    }  catch (error) {
+    } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
       throw new InternalServerErrorException(errorMessage);
@@ -234,7 +235,7 @@ export class FriendsLibraryService {
       }
 
       Object.assign(FriendFounded, dto);
-      
+
       await this.FriendRepositoy.save(FriendFounded);
 
       return { message: 'Amigo dado de baja correctamente' };

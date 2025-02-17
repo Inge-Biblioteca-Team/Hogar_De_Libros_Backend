@@ -31,7 +31,6 @@ describe('BookChildrenService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
   it('should add a new book-child', async () => {
     const bookData = {
       Title: 'Sample Book',
@@ -45,34 +44,42 @@ describe('BookChildrenService', () => {
       SignatureCode: 'CODE123',
       InscriptionCode: 'INSCR123',
       ReserveBook: true,
-      Observations: 'N/A'
-    } as BooksChildren;
-    
-
-    
-    jest.spyOn(repo, 'create').mockReturnValue(bookData as BooksChildren);
-    jest.spyOn(repo, 'save').mockResolvedValue({ id: 1, ...bookData } as BooksChildren);
-    
+      Observations: 'N/A',
+    };
+  
+    jest.spyOn(repo, 'create').mockReturnValue(bookData as any);
+    jest.spyOn(repo, 'save').mockResolvedValue(bookData as any);
+  
     const result = await service.addBook(bookData);
-    expect(result).toEqual({ id: 1, ...bookData });
+  
+    expect(result).toEqual({
+      message: 'Éxito al añadir el libro infantil',
+    });
   });
+  
 
   it('should throw NotFoundException if book is not found', async () => {
     jest.spyOn(repo, 'findOne').mockResolvedValue(null);
 
     await expect(service.findById(999)).rejects.toThrow(new NotFoundException('El libro con código 999 no fue encontrado'));
   });
-  
   it('should update an existing book-child', async () => {
-    const existingBook = { id: 1, BookCode: 123, Title: 'Old Title' } as unknown as BooksChildren;
+    const existingBook = { id: 1, BookCode: 123, Title: 'Old Title' } as any;
     const updatedData = { Title: 'Updated Title' };
-
+  
     jest.spyOn(repo, 'findOne').mockResolvedValue(existingBook);
     jest.spyOn(repo, 'save').mockResolvedValue({ ...existingBook, ...updatedData });
-
+  
     const result = await service.update(123, updatedData);
-    expect(result).toEqual({ ...existingBook, ...updatedData });
+  
+    expect(result).toEqual({
+      message: 'Éxito al editar el libro',
+    });
   });
+  
+  
+  
+  
 
   it('should throw NotFoundException if book-child to update is not found', async () => {
     jest.spyOn(repo, 'findOne').mockResolvedValue(null);

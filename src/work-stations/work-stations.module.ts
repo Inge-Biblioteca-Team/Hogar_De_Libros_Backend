@@ -5,6 +5,7 @@ import { WorkStationsController } from './work-stations.controller';
 import { WorkStation } from './entities/work-station.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+
 @Module({
   imports:[TypeOrmModule.forFeature([WorkStation])],
   controllers: [WorkStationsController],
