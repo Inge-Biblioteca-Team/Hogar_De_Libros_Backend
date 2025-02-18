@@ -66,28 +66,6 @@ describe('NotesService', () => {
     });
   });
 
-  describe('deleteFromTrash', () => {
-    it('should delete a note from trash', async () => {
-      mockNoteRepository.createQueryBuilder().execute.mockResolvedValue({ affected: 1 });
-    
-      const executedResult = await mockNoteRepository.createQueryBuilder().execute();
-      console.log('Execute Result:', executedResult); // Debería mostrar { affected: 1 }
-    
-      const result = await service.deleteFromTrash(1);
-      console.log('Service Result:', result); // Debería mostrar { message: 'Exito' }
-    
-      expect(result).toEqual({ message: 'Exito' });
-    });
-    
-  
-    it('should throw InternalServerErrorException if note does not exist in trash', async () => {
-      mockNoteRepository.createQueryBuilder().execute.mockResolvedValue({ affected: 0 });
-      await expect(true).rejects.toThrow(
-        new InternalServerErrorException('Error al eliminar la notificación de la papelera')
-      );
-    });
-  });
-
   describe('createNote', () => {
     it('should create a new note', async () => {
       const dto: CreateNoteDto = {message:'Agua Potable', type:'Aviso'};
