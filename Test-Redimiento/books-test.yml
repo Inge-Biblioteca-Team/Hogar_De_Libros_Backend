@@ -1,0 +1,51 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    - duration: 60  # Prueba durante 1 minuto
+      arrivalRate: 5  # 5 peticiones por segundo
+  headers:
+    Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+scenarios:
+  - name: "Crear un libro"
+    flow:
+      - post:
+          url: '/books'
+          json:
+            Title: "Lazarillo de Tormes"
+            Author: "Anonimo"
+            Editorial: "Editorial Universitaria Centroamericana Educa"
+            PublishedYear: 1997
+            ISBN: "9977-30-347-9"
+            ShelfCategory: "Obras Literarias"
+            Cover: "URL o Direccion Local"
+            BookConditionRating: 8
+            signatureCode: "string"
+            InscriptionCode: "683251"
+            ReserveBook: 1  # Usar un número en lugar de string "1 o 0"
+            Observations: "N/A"
+
+  - name: "Obtener todos los libros"
+    flow:
+      - get:
+          url: '/books?page=1&limit=10'
+
+  - name: "Obtener un libro por código"
+    flow:
+      - get:
+          url: '/books?page=1&limit=10&ISBN=9977-30-347-9'
+
+  - name: "Obtener colección de libros"
+    flow:
+      - get:
+          url: '/books/Colection?page=1&limit=10'
+
+  - name: "Deshabilitar un libro"
+    flow:
+      - patch:
+          url: '/books/1/disable'  # Reemplaza con un código real
+
+  - name: "Actualizar un libro"
+    flow:
+      - patch:
+          url: '/books/2'

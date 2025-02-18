@@ -1,0 +1,123 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    - duration: 60  # Prueba durante 1 minuto
+      arrivalRate: 5  # 5 peticiones por segundo
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - name: "Autenticación y obtención de token"
+    flow:
+      - post:
+          url: "/auth/login"
+          json:
+            email: "string@gmail.com"
+            password: "string"
+          capture:
+            - json: "$.token"
+              as: "jwtToken"
+          expect:
+            - statusCode: 200
+
+  - name: "Solicitar un préstamo de libro"
+    flow:
+      - post:
+          url: '/book-loan'
+          json:
+            BookPickUpDate: "2024-09-11"
+            LoanExpirationDate: "2024-09-18"
+            bookBookCode: 1
+            userCedula: "12345678"
+            userPhone: "12345678"
+            userAddress: "Calle 123, Ciudad"
+            userName: "Juan Pérez"
+            aprovedBy: "Admin123"
+          headers:
+            Authorization: "Bearer {{ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0IiwiZW1haWwiOiJzdHJpbmdAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzM5ODMwODkwLCJleHAiOjE3Mzk5MDI4OTB9.Ww-4OB6mBz-jK-Hf2HYVI30sfy3oUfVHFcU4K98iNEU}}"
+
+  - name: "Solicitar un préstamo administrativo"
+    flow:
+      - post:
+          url: '/book-loan/AdminLoan'
+          json:
+            BookPickUpDate: "2024-09-11"
+            LoanExpirationDate: "2024-09-18"
+            bookBookCode: 1
+            userCedula: "87654321"
+            aprovedBy: "Admin123"
+          headers:
+            Authorization: "Bearer {{ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0IiwiZW1haWwiOiJzdHJpbmdAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzM5ODMwODkwLCJleHAiOjE3Mzk5MDI4OTB9.Ww-4OB6mBz-jK-Hf2HYVI30sfy3oUfVHFcU4K98iNEU }}"
+
+  - name: "Aprobar un préstamo"
+    flow:
+      - patch:
+          url: '/book-loan/Approve'
+          json:
+            LoanID: 1
+            person: "Admin123"
+            Observations: "Préstamo aprobado sin observaciones"
+          headers:
+            Authorization: "Bearer {{ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0IiwiZW1haWwiOiJzdHJpbmdAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzM5ODMwODkwLCJleHAiOjE3Mzk5MDI4OTB9.Ww-4OB6mBz-jK-Hf2HYVI30sfy3oUfVHFcU4K98iNEU}}"
+
+  - name: "Rechazar un préstamo"
+    flow:
+      - patch:
+          url: '/book-loan/Refute'
+          json:
+            LoanID: 2
+            person: "Admin123"
+            Observations: "El usuario no cumple con los requisitos"
+          headers:
+            Authorization: "Bearer {{ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0IiwiZW1haWwiOiJzdHJpbmdAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzM5ODMwODkwLCJleHAiOjE3Mzk5MDI4OTB9.Ww-4OB6mBz-jK-Hf2HYVI30sfy3oUfVHFcU4K98iNEU}}"
+
+  - name: "Finalizar un préstamo"
+    flow:
+      - patch:
+          url: '/book-loan/finalize'
+          json:
+            LoanID: 3
+            person: "Juan Pérez"
+            Observations: "Libro devuelto en buen estado"
+          headers:
+            Authorization: "Bearer {{ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0IiwiZW1haWwiOiJzdHJpbmdAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzM5ODMwODkwLCJleHAiOjE3Mzk5MDI4OTB9.Ww-4OB6mBz-jK-Hf2HYVI30sfy3oUfVHFcU4K98iNEU}}"
+
+  - name: "Cancelar un préstamo"
+    flow:
+      - patch:
+          url: '/book-loan/cancel'
+          json:
+            LoanID: 4
+            person: "Admin123"
+            Observations: "Cancelado por falta de disponibilidad"
+          headers:
+            Authorization: "Bearer {{ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0IiwiZW1haWwiOiJzdHJpbmdAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzM5ODMwODkwLCJleHAiOjE3Mzk5MDI4OTB9.Ww-4OB6mBz-jK-Hf2HYVI30sfy3oUfVHFcU4K98iNEU}}"
+
+  - name: "Obtener préstamos en progreso"
+    flow:
+      - get:
+          url: '/book-loan/in-progress?page=1&limit=10'
+          headers:
+            Authorization: "Bearer {{ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0IiwiZW1haWwiOiJzdHJpbmdAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzM5ODMwODkwLCJleHAiOjE3Mzk5MDI4OTB9.Ww-4OB6mBz-jK-Hf2HYVI30sfy3oUfVHFcU4K98iNEU}}"
+
+  - name: "Obtener préstamos pendientes"
+    flow:
+      - get:
+          url: '/book-loan/pending?page=1&limit=10'
+          headers:
+            Authorization: "Bearer {{ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0IiwiZW1haWwiOiJzdHJpbmdAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzM5ODMwODkwLCJleHAiOjE3Mzk5MDI4OTB9.Ww-4OB6mBz-jK-Hf2HYVI30sfy3oUfVHFcU4K98iNEU }}"
+
+  - name: "Obtener préstamos completados"
+    flow:
+      - get:
+          url: '/book-loan/completed'
+          headers:
+            Authorization: "Bearer {{ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0IiwiZW1haWwiOiJzdHJpbmdAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzM5ODMwODkwLCJleHAiOjE3Mzk5MDI4OTB9.Ww-4OB6mBz-jK-Hf2HYVI30sfy3oUfVHFcU4K98iNEU}}"
+
+  - name: "Obtener lista general de préstamos"
+    flow:
+      - get:
+          url: '/book-loan/Loan-List?page=1&limit=10'
+          headers:
+            Authorization: "Bearer {{ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0IiwiZW1haWwiOiJzdHJpbmdAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzM5ODMwODkwLCJleHAiOjE3Mzk5MDI4OTB9.Ww-4OB6mBz-jK-Hf2HYVI30sfy3oUfVHFcU4K98iNEU }}"
