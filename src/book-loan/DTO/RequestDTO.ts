@@ -2,31 +2,43 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class BookInfoDTO {
-  @ApiProperty({ description: 'Título del libro' })
-  Title: string;
-
   @ApiProperty({ description: 'Código de signatura del libro' })
   signatureCode: string;
 
   @ApiProperty({ description: 'Código de inscripción del libro' })
   InscriptionCode: string;
 
+  @ApiProperty({ description: 'Título del libro' })
+  Author: string;
+
+  @ApiProperty({ description: 'Título del libro' })
+  Title: string;
+
   @ApiProperty({ description: 'ID del libro' })
-  BookCode: number; 
+  BookCode: number;
 }
 
 export class UserInfoDTO {
   @ApiProperty({ description: 'Nombre del usuario' })
   name: string;
 
-  @ApiProperty({ description: 'Apellido del usuario' })
-  lastName: string;
-
   @ApiProperty({ description: 'Cédula del usuario' })
-  cedula: string; 
+  cedula: string;
+
+  @ApiProperty({ description: 'Apellido del usuario' })
+  PhoneNumber: string;
+
+  @ApiProperty({ description: 'Apellido del usuario' })
+  Adress: string;
 }
 
 export class BookLoanResponseDTO {
+  @ApiProperty({ description: 'Fecha de vencimiento del préstamo' })
+  LoanExpirationDate: Date;
+
+  @ApiProperty({ description: 'Fecha de recogida del libro' })
+  BookPickUpDate: Date;
+
   @ApiProperty({ description: 'Estado del préstamo' })
   Status: string;
 
@@ -36,12 +48,6 @@ export class BookLoanResponseDTO {
   @ApiProperty({ description: 'Fecha de solicitud del préstamo' })
   LoanRequestDate: Date;
 
-  @ApiProperty({ description: 'Fecha de recogida del libro' })
-  BookPickUpDate: Date;
-
-  @ApiProperty({ description: 'Fecha de vencimiento del préstamo' })
-  LoanExpirationDate: Date;
-
   @ApiProperty({ description: 'Observaciones del préstamo', nullable: true })
   Observations: string;
 
@@ -50,6 +56,4 @@ export class BookLoanResponseDTO {
 
   @ApiProperty({ description: 'Datos del libro' })
   book: BookInfoDTO;
-
-  
 }

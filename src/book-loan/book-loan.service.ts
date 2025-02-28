@@ -375,17 +375,18 @@ export class BookLoanService {
       BookPickUpDate: loan.BookPickUpDate,
       LoanExpirationDate: loan.LoanExpirationDate,
       Observations: loan.Observations,
-
       user: {
         name: loan.userName,
-        lastName: loan.userAddress,
+        Adress: loan.userAddress,
         cedula: loan.userCedula,
+        PhoneNumber: loan.userPhone
       },
       book: {
         Title: loan.book.Title,
         signatureCode: loan.book.signatureCode,
         InscriptionCode: loan.book.InscriptionCode,
         BookCode: loan.book.BookCode,
+        Author: loan.book.Author,
       },
     }));
 
@@ -439,14 +440,16 @@ export class BookLoanService {
       Observations: loan.Observations,
       user: {
         name: loan.userName,
-        lastName: loan.userAddress,
+        Adress: loan.userAddress,
         cedula: loan.userCedula,
+        PhoneNumber: loan.userPhone,
       },
       book: {
         Title: loan.book.Title,
         signatureCode: loan.book.signatureCode,
         InscriptionCode: loan.book.InscriptionCode,
         BookCode: loan.book.BookCode,
+        Author: loan.book.Author,
       },
     }));
 
@@ -468,7 +471,9 @@ export class BookLoanService {
     const query = this.bookLoanRepository
       .createQueryBuilder('bookLoan')
       .leftJoinAndSelect('bookLoan.book', 'book')
-      .where('bookLoan.Status NOT IN (:...statuses)', { statuses: ['En progreso', 'Pendiente'] });
+      .where('bookLoan.Status NOT IN (:...statuses)', {
+        statuses: ['En progreso', 'Pendiente'],
+      });
 
     if (StartDate)
       query.andWhere('Date(bookLoan.LoanRequestDate) >= :StartDate', {
@@ -501,14 +506,16 @@ export class BookLoanService {
       Observations: loan.Observations,
       user: {
         name: loan.userName,
-        lastName: loan.userAddress,
+        Adress: loan.userAddress,
         cedula: loan.userCedula,
+        PhoneNumber: loan.userPhone,
       },
       book: {
         Title: loan.book.Title,
         signatureCode: loan.book.signatureCode,
         InscriptionCode: loan.book.InscriptionCode,
         BookCode: loan.book.BookCode,
+        Author: loan.book.Author,
       },
     }));
 
@@ -578,14 +585,16 @@ export class BookLoanService {
       Observations: loan.Observations,
       user: {
         name: loan.userName,
-        lastName: loan.userAddress,
+        Adress: loan.userAddress,
         cedula: loan.userCedula,
+        PhoneNumber: loan.userPhone,
       },
       book: {
         Title: loan.book.Title,
         signatureCode: loan.book.signatureCode,
         InscriptionCode: loan.book.InscriptionCode,
         BookCode: loan.book.BookCode,
+        Author: loan.book.Author,
       },
     }));
 
