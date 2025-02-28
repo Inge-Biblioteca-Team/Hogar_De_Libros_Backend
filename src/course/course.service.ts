@@ -176,7 +176,7 @@ export class CourseService {
 
     if (!course) {
       throw new NotFoundException(
-        `Active course with ID ${courseId} not found.`,
+        'No se encontró el curso activo con ID ${courseId}.',
       );
     }
 

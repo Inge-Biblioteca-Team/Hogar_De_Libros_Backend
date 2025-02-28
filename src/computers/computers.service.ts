@@ -79,7 +79,7 @@ export class ComputersService {
       where: { EquipmentUniqueCode: EquipmentUniqueCode },
     });
     if (!Equipment) {
-      throw new NotFoundException('The equipment does not exist');
+      throw new NotFoundException('El equipo no existe');
     }
     Equipment.Status = false;
     return this.computerRepository.save(Equipment);
