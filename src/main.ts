@@ -60,7 +60,8 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(3000);
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
   console.log(`Swagger está disponible en http://localhost:3000/api`);
 }
 bootstrap();
