@@ -17,7 +17,12 @@ async function bootstrap() {
     origin: [
       'http://localhost:5173',
       'http://localhost:5174',
-      'https://hogar-de-libros-front-zer0.vercel.app/',
+      'https://hogar-de-libros-front-zer0.vercel.app',
+      'https://front-inge-akion.vercel.app',
+      'https://zcz17ld0-5173.use2.devtunnels.ms',
+      'https://hogardelibroszero-production.up.railway.app',
+      'https://hogar-de-libros-front-keirin.vercel.app',
+'https://hogar-de-libros-front-naza-g.vercel.app'
     ],
     credentials: true,
   });
