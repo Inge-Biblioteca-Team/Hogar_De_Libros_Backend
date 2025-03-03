@@ -23,7 +23,7 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
 import { ActivitiesFilterDTO } from './DTO/ActivitiesFilter.dto';
-import { CreateProgramDto } from './dto/create-program.dto';
+import { CreateProgramDto } from './DTO/create-program.dto';
 
 @ApiTags('Programs')
 @Controller('programs')
