@@ -94,7 +94,9 @@ export class ReportService {
       WSLoans: prestamos,
       generateDate: new Date().toLocaleString(),
     });
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
     const page = await browser.newPage();
     await page.setContent(htmlContent);
 
@@ -133,7 +135,9 @@ export class ReportService {
       BLoans: prestamos,
       generateDate: new Date().toLocaleString(),
     });
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
     const page = await browser.newPage();
     await page.setContent(htmlContent);
 
@@ -186,7 +190,9 @@ export class ReportService {
       cursos: cursosConCuposRestantes,
       generateDate: new Date().toLocaleString(),
     });
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
     const page = await browser.newPage();
     await page.setContent(htmlContent);
 
@@ -224,7 +230,9 @@ export class ReportService {
       eventos: eventos,
       generateDate: new Date().toLocaleString(),
     });
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
     const page = await browser.newPage();
     await page.setContent(htmlContent);
 
