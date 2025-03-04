@@ -57,15 +57,32 @@ export class StatsService {
       .groupBy("DATE_FORMAT(bookLoan.LoanRequestDate, '%M %Y')")
       .getRawMany();
 
+    const WSstats = await this.ComputerLoanRepository.createQueryBuilder(
+      'computer_loan',
+    )
+      .select("DATE_FORMAT(computer_loan.LoanStartDate, '%M %Y') AS month")
+      .addSelect('COUNT(computer_loan.ComputerLoanId)', 'UsoComputo')
+      .where(
+        'computer_loan.LoanStartDate >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)',
+      )
+      .groupBy("DATE_FORMAT(computer_loan.LoanStartDate, '%M %Y')")
+      .getRawMany();
+
     const combinedStats: StatsDto[] = this.combineStats(
       eventStats,
       courseStats,
       loanStats,
+      WSstats,
     );
     return combinedStats;
   }
 
-  private combineStats(eventStats, courseStats, loanStats): StatsDto[] {
+  private combineStats(
+    eventStats,
+    courseStats,
+    loanStats,
+    WSstats,
+  ): StatsDto[] {
     const statsMap = new Map<string, StatsDto>();
 
     const addToMap = (stat, countField, keyField) => {
@@ -76,6 +93,7 @@ export class StatsService {
           Eventos: 0,
           Cursos: 0,
           Prestamos: 0,
+          UsoComputo: 0,
         });
       }
       statsMap.get(month)[countField] = parseInt(stat[countField], 10);
@@ -84,6 +102,7 @@ export class StatsService {
     eventStats.forEach((stat) => addToMap(stat, 'Eventos', 'month'));
     courseStats.forEach((stat) => addToMap(stat, 'Cursos', 'month'));
     loanStats.forEach((stat) => addToMap(stat, 'Prestamos', 'month'));
+    WSstats.forEach((stat) => addToMap(stat, 'UsoComputo', 'month'));
 
     return Array.from(statsMap.values());
   }

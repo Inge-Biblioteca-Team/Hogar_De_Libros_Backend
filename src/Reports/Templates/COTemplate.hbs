@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <meta charset='UTF-8' />
+    <title>Reporte de uso de Equipos de Cómputo</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; } h1 { text-align:
+      center; color: #333; } table { width: 100%; border-collapse: collapse;
+      margin-top: 20px; } th, td { border: 1px solid #ddd; padding: 8px;
+      text-align: left; } th { background-color: #f4f4f4; } .footer {
+      margin-top: 20px; text-align: center; font-size: 12px; color: #666; }
+    </style>
+  </head>
+  <body>
+    <h1>Reporte de Cursos</h1>
+    <p><strong>Fecha Inicio:</strong> {{startDate}}</p>
+    <p><strong>Fecha Fin:</strong> {{endDate}}</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Fecha</th>
+          <th>Lugar</th>
+          <th>Instructor</th>
+          <th>Asistencia</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each cursos}}
+          <tr>
+            <td>{{this.course_courseName}}</td>
+            <td>{{formatOnlyDate course_date}}</td>
+            <td>{{this.course_location}}</td>
+            <td>{{this.course_instructor}}</td>
+            <td>{{this.usedSeats}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <div class='footer'>Generado el {{generateDate}}</div>
+  </body>
+</html>

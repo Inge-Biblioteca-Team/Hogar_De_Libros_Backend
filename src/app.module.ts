@@ -27,6 +27,7 @@ import { DonationModule } from './donation/donation.module';
 import { CollaboratorModule } from './collaborator/collaborator.module';
 import { WorkStationsModule } from './work-stations/work-stations.module';
 import { StatsModule } from './stats/stats.module';
+import { ReportModule } from './Reports/Reports.Module';
 
 dotenv.config();
 
@@ -40,7 +41,7 @@ dotenv.config();
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
     BooksModule,
     ComputersModule,
@@ -65,6 +66,7 @@ dotenv.config();
     CollaboratorModule,
     WorkStationsModule,
     StatsModule,
+    ReportModule
   ],
   controllers: [AppController],
   providers: [AppService],

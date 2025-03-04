@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <meta charset='UTF-8' />
+    <title>Reporte de uso de Equipos de Cómputo</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; } h1 { text-align:
+      center; color: #333; } table { width: 100%; border-collapse: collapse;
+      margin-top: 20px; } th, td { border: 1px solid #ddd; padding: 8px;
+      text-align: left; } th { background-color: #f4f4f4; } .footer {
+      margin-top: 20px; text-align: center; font-size: 12px; color: #666; }
+    </style>
+  </head>
+  <body>
+    <h1>Reporte de Préstamos de Equipos</h1>
+    <p><strong>Fecha Inicio:</strong> {{startDate}}</p>
+    <p><strong>Fecha Fin:</strong> {{endDate}}</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Numero de maquina</th>
+          <th>Nombre</th>
+          <th>Cedula</th>
+          <th>Fecha y hora de inicio</th>
+          <th>Hora de finalizacion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each WSLoans}}
+          <tr>
+            <td>{{this.MachineNumber}}</td>
+            <td>{{this.UserName}}</td>
+            <td>{{this.cedula}}</td>
+            <td>{{formatDate this.LoanStartDate 'date'}}</td>
+            <td>{{formatDate this.LoanExpireDate 'datetime'}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <div class='footer'>Generado el {{generateDate}}</div>
+  </body>
+</html>
