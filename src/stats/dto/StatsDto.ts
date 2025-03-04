@@ -4,4 +4,5 @@ export class StatsDto {
   Cursos: number;
   Eventos: number;
   Prestamos: number;
+  UsoComputo:number
 }
