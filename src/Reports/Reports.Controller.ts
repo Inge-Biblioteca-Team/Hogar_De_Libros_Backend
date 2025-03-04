@@ -19,6 +19,8 @@ export class ReportController {
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="Reporte_uso_computadores_${params.startDate}_${params.endDate}.pdf"`,
     });
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
+
 
     res.send(pdfBuffer);
   }
@@ -34,6 +36,7 @@ export class ReportController {
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="Reporte_Prestamos_${params.startDate}_${params.endDate}.pdf"`,
     });
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
 
     res.send(pdfBuffer);
   }
@@ -44,8 +47,10 @@ export class ReportController {
 
     res.set({
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="loan_report_${params.startDate}_${params.endDate}.pdf"`,
+      'Content-Disposition': `attachment; filename="Reporte_Cursos_${params.startDate}_${params.endDate}.pdf"`,
     });
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
+
 
     res.send(pdfBuffer);
   }
@@ -56,8 +61,10 @@ export class ReportController {
 
     res.set({
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="loan_report_${params.startDate}_${params.endDate}.pdf"`,
+      'Content-Disposition': `attachment; filename="Reporte_Eventos_${params.startDate}_${params.endDate}.pdf"`,
     });
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
+
 
     res.send(pdfBuffer);
   }
