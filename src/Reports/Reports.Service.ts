@@ -31,6 +31,11 @@ export class ReportService {
     Handlebars.registerHelper(
       'formatDate',
       function (date: Date, format: string) {
+
+        if (!date) {
+          return 'N/A'; 
+        }
+
         const options: Intl.DateTimeFormatOptions = {
           day: '2-digit',
           month: '2-digit',
