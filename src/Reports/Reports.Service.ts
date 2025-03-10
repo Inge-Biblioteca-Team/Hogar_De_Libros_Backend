@@ -11,6 +11,7 @@ import { Between, In, Repository } from 'typeorm';
 import { BookLoan } from 'src/book-loan/book-loan.entity';
 import { Course } from 'src/course/course.entity';
 import { events } from 'src/events/events.entity';
+import { format } from '@formkit/tempo';
 
 @Injectable()
 export class ReportService {
@@ -30,25 +31,15 @@ export class ReportService {
   static registerHelpers() {
     Handlebars.registerHelper(
       'formatDate',
-      function (date: Date, format: string) {
-
+      function (date: Date, type: string) {
         if (!date) {
-          return 'N/A'; 
+          return 'N/A';
         }
 
-        const options: Intl.DateTimeFormatOptions = {
-          day: '2-digit',
-          month: '2-digit',
-          year: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false,
-        };
-
-        if (format === 'date') {
-          return date.toLocaleDateString('es-ES', options);
-        } else if (format === 'datetime') {
-          return date.toLocaleString('es-ES', options);
+        if (type === 'date') {
+          return format(date, 'DD/MM/YY', 'es');
+        } else if (type === 'datetime') {
+          return format(date, 'DD/MM/YY h:mm a', 'es');
         }
         return date;
       },
@@ -62,11 +53,7 @@ export class ReportService {
       const date = new Date(dateStr);
       if (isNaN(date.getTime())) return dateStr;
 
-      return date.toLocaleDateString('es-ES', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      });
+      return format(dateStr, 'DD/MM/YY', 'es');
     });
   }
 

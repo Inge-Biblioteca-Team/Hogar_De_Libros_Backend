@@ -44,6 +44,7 @@
     "migration:revert": "ts-node node_modules/.bin/typeorm migration:revert"
   },
   "dependencies": {
+    "@formkit/tempo": "^0.1.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",
