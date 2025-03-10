@@ -47,7 +47,7 @@ export class BooksService {
         );
       }
       Object.assign(book, updateBookDto);
-      this.bookRepository.save(book);
+      await this.bookRepository.save(book);
 
       return { message: 'Éxito al editar el libro' };
     } catch (error) {
@@ -94,7 +94,7 @@ export class BooksService {
         );
       }
       book.Status = false;
-      this.bookRepository.save(book);
+       await this.bookRepository.save(book);
       return { message: 'Libro dado de baja correctamente' };
     } catch (error) {
       const errorMessage =

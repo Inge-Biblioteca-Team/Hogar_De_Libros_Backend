@@ -21,7 +21,6 @@ export class ReportController {
     });
     res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
 
-
     res.send(pdfBuffer);
   }
 
@@ -51,7 +50,6 @@ export class ReportController {
     });
     res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
 
-
     res.send(pdfBuffer);
   }
 
@@ -64,7 +62,6 @@ export class ReportController {
       'Content-Disposition': `attachment; filename="Reporte_Eventos_${params.startDate}_${params.endDate}.pdf"`,
     });
     res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
-
 
     res.send(pdfBuffer);
   }

@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ReportDto } from './DTO';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -78,6 +78,33 @@ export class ReportService {
       order: { LoanStartDate: 'ASC' },
     });
 
+    if (prestamos.length == 0) {
+      const [year, month, day] = startDate.split('-');
+      const [endYear, endMonth, endDay] = endDate.split('-');
+
+      const startDateObj = new Date(
+        parseInt(year),
+        parseInt(month) - 1,
+        parseInt(day),
+      );
+      const endDateObj = new Date(
+        parseInt(endYear),
+        parseInt(endMonth) - 1,
+        parseInt(endDay),
+      );
+
+      startDateObj.setHours(0, 0, 0, 0);
+      endDateObj.setHours(23, 59, 59, 999);
+
+      const startDateFormatted = startDateObj.toLocaleDateString('es-CR');
+      const endDateFormatted = endDateObj.toLocaleDateString('es-CR');
+
+      throw new NotFoundException({
+        message: `No existen prestamos dentro del rango de fechas ${startDateFormatted} a ${endDateFormatted}`,
+        error: 'Not Found',
+      });
+    }
+
     ReportService.registerHelpers();
 
     const templatePath = path.join(
@@ -118,6 +145,33 @@ export class ReportService {
       },
       order: { BookPickUpDate: 'ASC' },
     });
+
+    if (prestamos.length == 0) {
+      const [year, month, day] = startDate.split('-');
+      const [endYear, endMonth, endDay] = endDate.split('-');
+
+      const startDateObj = new Date(
+        parseInt(year),
+        parseInt(month) - 1,
+        parseInt(day),
+      );
+      const endDateObj = new Date(
+        parseInt(endYear),
+        parseInt(endMonth) - 1,
+        parseInt(endDay),
+      );
+
+      startDateObj.setHours(0, 0, 0, 0);
+      endDateObj.setHours(23, 59, 59, 999);
+
+      const startDateFormatted = startDateObj.toLocaleDateString('es-CR');
+      const endDateFormatted = endDateObj.toLocaleDateString('es-CR');
+
+      throw new NotFoundException({
+        message: `No existen prestamos dentro del rango de fechas ${startDateFormatted} a ${endDateFormatted}`,
+        error: 'Not Found',
+      });
+    }
 
     ReportService.registerdateHelpers();
 
@@ -169,6 +223,33 @@ export class ReportService {
       .orderBy('course.date', 'ASC')
       .getRawMany();
 
+    if (cursos.length == 0) {
+      const [year, month, day] = startDate.split('-');
+      const [endYear, endMonth, endDay] = endDate.split('-');
+
+      const startDateObj = new Date(
+        parseInt(year),
+        parseInt(month) - 1,
+        parseInt(day),
+      );
+      const endDateObj = new Date(
+        parseInt(endYear),
+        parseInt(endMonth) - 1,
+        parseInt(endDay),
+      );
+
+      startDateObj.setHours(0, 0, 0, 0);
+      endDateObj.setHours(23, 59, 59, 999);
+
+      const startDateFormatted = startDateObj.toLocaleDateString('es-CR');
+      const endDateFormatted = endDateObj.toLocaleDateString('es-CR');
+
+      throw new NotFoundException({
+        message: `No existen cursos dentro del rango de fechas ${startDateFormatted} a ${endDateFormatted}`,
+        error: 'Not Found',
+      });
+    }
+
     const cursosConCuposRestantes = cursos.map((curso) => ({
       ...curso,
       usedSeats: curso.enrollmentCount,
@@ -213,6 +294,33 @@ export class ReportService {
       },
       order: { Date: 'ASC' },
     });
+
+    if (eventos.length == 0) {
+      const [year, month, day] = startDate.split('-');
+      const [endYear, endMonth, endDay] = endDate.split('-');
+
+      const startDateObj = new Date(
+        parseInt(year),
+        parseInt(month) - 1,
+        parseInt(day),
+      );
+      const endDateObj = new Date(
+        parseInt(endYear),
+        parseInt(endMonth) - 1,
+        parseInt(endDay),
+      );
+
+      startDateObj.setHours(0, 0, 0, 0);
+      endDateObj.setHours(23, 59, 59, 999);
+
+      const startDateFormatted = startDateObj.toLocaleDateString('es-CR');
+      const endDateFormatted = endDateObj.toLocaleDateString('es-CR');
+
+      throw new NotFoundException({
+        message: `No existen eventos dentro del rango de fechas ${startDateFormatted} a ${endDateFormatted}`,
+        error: 'Not Found',
+      });
+    }
 
     ReportService.registerdateHelpers();
 
