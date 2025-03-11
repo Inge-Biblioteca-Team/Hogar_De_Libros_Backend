@@ -10,6 +10,7 @@ import { Book } from 'src/books/book.entity';
 import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
 import { User } from 'src/user/user.entity';
 import { FriendsLibrary } from 'src/friends-library/friend-library.entity';
+import { Attendance } from 'src/attendance/attendance.type';
 
 @Injectable()
 export class StatsService {
@@ -28,6 +29,8 @@ export class StatsService {
     private UserRepository: Repository<User>,
     @InjectRepository(FriendsLibrary)
     private FriendRepository: Repository<FriendsLibrary>,
+    @InjectRepository(Attendance)
+    private AttendanceRepo: Repository<Attendance>,
   ) {}
 
   async getStats(): Promise<StatsDto[]> {
@@ -179,6 +182,17 @@ export class StatsService {
       .andWhere('Users.status = :status', { status: 1 })
       .getCount();
 
+    const today = new Date();
+    const currentYear = new Date().getFullYear();
+    const currentMonth = today.getMonth() + 1;
+
+    const Assistencia = await this.AttendanceRepo.createQueryBuilder(
+      'Attendance',
+    )
+      .where('YEAR(attendance.date) = :year', { year: currentYear })
+      .andWhere('MONTH(attendance.date) = :month', { month: currentMonth })
+      .getCount();
+
     return {
       Eventos: eventCount,
       Cursos: courseCount,
@@ -187,6 +201,7 @@ export class StatsService {
       Equipos: computerLoanCount,
       Amigos: FriendCount,
       Usuarios: UsersCount,
+      AsistenciaMes: Assistencia,
     };
   }
   async getSuccessfulCountsCurrentYear() {

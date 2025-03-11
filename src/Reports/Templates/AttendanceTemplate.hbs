@@ -1,7 +1,7 @@
 <html>
   <head>
     <meta charset='UTF-8' />
-    <title>Reporte de cursos</title>
+    <title>Reporte de asistencia</title>
     <style>
       body { font-family: Arial, sans-serif; margin: 20px; } h1 { text-align:
       center; color: #333; } table { width: 100%; border-collapse: collapse;
@@ -11,27 +11,27 @@
     </style>
   </head>
   <body>
-    <h1>Reporte de Cursos</h1>
+    <h1>Reporte de asistencia</h1>
     <p><strong>Fecha Inicio:</strong> {{startDate}}</p>
     <p><strong>Fecha Fin:</strong> {{endDate}}</p>
     <table>
       <thead>
         <tr>
           <th>Nombre</th>
+          <th>Cedula</th>
           <th>Fecha</th>
-          <th>Lugar</th>
-          <th>Instructor</th>
-          <th>Asistencia</th>
+          <th>Genero</th>
+          <th>Edad</th>
         </tr>
       </thead>
       <tbody>
-        {{#each cursos}}
+        {{#each Asistencias}}
           <tr>
-            <td>{{this.course_courseName}}</td>
-            <td>{{formatOnlyDate course_date}}</td>
-            <td>{{this.course_location}}</td>
-            <td>{{this.course_instructor}}</td>
-            <td>{{this.usedSeats}}</td>
+            <td>{{this.name}}</td>
+            <td>{{this.cedula}}</td>
+            <td>{{formatOnlyDate this.date}}</td>
+            <td>{{gender this.gender}}</td>
+            <td>{{this.age}}</td>
           </tr>
         {{/each}}
       </tbody>

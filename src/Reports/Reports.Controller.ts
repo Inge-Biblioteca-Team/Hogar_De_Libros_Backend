@@ -65,4 +65,17 @@ export class ReportController {
 
     res.send(pdfBuffer);
   }
+
+  @Post('download-AS-report')
+  async downloadAttendanceReport(@Body() params: ReportDto, @Res() res: Response) {
+    const pdfBuffer = await this.reportService.generateATTReport(params);
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="Reporte_Asistencia_${params.startDate}_${params.endDate}.pdf"`,
+    });
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
+
+    res.send(pdfBuffer);
+  }
 }

@@ -12,6 +12,7 @@ import { BookLoan } from 'src/book-loan/book-loan.entity';
 import { Course } from 'src/course/course.entity';
 import { events } from 'src/events/events.entity';
 import { format } from '@formkit/tempo';
+import { Attendance } from 'src/attendance/attendance.type';
 
 @Injectable()
 export class ReportService {
@@ -26,6 +27,9 @@ export class ReportService {
 
     @InjectRepository(events)
     private eventRepository: Repository<events>,
+
+    @InjectRepository(Attendance)
+    private attendanceRepo: Repository<Attendance>,
   ) {}
 
   static registerHelpers() {
@@ -54,6 +58,12 @@ export class ReportService {
       if (isNaN(date.getTime())) return dateStr;
 
       return format(dateStr, 'DD/MM/YY', 'es');
+    });
+  }
+
+  static registerGenderHelper() {
+    Handlebars.registerHelper('gender', (gender: string) => {
+      return gender === 'M' ? 'Masculino' : 'Femenino';
     });
   }
 
@@ -328,6 +338,74 @@ export class ReportService {
       startDate: startDate,
       endDate: endDate,
       eventos: eventos,
+      generateDate: new Date().toLocaleString(),
+    });
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+    const page = await browser.newPage();
+    await page.setContent(htmlContent);
+
+    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+    await browser.close();
+    return Buffer.from(pdfBuffer);
+  }
+
+  async generateATTReport(params: ReportDto): Promise<Buffer> {
+    const { startDate, endDate } = params;
+
+    const start = new Date(`${startDate}T00:00:00`);
+    const end = new Date(`${endDate}T23:59:59`);
+
+    const asistencias = await this.attendanceRepo.find({
+      where: {
+        date: Between(start, end),
+      },
+      order: { date: 'ASC' },
+    });
+
+    if (asistencias.length == 0) {
+      const [year, month, day] = startDate.split('-');
+      const [endYear, endMonth, endDay] = endDate.split('-');
+
+      const startDateObj = new Date(
+        parseInt(year),
+        parseInt(month) - 1,
+        parseInt(day),
+      );
+      const endDateObj = new Date(
+        parseInt(endYear),
+        parseInt(endMonth) - 1,
+        parseInt(endDay),
+      );
+
+      startDateObj.setHours(0, 0, 0, 0);
+      endDateObj.setHours(23, 59, 59, 999);
+
+      const startDateFormatted = startDateObj.toLocaleDateString('es-CR');
+      const endDateFormatted = endDateObj.toLocaleDateString('es-CR');
+
+      throw new NotFoundException({
+        message: `No existen asistencias dentro del rango de fechas ${startDateFormatted} a ${endDateFormatted}`,
+        error: 'Not Found',
+      });
+    }
+
+    ReportService.registerdateHelpers();
+    ReportService.registerGenderHelper();
+
+    const templatePath = path.join(
+      process.cwd(),
+      'src/Reports/Templates/AttendanceTemplate.hbs',
+    );
+
+    const templateHtml = fs.readFileSync(templatePath, 'utf-8');
+    const template = Handlebars.compile(templateHtml);
+
+    const htmlContent = template({
+      startDate: startDate,
+      endDate: endDate,
+      Asistencias: asistencias,
       generateDate: new Date().toLocaleString(),
     });
     const browser = await puppeteer.launch({

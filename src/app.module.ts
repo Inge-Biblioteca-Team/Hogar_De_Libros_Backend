@@ -28,6 +28,7 @@ import { CollaboratorModule } from './collaborator/collaborator.module';
 import { WorkStationsModule } from './work-stations/work-stations.module';
 import { StatsModule } from './stats/stats.module';
 import { ReportModule } from './Reports/Reports.Module';
+import { AttendanceModule } from './attendance/attendance.module';
 
 dotenv.config();
 
@@ -66,7 +67,8 @@ dotenv.config();
     CollaboratorModule,
     WorkStationsModule,
     StatsModule,
-    ReportModule
+    ReportModule,
+    AttendanceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
