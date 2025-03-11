@@ -23,7 +23,7 @@ async function bootstrap() {
       'https://hogardelibroszero-production.up.railway.app',
       'https://hogar-de-libros-front-keirin.vercel.app',
       'https://hogar-de-libros-front-naza-g.vercel.app',
-      'https://opac-hogar-libros.vercel.app/',
+      'https://opac-hogar-libros.vercel.app',
     ],
     credentials: true,
   });
