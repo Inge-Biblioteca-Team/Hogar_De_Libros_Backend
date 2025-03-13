@@ -12,6 +12,7 @@ import { UpdateBookDto } from './DTO/update-book.dto';
 import { PaginationFilterDto } from './DTO/pagination-filter.dto';
 import { CreateBookDto } from './DTO/create-book.dto';
 import { EnableBookDto } from './DTO/enable-book.dto';
+import { OpacFiltroDto } from './DTO/opac-filtro.dto';
 
 @Injectable()
 export class BooksService {
@@ -21,7 +22,7 @@ export class BooksService {
   ) {}
 
   async addBook(createBookDto: CreateBookDto): Promise<{ message: string }> {
-    console.log(createBookDto)
+    console.log(createBookDto);
     try {
       const newBook = this.bookRepository.create(createBookDto);
       await this.bookRepository.save(newBook);
@@ -183,12 +184,12 @@ export class BooksService {
 
   async getCategoriesNames(): Promise<string[]> {
     const categories = await this.bookRepository
-      .createQueryBuilder("book")
-      .select("DISTINCT book.ShelfCategory", "category")
+      .createQueryBuilder('book')
+      .select('DISTINCT book.ShelfCategory', 'category')
       .getRawMany();
     return categories.map((c) => c.category);
   }
-  
+
   async getColecction(
     PaginationFilterDto: PaginationFilterDto,
   ): Promise<{ data: Book[]; count: number }> {
@@ -263,7 +264,47 @@ export class BooksService {
       count,
     };
   }
+  async opacFiltro(filterDto: OpacFiltroDto): Promise<Book[]> {
+    console.log('DTO recibido en el servicio:', filterDto); // <-- Este es importante.
+    const { title, shelfCategory, author, publishedYear, year } = filterDto;
 
+    if (!title && !shelfCategory && !author && !year) {
+      return await this.bookRepository.find();
+    }
 
- 
+    const query = this.bookRepository.createQueryBuilder('book');
+
+    if (title?.trim()) {
+      query.andWhere('LOWER(book.Title) LIKE LOWER(:title)', {
+        title: `%${title.trim()}%`,
+      });
+    }
+
+    if (shelfCategory?.trim()) {
+      query.andWhere('LOWER(book.ShelfCategory) LIKE LOWER(:shelfCategory)', {
+        shelfCategory: `%${shelfCategory.trim()}%`,
+      });
+    }
+
+    if (author?.trim()) {
+      query.andWhere('LOWER(book.Author) LIKE LOWER(:author)', {
+        author: `%${author.trim()}%`,
+      });
+    }
+    console.log('publishedYear:', publishedYear);
+    console.log('year:', year);
+
+    if (year) {
+      const yearNumber = Number(year);
+      if (!isNaN(yearNumber)) {
+        query.andWhere('book.PublishedYear = :year', {
+          year: yearNumber,
+        });
+      }
+    }
+
+    const result = await query.getMany();
+    console.log('Resultado de la consulta:', result);
+    return result;
+  }
 }
