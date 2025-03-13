@@ -187,7 +187,7 @@ export class StatsService {
     const currentMonth = today.getMonth() + 1;
 
     const Assistencia = await this.AttendanceRepo.createQueryBuilder(
-      'Attendance',
+      'attendance',
     )
       .where('YEAR(attendance.date) = :year', { year: currentYear })
       .andWhere('MONTH(attendance.date) = :month', { month: currentMonth })
