@@ -39,6 +39,7 @@ export class StatsService {
       .select("DATE_FORMAT(events.Date, '%M %Y') AS month")
       .addSelect('COUNT(events.EventId)', 'Eventos')
       .where('events.Date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)')
+      .andWhere('events.Status = :status', { status: 'Finalizado' })
       .groupBy("DATE_FORMAT(events.Date, '%M %Y')")
       .getRawMany();
 
@@ -47,6 +48,7 @@ export class StatsService {
       .select("DATE_FORMAT(courses.date, '%M %Y') AS month")
       .addSelect('COUNT(courses.courseId)', 'Cursos')
       .where('courses.date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)')
+      .andWhere('courses.Status = :status', { status: '0' })
       .groupBy("DATE_FORMAT(courses.date, '%M %Y')")
       .getRawMany();
 
@@ -57,6 +59,7 @@ export class StatsService {
       .where(
         'bookLoan.LoanRequestDate >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)',
       )
+      .andWhere('bookLoan.status = :status', { status: 'Finalizado' })
       .groupBy("DATE_FORMAT(bookLoan.LoanRequestDate, '%M %Y')")
       .getRawMany();
 
@@ -68,6 +71,7 @@ export class StatsService {
       .where(
         'computer_loan.LoanStartDate >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)',
       )
+      .andWhere('computer_loan.Status = :status', { status: 'Finalizado' })
       .groupBy("DATE_FORMAT(computer_loan.LoanStartDate, '%M %Y')")
       .getRawMany();
 
@@ -179,6 +183,7 @@ export class StatsService {
       .getCount();
 
     const UsersCount = await this.UserRepository.createQueryBuilder('Users')
+    .where('Users.role = :role',{role:'external_user'})
       .andWhere('Users.status = :status', { status: 1 })
       .getCount();
 
@@ -209,13 +214,13 @@ export class StatsService {
 
     const eventCount = await this.eventRepository
       .createQueryBuilder('events')
-      .where('events.status = :status', { status: 'Cancelado' })
+      .where('events.Status = :status', { status: 'Finalizado' })
       .andWhere('YEAR(events.Date) = :year', { year: currentYear })
       .getCount();
 
     const courseCount = await this.courseRepository
       .createQueryBuilder('courses')
-      .where('courses.status = :status', { status: 'Cancelado' })
+      .where('courses.Status = :status', { status: '0' })
       .andWhere('YEAR(courses.date) = :year', { year: currentYear })
       .getCount();
 
