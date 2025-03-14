@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsInt } from 'class-validator';
+import { IsOptional, IsString, IsInt, Min } from 'class-validator';
 
 export class OpacFiltroDto {
   @ApiPropertyOptional({ description: 'Título del libro' })
@@ -23,4 +23,17 @@ export class OpacFiltroDto {
   publishedYear?: number;
 
   year:number;
+
+  
+  @ApiPropertyOptional({ description: 'Número de página', default: 1 })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  page?: number = 1;
+
+  @ApiPropertyOptional({ description: 'Cantidad de resultados por página', default: 10 })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  limit?: number = 10;
 }
