@@ -1,7 +1,7 @@
 <html>
   <head>
     <meta charset='UTF-8' />
-    <title>Reporte de préstamo de libros</title>
+    <title>Reporte de usuarios</title>
     <style>
       body { font-family: Arial, sans-serif; margin: 20px; } h1, h2 {
       text-align: start; color: #333; } table { width: 100%; border-collapse:
@@ -16,9 +16,8 @@
   <body>
     <header>
       <span style='display: flex; flex-direction: column; gap: 10px;'>
-        <h1>Biblioteca pública municipal de nicoya, Felipe Díaz Vidaure</h1><br
-        />
-        <h2>Reporte de préstamos de libros</h2>
+        <h1>Biblioteca Pública Municipal de Nicoya, Felipe Díaz Vidaure</h1>
+        <h2>Reporte de nuevos usuarios</h2>
       </span>
       <img
         src='{{baseUrl}}/assets/Docs/LogoBiblio.png'
@@ -34,28 +33,29 @@
     <table>
       <thead>
         <tr>
+          <th>#</th>
           <th>Nombre</th>
           <th>Cédula</th>
-          <th>Título</th>
-          <th>Nº Inscipción</th>
-          <th>Fecha de préstamo</th>
+          <th>Teléfono</th>
+          <th>Provincia</th>
+          <th>Cumpleaños</th>
+          <th>Fecha de registro</th>
         </tr>
       </thead>
       <tbody>
-        {{#each BLoans}}
+        {{#each users}}
           <tr>
-            <td>{{this.userName}}</td>
-            <td>{{this.userCedula}}</td>
-            <td>{{this.book.Title}}</td>
-            <td>{{this.book.InscriptionCode}}</td>
-            <td>{{formatOnlyDate this.BookPickUpDate}}</td>
+            <td>{{inc @index}}</td>
+            <td>{{this.name}}</td>
+            <td>{{this.cedula}}</td>
+            <td>{{this.phoneNumber}}</td>
+            <td>{{this.province}}</td>
+            <td>{{FbirthDate this.birthDate}}</td>
+            <td>{{formatOnlyDate this.registerDate}}</td>
           </tr>
         {{/each}}
       </tbody>
     </table>
-    <div class='final'>
-      <strong>Total de préstamos de libros: {{total}} </strong>
-    </div>
     <div class='footer'>Generado el {{generateDate}}</div>
   </body>
 </html>

@@ -130,7 +130,6 @@ export class RoomReservationService {
   async NewReservation(
     newReservation: CreateRoomReservationDto,
   ): Promise<{ message: string }> {
-    console.log(newReservation);
     try {
       let eventID: number;
       let courseID: number;

@@ -3,26 +3,41 @@
     <meta charset='UTF-8' />
     <title>Reporte de uso de Equipos de Cómputo</title>
     <style>
-      body { font-family: Arial, sans-serif; margin: 20px; } h1 { text-align:
-      center; color: #333; } table { width: 100%; border-collapse: collapse;
-      margin-top: 20px; } th, td { border: 1px solid #ddd; padding: 8px;
-      text-align: left; } th { background-color: #f4f4f4; } .footer {
+      body { font-family: Arial, sans-serif; margin: 20px; } h1, h2 {
+      text-align: start; color: #333; } table { width: 100%; border-collapse:
+      collapse; margin-top: 20px; } th, td { border: 1px solid #ddd; padding:
+      8px; text-align: left; } th { background-color: #f4f4f4; } .footer {
       margin-top: 20px; text-align: center; font-size: 12px; color: #666; }
+      header { display: flex; gap: 10px; justify-content: space-between;
+      align-items: center; } header h1, header h2 { margin: 0; } .final {
+      margin-top: 20px; }
     </style>
   </head>
   <body>
-    <h1>Reporte de Préstamos de Equipos</h1>
-    <p><strong>Fecha Inicio:</strong> {{startDate}}</p>
-    <p><strong>Fecha Fin:</strong> {{endDate}}</p>
-
+    <header>
+      <span style='display: flex; flex-direction: column; gap: 10px;'>
+        <h1>Biblioteca pública municipal de nicoya, Felipe Díaz Vidaure</h1>
+        <h2>Reporte de préstamos de equipos de cómputo</h2>
+      </span>
+      <img
+        src='{{baseUrl}}/assets/Docs/LogoBiblio.png'
+        alt='Logo'
+        width='190'
+        height='145'
+      />
+    </header>
+    <p><strong>Periodo:</strong>
+      {{formatOnlyDate startDate}}
+      a
+      {{formatOnlyDate endDate}}</p>
     <table>
       <thead>
         <tr>
-          <th>Numero de maquina</th>
+          <th>Número de maquina</th>
           <th>Nombre</th>
-          <th>Cedula</th>
+          <th>Cédula</th>
           <th>Fecha y hora de inicio</th>
-          <th>Hora de finalizacion</th>
+          <th>Hora de finalización</th>
         </tr>
       </thead>
       <tbody>
@@ -31,13 +46,15 @@
             <td>{{this.MachineNumber}}</td>
             <td>{{this.UserName}}</td>
             <td>{{this.cedula}}</td>
-            <td>{{formatDate this.LoanStartDate 'date'}}</td>
+            <td>{{formatDate this.LoanStartDate 'datetime'}}</td>
             <td>{{formatDate this.LoanExpireDate 'datetime'}}</td>
           </tr>
         {{/each}}
       </tbody>
     </table>
-
+    <div class='final'>
+      <strong>Total de prestamos de equipo de cómputo: {{total}} </strong>
+    </div>
     <div class='footer'>Generado el {{generateDate}}</div>
   </body>
 </html>

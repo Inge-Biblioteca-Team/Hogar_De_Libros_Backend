@@ -10,9 +10,10 @@ import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
 import { Book } from 'src/books/book.entity';
 import { User } from 'src/user/user.entity';
 import { FriendsLibrary } from 'src/friends-library/friend-library.entity';
+import { Attendance } from 'src/attendance/attendance.type';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([events, Course, BookLoan,ComputerLoan,Book, User, FriendsLibrary])],
+  imports: [TypeOrmModule.forFeature([events, Course, BookLoan,ComputerLoan,Book, User, FriendsLibrary,Attendance])],
   controllers: [StatsController],
   providers: [StatsService],
 })

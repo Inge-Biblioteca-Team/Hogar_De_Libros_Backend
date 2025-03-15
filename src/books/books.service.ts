@@ -22,7 +22,7 @@ export class BooksService {
   ) {}
 
   async addBook(createBookDto: CreateBookDto): Promise<{ message: string }> {
-    console.log(createBookDto);
+
     try {
       const newBook = this.bookRepository.create(createBookDto);
       await this.bookRepository.save(newBook);
@@ -48,7 +48,7 @@ export class BooksService {
         );
       }
       Object.assign(book, updateBookDto);
-      this.bookRepository.save(book);
+      await this.bookRepository.save(book);
 
       return { message: 'Éxito al editar el libro' };
     } catch (error) {
@@ -95,7 +95,7 @@ export class BooksService {
         );
       }
       book.Status = false;
-      this.bookRepository.save(book);
+       await this.bookRepository.save(book);
       return { message: 'Libro dado de baja correctamente' };
     } catch (error) {
       const errorMessage =
@@ -186,6 +186,7 @@ export class BooksService {
     const categories = await this.bookRepository
       .createQueryBuilder('book')
       .select('DISTINCT book.ShelfCategory', 'category')
+      .orderBy('book.ShelfCategory', 'ASC')
       .getRawMany();
     return categories.map((c) => c.category);
   }
@@ -266,7 +267,6 @@ export class BooksService {
   }
 
   async opacFiltro(filterDto: OpacFiltroDto): Promise<{ data: Book[]; total: number; page: number; limit: number }> {
-    console.log('DTO recibido en el servicio:', filterDto);
   
     const { title, shelfCategory, author, publishedYear, page = 1, limit = 10 } = filterDto;
   
@@ -300,7 +300,6 @@ export class BooksService {
       .skip((page - 1) * limit)
       .getMany();
   
-    console.log('Resultado de la consulta:', result);
     return {
       data: result,
       total,

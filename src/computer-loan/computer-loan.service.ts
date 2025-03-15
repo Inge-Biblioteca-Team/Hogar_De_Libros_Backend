@@ -68,7 +68,7 @@ export class ComputerLoanService {
     loan: UpdateComputerLoanDto,
   ): Promise<{ message: string }> {
     try {
-      console.log(loan);
+
       const computerLoan = await this.computerLoanRepository.findOne({
         where: {
           MachineNumber: loan.MachineNumber,
