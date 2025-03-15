@@ -171,7 +171,7 @@ export class CollaboratorService {
     CollaboratorId: number,
     dto: DenyCollaboratorRequestDTO,
   ): Promise<{ message: string }> {
-    console.log(dto);
+  
     try {
       const CollaboratorFounded = await this.collaboratorRepository.findOne({
         where: { CollaboratorId: CollaboratorId },
@@ -199,7 +199,7 @@ export class CollaboratorService {
     CollaboratorId: number,
     dto: DenyCollaboratorRequestDTO,
   ): Promise<{ message: string }> {
-    console.log(dto);
+ 
     try {
       const CollaboratorFounded = await this.collaboratorRepository.findOne({
         where: { CollaboratorId: CollaboratorId },

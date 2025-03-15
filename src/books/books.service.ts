@@ -22,7 +22,7 @@ export class BooksService {
   ) {}
 
   async addBook(createBookDto: CreateBookDto): Promise<{ message: string }> {
-    console.log(createBookDto);
+
     try {
       const newBook = this.bookRepository.create(createBookDto);
       await this.bookRepository.save(newBook);
@@ -186,6 +186,7 @@ export class BooksService {
     const categories = await this.bookRepository
       .createQueryBuilder('book')
       .select('DISTINCT book.ShelfCategory', 'category')
+      .orderBy('book.ShelfCategory', 'ASC')
       .getRawMany();
     return categories.map((c) => c.category);
   }
@@ -304,7 +305,6 @@ export class BooksService {
     }
 
     const result = await query.getMany();
-    console.log('Resultado de la consulta:', result);
     return result;
   }
 }

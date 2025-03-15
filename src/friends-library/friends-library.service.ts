@@ -182,8 +182,6 @@ export class FriendsLibraryService {
       }
       FriendFounded.Status = 'Rechazado';
       FriendFounded.Reason = dto.reason;
-
-      console.log(FriendFounded);
       await this.FriendRepositoy.save(FriendFounded);
 
       return { message: 'Solicitud de amigo rechazada correctamente' };

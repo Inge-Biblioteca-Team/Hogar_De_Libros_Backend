@@ -3,24 +3,42 @@
     <meta charset='UTF-8' />
     <title>Reporte de asistencia</title>
     <style>
-      body { font-family: Arial, sans-serif; margin: 20px; } h1 { text-align:
-      center; color: #333; } table { width: 100%; border-collapse: collapse;
-      margin-top: 20px; } th, td { border: 1px solid #ddd; padding: 8px;
-      text-align: left; } th { background-color: #f4f4f4; } .footer {
+      body { font-family: Arial, sans-serif; margin: 20px; } h1, h2 {
+      text-align: start; color: #333; } table { width: 100%; border-collapse:
+      collapse; margin-top: 20px; } th, td { border: 1px solid #ddd; padding:
+      8px; text-align: left; } th { background-color: #f4f4f4; } .footer {
       margin-top: 20px; text-align: center; font-size: 12px; color: #666; }
+      header { display: flex; gap: 10px; justify-content: space-between;
+      align-items: center; } header h1, header h2 { margin: 0; }
+      .table-container { margin-top: 30px; }
     </style>
   </head>
   <body>
-    <h1>Reporte de asistencia</h1>
-    <p><strong>Fecha Inicio:</strong> {{startDate}}</p>
-    <p><strong>Fecha Fin:</strong> {{endDate}}</p>
+    <header>
+      <span style='display: flex; flex-direction: column; gap: 10px;'>
+        <h1>Biblioteca pública municipal de nicoya, Felipe Díaz Vidaure</h1><br
+        />
+        <h2>Reporte de asistencia</h2>
+      </span>
+      <img
+        src='{{baseUrl}}/assets/Docs/LogoBiblio.png'
+        alt='Logo'
+        width='190'
+        height='145'
+      />
+    </header>
+    <p><strong>Periodo:</strong>
+      {{formatOnlyDate startDate}}
+      a
+      {{formatOnlyDate endDate}}</p>
+
     <table>
       <thead>
         <tr>
           <th>Nombre</th>
-          <th>Cedula</th>
+          <th>Cédula</th>
           <th>Fecha</th>
-          <th>Genero</th>
+          <th>Género</th>
           <th>Edad</th>
         </tr>
       </thead>
@@ -37,6 +55,39 @@
       </tbody>
     </table>
 
-    <div class='footer'>Generado el {{generateDate}}</div>
+    <div class='table-container'>
+      <strong>Conteo general</strong>
+      <table>
+        <thead>
+          <tr>
+            <th>Edad</th>
+            <th>Masculino</th>
+            <th>Femenino</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each stats.grouped}}
+            <tr>
+              <td>{{this.edad}} años</td>
+              <td>{{this.M}}</td>
+              <td>{{this.F}}</td>
+              <td>{{this.total}}</td>
+            </tr>
+          {{/each}}
+          <tr>
+            <td><strong>Total</strong></td>
+            <td>{{stats.total.M}}</td>
+            <td>{{stats.total.F}}</td>
+            <td>{{stats.total.total}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class='footer'>
+      Generado el
+      {{generateDate}}
+    </div>
   </body>
 </html>
