@@ -96,8 +96,8 @@ export class BooksController {
   }
 
   @Get('/opac/opac-filtro')
-  async opacFiltro(@Query() filterDto: OpacFiltroDto): Promise<Book[]> {
-    console.log('Request recibida en el controlador:', filterDto);  // <-- Añadido para depurar.
+  async getFilteredBooks(@Query() filterDto: OpacFiltroDto) {
     return this.booksService.opacFiltro(filterDto);
   }
+  
 }

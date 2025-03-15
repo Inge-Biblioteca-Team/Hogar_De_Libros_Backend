@@ -265,46 +265,47 @@ export class BooksService {
       count,
     };
   }
-  async opacFiltro(filterDto: OpacFiltroDto): Promise<Book[]> {
-    console.log('DTO recibido en el servicio:', filterDto); // <-- Este es importante.
-    const { title, shelfCategory, author, publishedYear, year } = filterDto;
 
-    if (!title && !shelfCategory && !author && !year) {
-      return await this.bookRepository.find();
-    }
-
+  async opacFiltro(filterDto: OpacFiltroDto): Promise<{ data: Book[]; total: number; page: number; limit: number }> {
+    console.log('DTO recibido en el servicio:', filterDto);
+  
+    const { title, shelfCategory, author, publishedYear, page = 1, limit = 10 } = filterDto;
+  
     const query = this.bookRepository.createQueryBuilder('book');
-
+  
     if (title?.trim()) {
       query.andWhere('LOWER(book.Title) LIKE LOWER(:title)', {
         title: `%${title.trim()}%`,
       });
     }
-
+  
     if (shelfCategory?.trim()) {
       query.andWhere('LOWER(book.ShelfCategory) LIKE LOWER(:shelfCategory)', {
         shelfCategory: `%${shelfCategory.trim()}%`,
       });
     }
-
+  
     if (author?.trim()) {
       query.andWhere('LOWER(book.Author) LIKE LOWER(:author)', {
         author: `%${author.trim()}%`,
       });
     }
-    console.log('publishedYear:', publishedYear);
-    console.log('year:', year);
-
-    if (year) {
-      const yearNumber = Number(year);
-      if (!isNaN(yearNumber)) {
-        query.andWhere('book.PublishedYear = :year', {
-          year: yearNumber,
-        });
-      }
+  
+    if (publishedYear) {
+      query.andWhere('book.PublishedYear = :publishedYear', { publishedYear });
     }
-
-    const result = await query.getMany();
-    return result;
+  
+    const total = await query.getCount(); // Obtener el número total de registros
+    const result = await query
+      .take(limit)
+      .skip((page - 1) * limit)
+      .getMany();
+  
+    return {
+      data: result,
+      total,
+      page,
+      limit,
+    };
   }
 }
