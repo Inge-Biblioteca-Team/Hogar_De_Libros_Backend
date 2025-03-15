@@ -267,7 +267,6 @@ export class BooksService {
   }
 
   async opacFiltro(filterDto: OpacFiltroDto): Promise<{ data: Book[]; total: number; page: number; limit: number }> {
-    console.log('DTO recibido en el servicio:', filterDto);
   
     const { title, shelfCategory, author, publishedYear, page = 1, limit = 10 } = filterDto;
   
