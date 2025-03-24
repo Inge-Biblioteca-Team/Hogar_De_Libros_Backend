@@ -66,43 +66,59 @@ export class CourseService {
       .createQueryBuilder('courses')
       .leftJoinAndSelect('courses.program', 'program')
       .orderBy('courses.date', 'DESC');
-
+  
+    // Obtener la fecha actual y la fecha de ayer
+    const now = new Date();
+    const today = now.toISOString().split('T')[0]; // Solo la fecha sin la hora
+    
     if (courseName) {
       query.andWhere('courses.courseName LIKE :courseName', {
         courseName: `%${courseName}%`,
       });
     }
+    
     if (status) {
-      query.andWhere('courses.Status = :status', {
-        status: status,
-      });
+      if (status === 'upcoming') {
+        query.andWhere('courses.date >= :today AND courses.Status = :trueStatus', {
+          today,
+          trueStatus: true,
+        });
+      } else if (status === 'past') {
+        query.andWhere('courses.date < :today AND courses.Status = :trueStatus', {
+          today,
+          trueStatus: true,
+        });
+      } else if (status === 'cancelled') {
+        query.andWhere('courses.Status = :falseStatus', { falseStatus: false });
+      } else {
+        query.andWhere('courses.Status = :status', { status });
+      }
     }
+  
     query.skip((page - 1) * limit).take(limit);
-
+  
     const [courses, count] = await query.getManyAndCount();
-
+  
     const result = await Promise.all(
       courses.map(async (course) => {
-        const enrollmentCount =
-          await this.enrollmentService.countActiveEnrollmentsByCourse(
-            course.courseId,
-          );
-
-        const now = new Date();
+        const enrollmentCount = await this.enrollmentService.countActiveEnrollmentsByCourse(
+          course.courseId,
+        );
+  
         const courseStartDate = new Date(course.date);
         const endDate = new Date(course.endDate);
-
-        let status: string;
+  
+        let Status: string;
         if (!course.Status) {
-          status = 'Cancelado';
+          Status = 'Cancelado';
         } else if (endDate && now > endDate) {
-          status = 'Cerrado';
+          Status = 'Cerrado';
         } else if (courseStartDate > now) {
-          status = 'Pendiente';
+          Status = 'Pendiente';
         } else {
-          status = 'En Curso';
+          Status = 'En Curso';
         }
-
+  
         return {
           courseId: course.courseId,
           image: course.image,
@@ -118,16 +134,17 @@ export class CourseService {
           duration: course.duration,
           courseTime: course.courseTime,
           targetAge: course.targetAge,
-          currentStatus: status,
-          programName: course.program ? course.program.programName : null,
-          programProgramsId: course.program ? course.program.programsId : null,
+          currentStatus: Status,
+          programName: course.program?.programName || null,
+          programProgramsId: course.program?.programsId || null,
           materials: course.materials,
         };
       }),
     );
-
+  
     return { data: result, count };
   }
+  
 
   async updateCourseById(
     courseId: number,
