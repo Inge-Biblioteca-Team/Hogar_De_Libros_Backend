@@ -42,7 +42,7 @@ export class ProgramsController {
   async getAllPrograms(
     @Query() searchDTO: SearchPDTO,
   ): Promise<{ data: ProgramDTO[]; count: number }> {
-    return this.programService.getAllsPrograms(searchDTO);
+    return await this.programService.getAllsPrograms(searchDTO);
   }
 
   @Get('Program/Activities')

@@ -205,61 +205,73 @@ export class CourseService {
   ): Promise<{ data: NexCorusesDTO[]; count: number }> {
     const { month, type } = SearchDTO;
     const query = this.courseRepository.createQueryBuilder('courses');
-
-    let data: Course[];
-    let count: number;
-
+  
+    let data: Course[] = [];
+    let count: number = 0;
+  
     const currentDate = new Date();
     const threeMonthsLater = new Date();
-    threeMonthsLater.setMonth(currentDate.getMonth() + 3);
-
+    threeMonthsLater.setUTCMonth(currentDate.getUTCMonth() + 3);
+    threeMonthsLater.setUTCDate(1); //!Los dias llegaban a no existir
+  
+    const formatDate = (date: Date) => date.toISOString().split('T')[0];
+  
     try {
-      query
-        .andWhere('courses.date <= :threeMonthsLater', { threeMonthsLater });
-
+      query.andWhere('courses.date BETWEEN :today AND :threeMonthsLater', { 
+        today: formatDate(currentDate), 
+        threeMonthsLater: formatDate(threeMonthsLater),
+      });
+  
       if (month) {
         query.andWhere('MONTH(courses.date) = :month', { month });
       }
+  
       if (type) {
-        query.andWhere('courses.courseType LIKE :type', { type: `%${type}%` });
+        const escapeLike = (str: string) => str.replace(/[%_]/g, '\\$&');
+        query.andWhere('courses.courseType LIKE :type', { type: `%${escapeLike(type)}%` });
       }
+  
       query.andWhere('courses.Status = 1');
-
       query.orderBy('courses.date', 'ASC');
-
-      [data, count] = await query.getManyAndCount();
+  
+      [data, count] = (await query.getManyAndCount()) || [[], 0];
     } catch (error) {
+      console.error("Error al ejecutar la consulta de cursos:", error);
       throw new InternalServerErrorException('Error al cargar los cursos');
     }
-
+  
     const result = await Promise.all(
       data.map(async (course) => {
-        const enrollmentCount =
-          await this.enrollmentService.countActiveEnrollmentsByCourse(
-            course.courseId,
-          );
-
-        return {
-          Id: course.courseId,
-          image: course.image,
-          courseType: course.courseType,
-          courseName: course.courseName,
-          instructor: course.instructor,
-          avaibleQuota: course.capacity - enrollmentCount,
-          capacity: course.capacity,
-          location: course.location,
-          Date: course.date,
-          CourseTime: course.courseTime,
-          EndDate: course.endDate,
-          objetiveAge: course.targetAge,
-          duration: course.duration,
-          materials: course.materials,
-        };
+        try {
+          const enrollmentCount =
+            await this.enrollmentService.countActiveEnrollmentsByCourse(course.courseId);
+  
+          return {
+            Id: course.courseId,
+            image: course.image,
+            courseType: course.courseType,
+            courseName: course.courseName,
+            instructor: course.instructor,
+            avaibleQuota: course.capacity - enrollmentCount,
+            capacity: course.capacity,
+            location: course.location,
+            Date: course.date,
+            CourseTime: course.courseTime,
+            EndDate: course.endDate,
+            objetiveAge: course.targetAge,
+            duration: course.duration,
+            materials: course.materials,
+          };
+        } catch (error) {
+          console.error(`Error al obtener inscripciones del curso ${course.courseId}:`, error);
+          return null;
+        }
       }),
     );
-
-    return { data: result, count };
+  
+    return { data: result.filter(Boolean), count };
   }
+  
 
   async getCoursesByUserCedula(
     searchDTO: SearchDTO,
