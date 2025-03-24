@@ -13,6 +13,7 @@ import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './DTO/update-user.dto';
 import { FindAllUsersDto } from './DTO/GetPaginatedDTO';
 import { UpdatePasswordDto } from './DTO/UpdatePassDTO';
+import { UserDto } from './DTO/UserInfo';
 
 @Injectable()
 export class UserService {
@@ -173,7 +174,9 @@ export class UserService {
     }
   }
 
-  async getUserByCedula(cedula: string): Promise<User> {
+  async getUserByCedula(cedula: string): Promise<UserDto> {
+    const baseUrl = process.env.BASE_URL;
+
     const user = await this.UserRepository.findOne({ where: { cedula } });
 
     if (!user) {
@@ -183,7 +186,27 @@ export class UserService {
       );
     }
 
-    return user;
+    delete user.password;
+
+    const today = new Date();
+    const birthDateObj = new Date(user.birthDate);
+    let age = today.getFullYear() - birthDateObj.getFullYear();
+    const month = today.getMonth() - birthDateObj.getMonth();
+
+    if (
+      month < 0 ||
+      (month === 0 && today.getDate() < birthDateObj.getDate())
+    ) {
+      age--;
+    }
+
+    const genderAbbreviation =
+      user.gender === 'Mujer' ? 'M' : user.gender === 'Hombre' ? 'H' : 'Other';
+    const ageCategory = age < 18 ? 'J' : age < 40 ? 'A' : 'C';
+
+    const imageUrl = `${baseUrl}/assets/ProfileImg/${genderAbbreviation}${ageCategory}.webp`;
+
+    return { ...user, imageUrl };
   }
 
   async updatePassword(
