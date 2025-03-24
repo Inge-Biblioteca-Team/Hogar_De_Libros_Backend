@@ -91,7 +91,7 @@ export class UserService {
 
         if (existingUser.cedula === cedula) {
           throw new HttpException(
-            'Ya existe un usuario con la cedula ingresada.',
+            'Ya existe un usuario con la cédula ingresada.',
             HttpStatus.CONFLICT,
           );
         }
@@ -119,7 +119,7 @@ export class UserService {
       const user = await this.UserRepository.findOneBy({ cedula });
       if (!user)
         throw new HttpException(
-          `Usuario con cedula ${cedula} no encontrado`,
+          `Usuario con cédula ${cedula} no encontrado`,
           HttpStatus.NOT_FOUND,
         );
       await this.UserRepository.update(cedula, updateUserDto);
@@ -138,7 +138,7 @@ export class UserService {
 
       if (!user) {
         throw new HttpException(
-          `user with cedula ${cedula} not found`,
+          `Usuario con cédula ${cedula} no encontrado`,
           HttpStatus.NOT_FOUND,
         );
       }
@@ -159,14 +159,14 @@ export class UserService {
 
       if (!user) {
         throw new HttpException(
-          `Usuario con cedula ${cedula} no encontrado`,
+          `Usuario con cédula ${cedula} no encontrado`,
           HttpStatus.NOT_FOUND,
         );
       }
 
       user.status = user.status = true;
       await this.UserRepository.save(user);
-      return { message: 'El el usuario ha sido habilitado con éxito' };
+      return { message: 'El  usuario ha sido habilitado con éxito' };
     } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al habilitar el usuario';
