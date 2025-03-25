@@ -16,7 +16,11 @@ export class AttendanceService {
   async newAttendance(
     attendance: NewAttendanceDTO,
   ): Promise<{ message: string }> {
-    const fecha = format(new Date(), 'YYYY-MM-DD', 'CR');
+    const fecha = format({
+      date: new Date(),
+      format: 'YYYY-MM-DD',
+      tz: 'America/Costa_Rica',
+    });
 
     const today = new Date();
 
@@ -31,7 +35,7 @@ export class AttendanceService {
 
     if (existingAttendance) {
       throw new ConflictException(
-        'Ya se registro una asistencia con su cedula.',
+        'Ya se registro una asistencia con su cedula el dia de hoy.',
       );
     }
 
