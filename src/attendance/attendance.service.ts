@@ -17,6 +17,8 @@ export class AttendanceService {
   ): Promise<{ message: string }> {
     const today = new Date();
 
+    console.log(today)
+
     const existingAttendance = await this.attendanceRepo.findOne({
       where: {
         cedula: attendance.cedula,
@@ -31,8 +33,7 @@ export class AttendanceService {
     }
 
     const newAttendance = this.attendanceRepo.create(attendance);
-    await this.attendanceRepo.save({ ...newAttendance, date: today });
+    await this.attendanceRepo.save({ ...newAttendance, date: new Date() });
     return { message: 'Exito al registrar la asistencia' };
   }
-
 }
