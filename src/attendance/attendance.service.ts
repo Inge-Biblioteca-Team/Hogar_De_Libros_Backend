@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Attendance } from './attendance.type';
 import { Repository } from 'typeorm';
 import { NewAttendanceDTO } from './DTO';
+import { format } from '@formkit/tempo';
 
 @Injectable()
 export class AttendanceService {
@@ -15,14 +16,14 @@ export class AttendanceService {
   async newAttendance(
     attendance: NewAttendanceDTO,
   ): Promise<{ message: string }> {
-    const today = new Date();
+    const fecha = format(new Date(), 'yyyy-MM-dd', 'America/Costa_Rica');
 
-    console.log(today)
+    console.log(fecha);
 
     const existingAttendance = await this.attendanceRepo.findOne({
       where: {
         cedula: attendance.cedula,
-        date: new Date(today.toDateString()),
+        date: new Date(fecha),
       },
     });
 
@@ -33,7 +34,7 @@ export class AttendanceService {
     }
 
     const newAttendance = this.attendanceRepo.create(attendance);
-    await this.attendanceRepo.save({ ...newAttendance, date: new Date() });
+    await this.attendanceRepo.save({ ...newAttendance, date: fecha });
     return { message: 'Exito al registrar la asistencia' };
   }
 }
