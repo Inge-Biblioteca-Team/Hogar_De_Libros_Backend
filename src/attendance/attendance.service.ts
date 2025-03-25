@@ -16,14 +16,16 @@ export class AttendanceService {
   async newAttendance(
     attendance: NewAttendanceDTO,
   ): Promise<{ message: string }> {
-    const fecha = format(new Date(), 'yyyy-MM-dd', 'America/Costa_Rica');
+    const fecha = format(new Date(), 'YYYY-MM-DD', 'CR');
+
+    const today = new Date();
 
     console.log(fecha);
 
     const existingAttendance = await this.attendanceRepo.findOne({
       where: {
         cedula: attendance.cedula,
-        date: new Date(fecha),
+        date: new Date(today.toDateString()),
       },
     });
 
