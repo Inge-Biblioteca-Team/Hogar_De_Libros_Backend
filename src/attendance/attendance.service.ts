@@ -24,8 +24,6 @@ export class AttendanceService {
 
     const today = new Date();
 
-    console.log(fecha);
-
     const existingAttendance = await this.attendanceRepo.findOne({
       where: {
         cedula: attendance.cedula,
