@@ -7,22 +7,21 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { EnrollmentService } from 'src/enrollment/enrollment.service';
-import {  ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateEnrollmentDto } from './DTO/create-enrollment.dto';
 import { PaginationEnrollmentListDto } from './DTO/pagination-enrollmentList.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
-
+import { Response } from 'express';
 
 @ApiTags('Enrollments')
 @Controller('enrollments')
-
 export class EnrollmentController {
   constructor(private readonly enrollmentService: EnrollmentService) {}
 
-  
   @Post(':courseId')
   async enrollUser(
     @Body() createEnrollmentDto: CreateEnrollmentDto,
@@ -47,5 +46,16 @@ export class EnrollmentController {
     return this.enrollmentService.getEnrollmentsListByIdCourse(
       paginationEnrollmentListDTO,
     );
+  }
+
+  @Post('/Save-List/:courseID')
+  async generatePdf(@Param('courseID') courseID: number, @Res() res: Response) {
+    const pdfBuffer = await this.enrollmentService.saveEnrollmentList(courseID);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="Lista_Matricula_${courseID}.pdf"`,
+    });
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
+    res.send(pdfBuffer);
   }
 }
