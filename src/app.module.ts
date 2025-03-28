@@ -36,13 +36,15 @@ dotenv.config();
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.DB_HOST,
-      port: +process.env.DB_PORT,
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-      autoLoadEntities: true,
+      host: process.env.DB_HOST || 'mysql',
+      port: parseInt(process.env.DB_PORT, 10) || 3306,
+      username: process.env.DB_USERNAME || 'user',
+      password: process.env.DB_PASSWORD || 'userpassword',
+      database: process.env.DB_DATABASE || 'hogar_de_libros_db',
+      entities: [__dirname + '/**/*.entity.{ts,js}'],
       synchronize: false,
+      retryAttempts: 5, // Reintenta 5 veces
+      retryDelay: 5000, // Espera 5 segundos entre intentos
     }),
     BooksModule,
     ComputersModule,
