@@ -15,8 +15,11 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
+      'http://localhost',
+      'http://localhost:8080',
       'http://localhost:5173',
       'http://localhost:5174',
+      'http://localhost:5176',
       'https://hogar-de-libros-front-zer0.vercel.app',
       'https://front-inge-akion.vercel.app',
       'https://zcz17ld0-5173.use2.devtunnels.ms',
