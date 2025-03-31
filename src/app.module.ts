@@ -41,7 +41,7 @@ dotenv.config();
       username: process.env.DB_USERNAME || 'user',
       password: process.env.DB_PASSWORD || 'userpassword',
       database: process.env.DB_DATABASE || 'hogar_de_libros_db',
-      entities: [__dirname + '/**/*.entity.{ts,js}'],
+      autoLoadEntities: true,
       synchronize: false,
       retryAttempts: 5, // Reintenta 5 veces
       retryDelay: 5000, // Espera 5 segundos entre intentos
