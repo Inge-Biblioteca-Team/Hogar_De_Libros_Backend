@@ -48,7 +48,7 @@ export class RoomReservationController {
 
   @Get('queque')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'asistente')
+  @Roles('admin', 'asistente','institucional')
   async getQuequeReservations(
     @Query() filter: FilterGetDTO,
   ): Promise<Queque[]> {

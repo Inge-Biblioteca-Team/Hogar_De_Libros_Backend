@@ -238,7 +238,7 @@ export class ProgramsService {
       .orderBy('program.programName', 'ASC');
 
       if (programsId) {
-        query.andWhere('programs.programsId = :programsId', {
+        query.andWhere('program.programsId = :programsId', {
           programsId: programsId,
         });
       }
