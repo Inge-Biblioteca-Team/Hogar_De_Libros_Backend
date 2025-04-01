@@ -41,6 +41,11 @@ export class NotesController {
     return await this.notyService.getPendingNotes();
   }
 
+  @Get('Count')
+  async getCountPending(): Promise<number> {
+    return await this.notyService.getNotifyCount();
+  }
+
   @Patch(':id/read')
   @Roles('admin', 'asistente')
   async markAsRead(

@@ -5,7 +5,7 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { User } from './user.entity';
+import { Role, User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './DTO/create-user.dto';
@@ -234,5 +234,19 @@ export class UserService {
         (error as Error).message || 'Error al actualizar la contraseña';
       throw new InternalServerErrorException(errorMessage);
     }
+  }
+
+  async getAdminList() {
+    const data = await this.UserRepository.find({
+      where: {
+        role: Role.Admin,
+        status: true,
+      },
+    });
+
+    return data.map(({ cedula, name, lastName }) => ({
+      cedula,
+      name: lastName ? `${name} ${lastName}` : name,
+    }));
   }
 }
