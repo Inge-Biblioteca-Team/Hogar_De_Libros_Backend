@@ -35,6 +35,10 @@ export class UserController {
   async findAll(@Query() query: FindAllUsersDto) {
     return this.userService.findAll(query);
   }
+  @Get('/Admin-List')
+  async getAdminList() {
+    return await this.userService.getAdminList();
+  }
 
   @Get(':cedula')
   @UseGuards(AuthGuard)
@@ -47,21 +51,25 @@ export class UserController {
   async updateUser(
     @Param('cedula') cedula: string,
     @Body() updateUserDto: UpdateUserDto,
-  ): Promise<{message : string}> {
+  ): Promise<{ message: string }> {
     return await this.userService.update(cedula, updateUserDto);
   }
 
   @Patch('change-status/:cedula')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
-  async changeUserStatus(@Param('cedula') cedula: string): Promise<{ message: string }> {
+  async changeUserStatus(
+    @Param('cedula') cedula: string,
+  ): Promise<{ message: string }> {
     return await this.userService.changeStatus(cedula);
   }
- 
+
   @Patch('UP-status/:cedula')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
-  async changeUserStatusUP(@Param('cedula') cedula: string): Promise<{ message: string }> {
+  async changeUserStatusUP(
+    @Param('cedula') cedula: string,
+  ): Promise<{ message: string }> {
     return await this.userService.UPStatus(cedula);
   }
 
