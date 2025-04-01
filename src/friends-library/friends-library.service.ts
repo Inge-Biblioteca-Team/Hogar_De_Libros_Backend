@@ -102,7 +102,7 @@ export class FriendsLibraryService {
     } = filterDTO;
 
     const query = this.FriendRepositoy.createQueryBuilder('friend').orderBy(
-      'friend. DateGenerated',
+      'friend.DateGenerated',
       'ASC',
     );
 
