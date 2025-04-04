@@ -23,7 +23,7 @@ export class WorkStationsService {
     data: CreateWorkStationDto,
   ): Promise<{ message: string }> {
     try {
-      const station = this.workStationRepository.findOne({
+      const station = await this.workStationRepository.findOne({
         where: { MachineNumber: data.MachineNumber },
       });
       if (station) {

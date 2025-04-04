@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BooksService } from './books.service';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Book } from './book.entity';
 import { NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { mock, MockProxy } from 'jest-mock-extended';
-import { CreateBookDto } from './DTO/create-book.dto';
+import { CreateBookDto } from '../DTO/create-book.dto';
+import { BooksService } from '../books.service';
+import { Book } from '../book.entity';
 
 describe('BooksService', () => {
   let service: BooksService;
