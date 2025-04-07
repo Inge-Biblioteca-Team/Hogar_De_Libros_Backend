@@ -14,11 +14,12 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { CreateBookLoanDto } from './DTO/create-book-loan.dto';
 import { updatedBookLoan } from './DTO/update-bookLoan.dto';
 import { GETResponseDTO } from './DTO/GETSResponse';
-import { BookLoanResponseDTO } from './DTO/RequestDTO';
+import { BookLoanResponseDTO, extendDTO } from './DTO/RequestDTO';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
 import { ChangeLoanStatus } from './DTO/ChangeLoanStatus.dto';
+import { BookLoan } from './book-loan.entity';
 
 @ApiTags('booksLoan')
 @Controller('book-loan')
@@ -33,6 +34,15 @@ export class BookLoanController {
   ): Promise<{ message: string }> {
     return this.bookLoanService.createLoan(createBookLoanDto);
   }
+
+  @Post('children')
+  @UseGuards(AuthGuard)
+  @ApiBody({ type: CreateBookLoanDto })
+  async createChildrenLoan(
+    @Body() createBookLoanDto: CreateBookLoanDto,
+  ): Promise<{ message: string }> {
+    return this.bookLoanService.createChildrenLoan(createBookLoanDto);
+  }
   @Post('/AdminLoan')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin', 'asistente')
@@ -41,6 +51,16 @@ export class BookLoanController {
     @Body() createBookLoanDto: CreateBookLoanDto,
   ): Promise<{ message: string }> {
     return this.bookLoanService.createAdminLoan(createBookLoanDto);
+  }
+
+  @Post('/AdminLoan/children')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin', 'asistente')
+  @ApiBody({ type: CreateBookLoanDto })
+  async createAdminChildrenLoan(
+    @Body() createBookLoanDto: CreateBookLoanDto,
+  ): Promise<{ message: string }> {
+    return this.bookLoanService.createAdminChildrenLoan(createBookLoanDto);
   }
 
   @Patch('/Approve')
@@ -90,7 +110,7 @@ export class BookLoanController {
   @UseGuards(AuthGuard)
   async getInProgressLoans(
     @Query() paginationDto: GETResponseDTO,
-  ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
+  ): Promise<{ data: BookLoan[]; count: number }> {
     return this.bookLoanService.getInProgressLoans(paginationDto);
   }
 
@@ -98,7 +118,7 @@ export class BookLoanController {
   @UseGuards(AuthGuard)
   async getPendingLoans(
     @Query() paginationDto: GETResponseDTO,
-  ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
+  ): Promise<{ data: extendDTO[]; count: number }> {
     return this.bookLoanService.getPendingLoans(paginationDto);
   }
 
@@ -106,7 +126,7 @@ export class BookLoanController {
   @UseGuards(AuthGuard)
   async getCompletedLoans(
     @Query() paginationDto: GETResponseDTO,
-  ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
+  ): Promise<{ data: BookLoan[]; count: number }> {
     return this.bookLoanService.getCompletedLoans(paginationDto);
   }
 

@@ -7,15 +7,17 @@ import { BookLoan } from './book-loan.entity';
 import { UserModule } from 'src/user/user.module';
 import { BooksModule } from 'src/books/books.module';
 import { NotesModule } from 'src/notes/notes.module';
-
+import { BooksChildren } from 'src/book-children/book-children.entity';
 
 @Module({
-  imports:[
+  imports: [
     UserModule,
     BooksModule,
-    TypeOrmModule.forFeature([BookLoan]), NotesModule],
+    TypeOrmModule.forFeature([BookLoan, BooksChildren]),
+    NotesModule,
+  ],
   controllers: [BookLoanController],
   providers: [BookLoanService],
-  exports:[TypeOrmModule]
+  exports: [TypeOrmModule],
 })
 export class BookLoanModule {}

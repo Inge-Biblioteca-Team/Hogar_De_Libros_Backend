@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { BookLoan } from '../book-loan.entity';
 
 export class BookInfoDTO {
   @ApiProperty({ description: 'Código de signatura del libro' })
@@ -56,4 +57,8 @@ export class BookLoanResponseDTO {
 
   @ApiProperty({ description: 'Datos del libro' })
   book: BookInfoDTO;
+}
+
+export class extendDTO extends PartialType(BookLoan){
+  oldObservations:string[] 
 }

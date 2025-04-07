@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BookLoan } from 'src/book-loan/book-loan.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'books-children' })
 export class BooksChildren {
@@ -59,6 +60,9 @@ export class BooksChildren {
   @Column()
   @ApiProperty({ description: 'Indica si esta deshabilitado' })
   Status: boolean = true;
+
+  @OneToMany(() => BookLoan, (bookLoan) => bookLoan.childrenBook)
+  bookLoans: BookLoan[];
 
   // relaciones
 

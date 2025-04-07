@@ -2,7 +2,15 @@
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsInt, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
+import { BookType } from '../book-loan.entity';
 
 export class GETResponseDTO {
   @ApiPropertyOptional({ description: 'Número de página', default: 1 })
@@ -65,13 +73,16 @@ export class GETResponseDTO {
   @IsString({ message: 'Añada el codigo.' })
   signatureCode?: string;
 
-
   @IsOptional()
-  @IsString({message:"Cedula"})
-  cedula:string
+  @IsString({ message: 'Cedula' })
+  cedula: string;
 
   @IsOptional()
   @IsString()
-  Status:string
+  Status: string;
 
+  @IsOptional()
+  @IsEnum(BookType)
+  type: BookType;
+  
 }
