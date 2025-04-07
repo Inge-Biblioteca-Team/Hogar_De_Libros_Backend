@@ -19,6 +19,7 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
 import { ChangeLoanStatus } from './DTO/ChangeLoanStatus.dto';
+import { ExtendLoanDTO } from './DTO/ExtendLoan.dto';
 
 @ApiTags('booksLoan')
 @Controller('book-loan')
@@ -117,5 +118,13 @@ export class BookLoanController {
     @Query() paginationDto: GETResponseDTO,
   ): Promise<{ data: BookLoanResponseDTO[]; count: number }> {
     return this.bookLoanService.getLoansList(paginationDto);
+  }
+
+  @Post('extend/:id')
+  async extendLoan(
+    @Param('id') bookLoanId: number,
+    @Body() extendedDTO: ExtendLoanDTO,
+  ): Promise<{ message: string }> {
+    return this.bookLoanService.extendLoan(bookLoanId, extendedDTO);
   }
 }
