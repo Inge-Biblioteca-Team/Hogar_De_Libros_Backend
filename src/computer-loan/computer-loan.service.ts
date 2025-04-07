@@ -68,7 +68,7 @@ export class ComputerLoanService {
     loan: UpdateComputerLoanDto,
   ): Promise<{ message: string }> {
     try {
-      console.log(loan);
+
       const computerLoan = await this.computerLoanRepository.findOne({
         where: {
           MachineNumber: loan.MachineNumber,
@@ -110,7 +110,7 @@ export class ComputerLoanService {
       .take(Limit);
 
     if (StartDate)
-      query.andWhere('Date(computerLoan.LoanStartDate) >= :StartDate', {
+      query.andWhere('DATE(computerLoan.LoanStartDate) = :StartDate', {
         StartDate,
       });
 

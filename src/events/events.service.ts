@@ -209,7 +209,7 @@ export class EventsService {
   async EventList(date: Date): Promise<CreateEventsDTO[]> {
     const event = await this.EventsRepository.find({
       select: ['EventId', 'Title'],
-      where: { Status: 'P', Date: date },
+      where: { Status: 'Pendiente de ejecución', Date: date },
     });
 
     return event;
@@ -219,9 +219,9 @@ export class EventsService {
     const currentDate = new Date();
     await this.EventsRepository.createQueryBuilder()
       .update(events)
-      .set({ Status: 'F' })
+      .set({ Status: 'Finalizado' })
       .where('Date < :currentDate', { currentDate })
-      .andWhere('Status != :status', { status: 'C' })
+      .andWhere('Status != :status', { status: 'Cancelado' })
       .execute();
   }
 }

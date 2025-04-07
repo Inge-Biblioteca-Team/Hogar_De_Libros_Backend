@@ -1,0 +1,77 @@
+<html>
+  <head>
+    <meta charset='UTF-8' />
+    <title>Reporte de cursos</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; color:
+      #333; } h1, h2 { text-align: start; color: #333; } h1 { margin-bottom:
+      20px; } table { width: 100%; border-collapse: collapse; margin-top: 10px;
+      } th, td { border: 1px solid #ddd; padding: 8px; text-align: left; } th {
+      background-color: #f4f4f4; } .footer { margin-top: 20px; text-align:
+      center; font-size: 12px; color: #666; } header { display: flex; gap: 10px;
+      justify-content: space-between; align-items: center; } header h1, header
+      h2 { margin: 0; } .curso { border: 2px solid #ddd; padding: 15px;
+      margin-bottom: 20px; border-radius: 10px; background: #fafafa; } .curso h2
+      { color: #444; margin-bottom: 10px; } .final { margin-top: 20px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <span style='display: flex; flex-direction: column; gap: 10px;'>
+        <h1>Biblioteca pública municipal de nicoya, Felipe Díaz Vidaure</h1><br>
+        <h2>Reporte de cursos</h2>
+      </span>
+      <img
+        src='{{baseUrl}}/assets/Docs/LogoBiblio.png'
+        alt='Logo'
+        width='190'
+        height='145'
+      />
+    </header>
+    <p><strong>Periodo:</strong>
+      {{formatOnlyDate startDate}}
+      a
+      {{formatOnlyDate endDate}}
+    </p>
+
+    {{#each cursos}}
+      <div class='curso'>
+        <h3>Curso: {{this.courseName}} </h3>
+        <div>
+          <strong>Fecha: <span>{{formatOnlyDate date}}</span> </strong><br />
+          <strong>Instructor: <span>{{this.instructor}}</span> </strong><br />
+          <strong>Ubicación: <span>{{this.location}}</span> </strong><br />
+          <strong>Edad objetivo: {{ageRange targetAge}} </strong>
+          <h4>Asistentes</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Cédula</th>
+                <th>Teléfono</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {{#each enrollments}}
+                <tr>
+                  <td>{{inc @index}}</td>
+                  <td>{{this.UserName}}</td>
+                  <td>{{this.userCedula}}</td>
+                  <td>{{this.phone}}</td>
+                </tr>
+              {{else}}
+                <tr>
+                  <td colspan='4' style='text-align: center;'>No hay asistentes
+                    registrados</td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {{/each}}
+    <div class='footer'>Generado el {{generateDate}}</div>
+  </body>
+</html>

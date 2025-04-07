@@ -20,7 +20,7 @@ export class LocalArtist {
   @ApiProperty({ description: 'URL de la foto' })
   Cover: string;
 
-  @Column()
+  @Column({ type: 'text'  })
   @ApiProperty({ description: 'Menciones y Demas' })
   MoreInfo: string;
 

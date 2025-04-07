@@ -72,7 +72,6 @@ export class NotesService {
     }
   }
 
-  
   async moveMultipleToRead(
     notificationIds: number[],
   ): Promise<{ message: string }> {
@@ -136,7 +135,7 @@ export class NotesService {
         .set({ trash: false, deletedAt: null })
         .where('id_Note = :id', { id: notificationId })
         .execute();
-        return { message: 'Exito' };
+      return { message: 'Exito' };
     } catch (error) {
       throw new InternalServerErrorException(
         'Error al mover la notificación a la papelera',
@@ -154,7 +153,7 @@ export class NotesService {
         .set({ trash: false, deletedAt: null })
         .whereInIds(notificationIds)
         .execute();
-        return { message: 'Exito' };
+      return { message: 'Exito' };
     } catch (error) {
       throw new InternalServerErrorException(
         'Error al mover las notificaciones a la papelera',
@@ -163,7 +162,7 @@ export class NotesService {
   }
 
   //Borrados individual y nulo
-  async deleteFromTrash(notificationId: number): Promise<{message:string}> {
+  async deleteFromTrash(notificationId: number): Promise<{ message: string }> {
     try {
       const result = await this.notyRepository
         .createQueryBuilder()
@@ -186,7 +185,9 @@ export class NotesService {
     }
   }
 
-  async deleteMultipleFromTrash(notificationIds: number[]): Promise<{message:string}> {
+  async deleteMultipleFromTrash(
+    notificationIds: number[],
+  ): Promise<{ message: string }> {
     try {
       const result = await this.notyRepository
         .createQueryBuilder()
@@ -234,5 +235,14 @@ export class NotesService {
     const newNote = this.notyRepository.create(createNoteDto);
     await this.notyRepository.save(newNote);
     return { message: 'Exito' };
+  }
+
+  async getNotifyCount(): Promise<number> {
+    return await this.notyRepository.count({
+      where: {
+        trash: false,
+        isRead: false,
+      },
+    });
   }
 }

@@ -52,8 +52,8 @@ export class CreateCollaboratorDTO {
     description: 'Correo del amigo',
     example: 'juanPerez@gmail.com',
   })
-  @IsEmail()
-  @IsNotEmpty()
+  @IsEmail({}, { message: 'Email debe ser un correo válido' })
+  @IsNotEmpty({ message: 'Email es obligatorio' })
   UserEmail: string;
 
   @ApiProperty({ description: 'Categoría principal', example: 'Capacitacion' })

@@ -15,9 +15,18 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
+      'http://localhost',
+      'http://localhost:8080',
       'http://localhost:5173',
       'http://localhost:5174',
-      'https://hogar-de-libros-front-zer0.vercel.app/',
+      'http://localhost:5176',
+      'https://hogar-de-libros-front-zer0.vercel.app',
+      'https://front-inge-akion.vercel.app',
+      'https://zcz17ld0-5173.use2.devtunnels.ms',
+      'https://hogardelibroszero-production.up.railway.app',
+      'https://hogar-de-libros-front-keirin.vercel.app',
+      'https://hogar-de-libros-front-naza-g.vercel.app',
+      'https://opac-hogar-libros.vercel.app',
     ],
     credentials: true,
   });
@@ -38,7 +47,7 @@ async function bootstrap() {
     )
     .build();
 
-    app.useGlobalInterceptors(new SwaggerAuthInterceptor())
+  app.useGlobalInterceptors(new SwaggerAuthInterceptor());
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
   app.useStaticAssets(join(__dirname, '..', 'assets'), {
@@ -49,13 +58,15 @@ async function bootstrap() {
   });
   app.useGlobalPipes(
     new ValidationPipe({
+      whitelist: true,
       transformOptions: {
-        enableImplicitConversion: true,
+        enableImplicitConversion: true
       },
     }),
   );
 
-  await app.listen(3000);
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
   console.log(`Swagger está disponible en http://localhost:3000/api`);
 }
 bootstrap();

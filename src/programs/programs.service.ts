@@ -8,7 +8,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Programs } from './programs.entity';
-import { CreateProgramDto } from './dto/create-program.dto';
+import { CreateProgramDto } from './DTO/create-program.dto';
 import { UpdateProgramsDto } from './DTO/update-course.dto';
 import { SearchPDTO } from './DTO/SearchPDTO';
 import { ProgramDTO } from './DTO/GetPDTO';
@@ -238,7 +238,7 @@ export class ProgramsService {
       .orderBy('program.programName', 'ASC');
 
       if (programsId) {
-        query.andWhere('programs.programsId = :programsId', {
+        query.andWhere('program.programsId = :programsId', {
           programsId: programsId,
         });
       }

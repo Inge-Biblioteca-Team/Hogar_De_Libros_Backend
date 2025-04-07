@@ -21,7 +21,6 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
 
-
 @ApiTags('Reservations')
 @Controller('room-reservation')
 export class RoomReservationController {
@@ -49,7 +48,7 @@ export class RoomReservationController {
 
   @Get('queque')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'asistente')
+  @Roles('admin', 'asistente','institucional')
   async getQuequeReservations(
     @Query() filter: FilterGetDTO,
   ): Promise<Queque[]> {
@@ -58,7 +57,7 @@ export class RoomReservationController {
 
   @Patch('Aprove/:id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin' )
+  @Roles('admin')
   async PatchAprove(@Param('id') Id: number): Promise<{ message: string }> {
     return this.roomReservationService.aprovReservation(Id);
   }
@@ -93,9 +92,7 @@ export class RoomReservationController {
   async countReservationsByCedula(
     @Param('userCedula') userCedula: string,
   ): Promise<{ count: number }> {
-    const count =
-      await this.roomReservationService.countReservationsByCedula(userCedula);
-    return { count };
+    return this.roomReservationService.countReservationsByCedula(userCedula);
   }
 
   @Get('user')

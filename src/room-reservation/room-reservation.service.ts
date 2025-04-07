@@ -7,7 +7,7 @@ import {
 import { CreateRoomReservationDto } from './dto/create-room-reservation.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RoomReservation } from './entities/room-reservation.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { ReservationDTO } from './dto/GetReservationsDTO';
 import { FilterGetDTO } from './dto/FilterGetDTO';
 import { Queque } from './dto/ReservationsQueque';
@@ -130,7 +130,6 @@ export class RoomReservationService {
   async NewReservation(
     newReservation: CreateRoomReservationDto,
   ): Promise<{ message: string }> {
-    console.log(newReservation);
     try {
       let eventID: number;
       let courseID: number;
@@ -167,7 +166,6 @@ export class RoomReservationService {
       return {
         message: 'La solicitud se genero correctamente',
       };
-
     } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
@@ -280,16 +278,17 @@ export class RoomReservationService {
     }
   }
 
-  async countReservationsByCedula(userCedula: string): Promise<number> {
-    const count = await this.reservationRepository
-      .createQueryBuilder('room_reservations')
-      .where('room_reservations.userCedula = :userCedula', { userCedula })
-      .andWhere('room_reservations.reserveStatus <> :status', {
-        status: 'Finalizado',
-      })
-      .getCount();
+  async countReservationsByCedula(
+    userCedula: string,
+  ): Promise<{ count: number }> {
+    const count = await this.reservationRepository.count({
+      where: {
+        user: { cedula: userCedula },
+        reserveStatus: Not("Finalizado")
+      },
+    });
 
-    return count;
+    return { count };
   }
 
   async getAllUserReservations(

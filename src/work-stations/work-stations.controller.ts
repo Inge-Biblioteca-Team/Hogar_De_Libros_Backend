@@ -63,4 +63,9 @@ export class WorkStationsController {
   ): Promise<{ message: string }> {
     return this.WsService.createWorkStation(data);
   }
+
+  @Get('/Count')
+  async wsCount(): Promise<number> {
+    return await this.WsService.countWs();
+  }
 }

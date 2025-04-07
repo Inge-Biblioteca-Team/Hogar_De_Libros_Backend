@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { WorkStation } from './entities/work-station.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { CreateWorkStationDto } from './dto/create-work-station.dto';
 import { NotFoundError } from 'rxjs';
 import { UpdateWorkStationDto } from './dto/update-work-station.dto';
@@ -23,7 +23,7 @@ export class WorkStationsService {
     data: CreateWorkStationDto,
   ): Promise<{ message: string }> {
     try {
-      const station = this.workStationRepository.findOne({
+      const station = await this.workStationRepository.findOne({
         where: { MachineNumber: data.MachineNumber },
       });
       if (station) {
@@ -32,7 +32,7 @@ export class WorkStationsService {
         );
       }
       const Ws = this.workStationRepository.create(data);
-      await  this.workStationRepository.save(Ws);
+      await this.workStationRepository.save(Ws);
       return { message: 'Exito al crear equipo' };
     } catch (error) {
       const errorMessage =
@@ -163,5 +163,13 @@ export class WorkStationsService {
     }
 
     return 'El Equipo no está en mantenimiento, no se realizaron cambios';
+  }
+
+  async countWs(): Promise<number> {
+    return await this.workStationRepository.count({
+      where: {
+        Status: Not('Mantenimiento'),
+      },
+    });
   }
 }

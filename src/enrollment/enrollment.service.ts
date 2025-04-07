@@ -14,6 +14,10 @@ import { User } from 'src/user/user.entity';
 import { CreateEnrollmentDto } from './DTO/create-enrollment.dto';
 import { PaginationEnrollmentListDto } from './DTO/pagination-enrollmentList.dto';
 import { GetEnrollmentsDTO } from './DTO/GetDTO';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as Handlebars from 'handlebars';
+import puppeteer from 'puppeteer';
 
 @Injectable()
 export class EnrollmentService {
@@ -172,5 +176,44 @@ export class EnrollmentService {
       })),
       count: total,
     };
+  }
+
+  async saveEnrollmentList(courseID: number) {
+    const data = await this.courseRepository.findOne({
+      where: { courseId: courseID, enrollments: { status: 'Activa' } },
+      relations: ['enrollments'],
+    });
+    const templatePath = path.join(
+      process.cwd(),
+      'src/enrollment/EnrollmentsListTemplate.hbs',
+    );
+
+    const templateHtml = fs.readFileSync(templatePath, 'utf-8');
+    const template = Handlebars.compile(templateHtml);
+    const baseUrl = process.env.BASE_URL;
+
+    Handlebars.registerHelper("addOne", function (value) {
+      return value + 1;
+    });
+
+    const htmlContent = template({
+      course: data,
+      baseUrl
+    });
+
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+
+    const page = await browser.newPage();
+    await page.setContent(htmlContent);
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      margin: { top: '10mm', bottom: '10mm' },
+    });
+
+    await browser.close();
+    return Buffer.from(pdfBuffer);
   }
 }

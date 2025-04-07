@@ -5,7 +5,7 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { User } from './user.entity';
+import { Role, User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './DTO/create-user.dto';
@@ -13,6 +13,7 @@ import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './DTO/update-user.dto';
 import { FindAllUsersDto } from './DTO/GetPaginatedDTO';
 import { UpdatePasswordDto } from './DTO/UpdatePassDTO';
+import { UserDto } from './DTO/UserInfo';
 
 @Injectable()
 export class UserService {
@@ -90,7 +91,7 @@ export class UserService {
 
         if (existingUser.cedula === cedula) {
           throw new HttpException(
-            'Ya existe un usuario con la cedula ingresada.',
+            'Ya existe un usuario con la cédula ingresada.',
             HttpStatus.CONFLICT,
           );
         }
@@ -118,7 +119,7 @@ export class UserService {
       const user = await this.UserRepository.findOneBy({ cedula });
       if (!user)
         throw new HttpException(
-          `Usuario con cedula ${cedula} no encontrado`,
+          `Usuario con cédula ${cedula} no encontrado`,
           HttpStatus.NOT_FOUND,
         );
       await this.UserRepository.update(cedula, updateUserDto);
@@ -137,7 +138,7 @@ export class UserService {
 
       if (!user) {
         throw new HttpException(
-          `user with cedula ${cedula} not found`,
+          `Usuario con cédula ${cedula} no encontrado`,
           HttpStatus.NOT_FOUND,
         );
       }
@@ -158,14 +159,14 @@ export class UserService {
 
       if (!user) {
         throw new HttpException(
-          `Usuario con cedula ${cedula} no encontrado`,
+          `Usuario con cédula ${cedula} no encontrado`,
           HttpStatus.NOT_FOUND,
         );
       }
 
       user.status = user.status = true;
       await this.UserRepository.save(user);
-      return { message: 'El el usuario ha sido habilitado con éxito' };
+      return { message: 'El  usuario ha sido habilitado con éxito' };
     } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al habilitar el usuario';
@@ -173,7 +174,9 @@ export class UserService {
     }
   }
 
-  async getUserByCedula(cedula: string): Promise<User> {
+  async getUserByCedula(cedula: string): Promise<UserDto> {
+    const baseUrl = process.env.BASE_URL;
+
     const user = await this.UserRepository.findOne({ where: { cedula } });
 
     if (!user) {
@@ -183,7 +186,27 @@ export class UserService {
       );
     }
 
-    return user;
+    delete user.password;
+
+    const today = new Date();
+    const birthDateObj = new Date(user.birthDate);
+    let age = today.getFullYear() - birthDateObj.getFullYear();
+    const month = today.getMonth() - birthDateObj.getMonth();
+
+    if (
+      month < 0 ||
+      (month === 0 && today.getDate() < birthDateObj.getDate())
+    ) {
+      age--;
+    }
+
+    const genderAbbreviation =
+      user.gender === 'Mujer' ? 'M' : user.gender === 'Hombre' ? 'H' : 'Other';
+    const ageCategory = age < 18 ? 'J' : age < 40 ? 'A' : 'C';
+
+    const imageUrl = `${baseUrl}/assets/ProfileImg/${genderAbbreviation}${ageCategory}.webp`;
+
+    return { ...user, imageUrl };
   }
 
   async updatePassword(
@@ -211,5 +234,19 @@ export class UserService {
         (error as Error).message || 'Error al actualizar la contraseña';
       throw new InternalServerErrorException(errorMessage);
     }
+  }
+
+  async getAdminList() {
+    const data = await this.UserRepository.find({
+      where: {
+        role: Role.Admin,
+        status: true,
+      },
+    });
+
+    return data.map(({ cedula, name, lastName }) => ({
+      cedula,
+      name: lastName ? `${name} ${lastName}` : name,
+    }));
   }
 }

@@ -60,7 +60,7 @@ export class LocalArtistService {
       });
     }
 
-    if (Actived !== undefined) {
+    if (Actived) {
       queryBuilder.andWhere('artist.Actived = :Actived', { Actived });
     }
 

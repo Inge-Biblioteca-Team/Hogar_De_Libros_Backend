@@ -12,6 +12,7 @@ import { UpdateBookDto } from './DTO/update-book.dto';
 import { PaginationFilterDto } from './DTO/pagination-filter.dto';
 import { CreateBookDto } from './DTO/create-book.dto';
 import { EnableBookDto } from './DTO/enable-book.dto';
+import { OpacFiltroDto } from './DTO/opac-filtro.dto';
 
 @Injectable()
 export class BooksService {
@@ -21,7 +22,7 @@ export class BooksService {
   ) {}
 
   async addBook(createBookDto: CreateBookDto): Promise<{ message: string }> {
-    console.log(createBookDto)
+
     try {
       const newBook = this.bookRepository.create(createBookDto);
       await this.bookRepository.save(newBook);
@@ -47,7 +48,7 @@ export class BooksService {
         );
       }
       Object.assign(book, updateBookDto);
-      this.bookRepository.save(book);
+      await this.bookRepository.save(book);
 
       return { message: 'Éxito al editar el libro' };
     } catch (error) {
@@ -94,7 +95,7 @@ export class BooksService {
         );
       }
       book.Status = false;
-      this.bookRepository.save(book);
+       await this.bookRepository.save(book);
       return { message: 'Libro dado de baja correctamente' };
     } catch (error) {
       const errorMessage =
@@ -183,12 +184,13 @@ export class BooksService {
 
   async getCategoriesNames(): Promise<string[]> {
     const categories = await this.bookRepository
-      .createQueryBuilder("book")
-      .select("DISTINCT book.ShelfCategory", "category")
+      .createQueryBuilder('book')
+      .select('DISTINCT book.ShelfCategory', 'category')
+      .orderBy('book.ShelfCategory', 'ASC')
       .getRawMany();
     return categories.map((c) => c.category);
   }
-  
+
   async getColecction(
     PaginationFilterDto: PaginationFilterDto,
   ): Promise<{ data: Book[]; count: number }> {
@@ -264,6 +266,45 @@ export class BooksService {
     };
   }
 
-
- 
+  async opacFiltro(filterDto: OpacFiltroDto): Promise<{ data: Book[]; total: number; page: number; limit: number }> {
+  
+    const { title, shelfCategory, author, publishedYear, page = 1, limit = 10 } = filterDto;
+  
+    const query = this.bookRepository.createQueryBuilder('book');
+  
+    if (title?.trim()) {
+      query.andWhere('LOWER(book.Title) LIKE LOWER(:title)', {
+        title: `%${title.trim()}%`,
+      });
+    }
+  
+    if (shelfCategory?.trim()) {
+      query.andWhere('LOWER(book.ShelfCategory) LIKE LOWER(:shelfCategory)', {
+        shelfCategory: `%${shelfCategory.trim()}%`,
+      });
+    }
+  
+    if (author?.trim()) {
+      query.andWhere('LOWER(book.Author) LIKE LOWER(:author)', {
+        author: `%${author.trim()}%`,
+      });
+    }
+  
+    if (publishedYear) {
+      query.andWhere('book.PublishedYear = :publishedYear', { publishedYear });
+    }
+  
+    const total = await query.getCount(); // Obtener el número total de registros
+    const result = await query
+      .take(limit)
+      .skip((page - 1) * limit)
+      .getMany();
+  
+    return {
+      data: result,
+      total,
+      page,
+      limit,
+    };
+  }
 }

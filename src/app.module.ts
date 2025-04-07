@@ -27,6 +27,8 @@ import { DonationModule } from './donation/donation.module';
 import { CollaboratorModule } from './collaborator/collaborator.module';
 import { WorkStationsModule } from './work-stations/work-stations.module';
 import { StatsModule } from './stats/stats.module';
+import { ReportModule } from './Reports/Reports.Module';
+import { AttendanceModule } from './attendance/attendance.module';
 
 dotenv.config();
 
@@ -34,13 +36,15 @@ dotenv.config();
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.DB_HOST,
-      port: +process.env.DB_PORT,
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
+      host: process.env.DB_HOST || 'mysql',
+      port: parseInt(process.env.DB_PORT, 10) || 3306,
+      username: process.env.DB_USERNAME || 'user',
+      password: process.env.DB_PASSWORD || 'userpassword',
+      database: process.env.DB_DATABASE || 'hogar_de_libros_db',
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
+      retryAttempts: 5, // Reintenta 5 veces
+      retryDelay: 5000, // Espera 5 segundos entre intentos
     }),
     BooksModule,
     ComputersModule,
@@ -65,6 +69,8 @@ dotenv.config();
     CollaboratorModule,
     WorkStationsModule,
     StatsModule,
+    ReportModule,
+    AttendanceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

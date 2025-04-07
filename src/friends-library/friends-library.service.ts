@@ -102,7 +102,7 @@ export class FriendsLibraryService {
     } = filterDTO;
 
     const query = this.FriendRepositoy.createQueryBuilder('friend').orderBy(
-      'friend. DateGenerated',
+      'friend.DateGenerated',
       'ASC',
     );
 
@@ -182,8 +182,6 @@ export class FriendsLibraryService {
       }
       FriendFounded.Status = 'Rechazado';
       FriendFounded.Reason = dto.reason;
-
-      console.log(FriendFounded);
       await this.FriendRepositoy.save(FriendFounded);
 
       return { message: 'Solicitud de amigo rechazada correctamente' };

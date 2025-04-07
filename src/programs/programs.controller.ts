@@ -11,7 +11,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags} from '@nestjs/swagger';
-import { CreateProgramDto } from './dto/create-program.dto';
 import { Programs } from './programs.entity';
 import { ProgramsService } from './programs.service';
 import { UpdateProgramsDto } from './DTO/update-course.dto';
@@ -24,6 +23,7 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
 import { ActivitiesFilterDTO } from './DTO/ActivitiesFilter.dto';
+import { CreateProgramDto } from './DTO/create-program.dto';
 
 @ApiTags('Programs')
 @Controller('programs')
@@ -42,7 +42,7 @@ export class ProgramsController {
   async getAllPrograms(
     @Query() searchDTO: SearchPDTO,
   ): Promise<{ data: ProgramDTO[]; count: number }> {
-    return this.programService.getAllsPrograms(searchDTO);
+    return await this.programService.getAllsPrograms(searchDTO);
   }
 
   @Get('Program/Activities')

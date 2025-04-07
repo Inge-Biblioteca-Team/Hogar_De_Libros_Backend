@@ -77,7 +77,7 @@ export class CourseController {
   async getNextCourses(
     @Query() SearchDTO: SearchDTO,
   ): Promise<{ data: NexCorusesDTO[]; count: number }> {
-    return this.courseService.getNextCourses(SearchDTO);
+    return await this.courseService.getNextCourses(SearchDTO);
   }
 
   @Get('User_Courses')
@@ -85,12 +85,12 @@ export class CourseController {
   async getCoursesByUserCedula(
     @Query() searchDTO: SearchDTO,
   ): Promise<{ data: NexCorusesDTO[]; count: number }> {
-    return this.courseService.getCoursesByUserCedula(searchDTO);
+    return await this.courseService.getCoursesByUserCedula(searchDTO);
   }
 
   @Get('CourseList')
   @UseGuards(AuthGuard)
   async CourseList(@Query('fecha') fecha: Date): Promise<CreateCourseDto[]> {
-    return this.courseService.CourseList(fecha);
+    return await this.courseService.CourseList(fecha);
   }
 }

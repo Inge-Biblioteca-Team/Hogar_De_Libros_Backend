@@ -22,6 +22,7 @@ import { EnableBookDto } from './DTO/enable-book.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorators';
+import { OpacFiltroDto } from './DTO/opac-filtro.dto';
 
 
 @ApiTags('books')
@@ -94,5 +95,9 @@ export class BooksController {
     return await this.booksService.findAll(paginationFilterDto);
   }
 
+  @Get('/opac/opac-filtro')
+  async getFilteredBooks(@Query() filterDto: OpacFiltroDto) {
+    return this.booksService.opacFiltro(filterDto);
+  }
   
 }

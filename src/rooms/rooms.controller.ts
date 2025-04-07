@@ -41,7 +41,7 @@ export class RoomsController {
 
   @Get('table')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles('admin', 'asistente', 'Insititucionales')
+  @Roles('admin', 'asistente', 'institucional')
   async findAllRoomsTable(): Promise<CreateRoomDto[]> {
     return this.roomsService.findAllRoomsTable();
   }

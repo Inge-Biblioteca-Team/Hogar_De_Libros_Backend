@@ -11,6 +11,7 @@ import {
   IsString,
 } from 'class-validator';
 import { Role } from '../user.entity';
+import { Type } from 'class-transformer';
 
 export class CreateUserDto {
 
@@ -60,6 +61,7 @@ export class CreateUserDto {
   address: string;
 
   @ApiProperty({ description: 'Fecha de nacimiento del usuario' })
+  @Type(() => Date)
   @IsDate()
   @IsNotEmpty({ message: 'La fecha de nacimiento es obligatoria' })
   birthDate: Date;

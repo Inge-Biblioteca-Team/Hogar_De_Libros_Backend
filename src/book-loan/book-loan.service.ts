@@ -6,12 +6,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BookLoan } from './book-loan.entity';
 import { In, Repository } from 'typeorm';
 import { CreateBookLoanDto } from './DTO/create-book-loan.dto';
 import { updatedBookLoan } from './DTO/update-bookLoan.dto';
 import { PaginationFilterBookLoanDto } from './DTO/pagination-filter-bookLoan.dto';
-import { Book } from 'src/books/book.entity';
 import { GETResponseDTO } from './DTO/GETSResponse';
 import { BookLoanResponseDTO } from './DTO/RequestDTO';
 import { LoanPolicy } from 'src/user/loan-policy';
@@ -19,6 +17,8 @@ import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
 import { NotesService } from 'src/notes/notes.service';
 import { UserService } from 'src/user/user.service';
 import { ChangeLoanStatus } from './DTO/ChangeLoanStatus.dto';
+import { BookLoan } from './book-loan.entity';
+import { Book } from 'src/books/book.entity';
 
 @Injectable()
 export class BookLoanService {
@@ -375,17 +375,18 @@ export class BookLoanService {
       BookPickUpDate: loan.BookPickUpDate,
       LoanExpirationDate: loan.LoanExpirationDate,
       Observations: loan.Observations,
-
       user: {
         name: loan.userName,
-        lastName: loan.userAddress,
+        Adress: loan.userAddress,
         cedula: loan.userCedula,
+        PhoneNumber: loan.userPhone,
       },
       book: {
         Title: loan.book.Title,
         signatureCode: loan.book.signatureCode,
         InscriptionCode: loan.book.InscriptionCode,
         BookCode: loan.book.BookCode,
+        Author: loan.book.Author,
       },
     }));
 
@@ -429,26 +430,41 @@ export class BookLoanService {
     query.skip((page - 1) * limit).take(limit);
     query.orderBy('bookLoan.LoanRequestDate', 'DESC');
     const [data, count] = await query.getManyAndCount();
+    const result = [];
+    for (const loan of data) {
+      const Oldobservations = await this.bookLoanRepository
+        .createQueryBuilder('bookLoan')
+        .select('bookLoan.Observations')
+        .where('bookLoan.Status = :status', { status: 'Finalizado' })
+        .andWhere('bookLoan.Observations IS NOT NULL')
+        .andWhere('bookLoan.userCedula = :cedula', { cedula: loan.userCedula })
+        .orderBy('bookLoan.LoanRequestDate', 'DESC')
+        .take(5)
+        .getRawMany();
 
-    const result = data.map((loan) => ({
-      Status: loan.Status,
-      BookLoanId: loan.BookLoanId,
-      LoanRequestDate: loan.LoanRequestDate,
-      BookPickUpDate: loan.BookPickUpDate,
-      LoanExpirationDate: loan.LoanExpirationDate,
-      Observations: loan.Observations,
-      user: {
-        name: loan.userName,
-        lastName: loan.userAddress,
-        cedula: loan.userCedula,
-      },
-      book: {
-        Title: loan.book.Title,
-        signatureCode: loan.book.signatureCode,
-        InscriptionCode: loan.book.InscriptionCode,
-        BookCode: loan.book.BookCode,
-      },
-    }));
+      result.push({
+        Status: loan.Status,
+        BookLoanId: loan.BookLoanId,
+        LoanRequestDate: loan.LoanRequestDate,
+        BookPickUpDate: loan.BookPickUpDate,
+        LoanExpirationDate: loan.LoanExpirationDate,
+        Observations: loan.Observations,
+        OldObservations: Oldobservations.map((obs) => obs.bookLoan_Observations),
+        user: {
+          name: loan.userName,
+          Adress: loan.userAddress,
+          cedula: loan.userCedula,
+          PhoneNumber: loan.userPhone,
+        },
+        book: {
+          Title: loan.book.Title,
+          signatureCode: loan.book.signatureCode,
+          InscriptionCode: loan.book.InscriptionCode,
+          BookCode: loan.book.BookCode,
+          Author: loan.book.Author,
+        },
+      });
+    }
 
     return { data: result, count };
   }
@@ -468,7 +484,9 @@ export class BookLoanService {
     const query = this.bookLoanRepository
       .createQueryBuilder('bookLoan')
       .leftJoinAndSelect('bookLoan.book', 'book')
-      .where('bookLoan.Status NOT IN (:...statuses)', { statuses: ['En progreso', 'Pendiente'] });
+      .where('bookLoan.Status NOT IN (:...statuses)', {
+        statuses: ['En progreso', 'Pendiente'],
+      });
 
     if (StartDate)
       query.andWhere('Date(bookLoan.LoanRequestDate) >= :StartDate', {
@@ -501,14 +519,16 @@ export class BookLoanService {
       Observations: loan.Observations,
       user: {
         name: loan.userName,
-        lastName: loan.userAddress,
+        Adress: loan.userAddress,
         cedula: loan.userCedula,
+        PhoneNumber: loan.userPhone,
       },
       book: {
         Title: loan.book.Title,
         signatureCode: loan.book.signatureCode,
         InscriptionCode: loan.book.InscriptionCode,
         BookCode: loan.book.BookCode,
+        Author: loan.book.Author,
       },
     }));
 
@@ -578,14 +598,16 @@ export class BookLoanService {
       Observations: loan.Observations,
       user: {
         name: loan.userName,
-        lastName: loan.userAddress,
+        Adress: loan.userAddress,
         cedula: loan.userCedula,
+        PhoneNumber: loan.userPhone,
       },
       book: {
         Title: loan.book.Title,
         signatureCode: loan.book.signatureCode,
         InscriptionCode: loan.book.InscriptionCode,
         BookCode: loan.book.BookCode,
+        Author: loan.book.Author,
       },
     }));
 
