@@ -30,6 +30,7 @@ import { BookLoan, BookType } from './book-loan.entity';
 import { Book } from 'src/books/book.entity';
 import { BooksChildren } from 'src/book-children/book-children.entity';
 import { removeOffset } from '@formkit/tempo';
+
 @Injectable()
 export class BookLoanService {
   constructor(
@@ -664,6 +665,96 @@ export class BookLoanService {
     } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
+    }
+  }
+
+  async extendLoan(
+    bookLoanId: number,
+    extendedDTO: any,
+  ): Promise<{ message: string }> {
+    try {
+      const existingLoan = await this.bookLoanRepository.findOne({
+        where: { BookLoanId: bookLoanId },
+        relations: ['book'],
+      });
+
+      if (!existingLoan) {
+        throw new NotFoundException(
+          `No se encontró un préstamo con ID ${bookLoanId}`,
+        );
+      }
+
+      if (existingLoan.Status !== 'En progreso') {
+        throw new BadRequestException(
+          `El préstamo con ID ${bookLoanId} no está en progreso y no puede extenderse.`,
+        );
+      }
+
+      const targetDate = new Date(existingLoan.LoanExpirationDate);
+      const extendedDate = new Date(extendedDTO.LoanExpirationDate);
+      const today = new Date();
+      const dayOfWeek = extendedDate.getDay();
+
+      today.setHours(0, 0, 0, 0);
+      targetDate.setHours(0, 0, 0, 0);
+      extendedDate.setHours(0, 0, 0, 0);
+
+      if (extendedDate < targetDate) {
+        throw new BadRequestException(
+          `La nueva fecha de devolución no puede ser anterior a la fecha de devolucion actual.`,
+        );
+      }
+
+      if (extendedDate <= today) {
+        throw new BadRequestException(
+          `La nueva fecha de devolución no puede ser anterior o igual a la fecha actual.`,
+        );
+      }
+
+      if (dayOfWeek === 0 || dayOfWeek === 6) {
+        throw new BadRequestException(
+          `La nueva fecha de devolución no puede ser un fin de semana.`,
+        );
+      }
+      const diffInMs = targetDate.getTime() - today.getTime();
+      const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+      if (diffInDays <= 4) {
+        throw new BadRequestException(
+          `No se puede extender el préstamo: faltan menos de 4 días para la fecha límite.`,
+        );
+      }
+
+      const newLoanDto: CreateBookLoanDto = {
+        BookPickUpDate: existingLoan.BookPickUpDate.toString(),
+        LoanExpirationDate: extendedDTO.LoanExpirationDate,
+        bookBookCode: existingLoan.book.BookCode,
+        userCedula: existingLoan.userCedula,
+        userPhone: existingLoan.userPhone,
+        userAddress: existingLoan.userAddress,
+        userName: existingLoan.userName,
+        aprovedBy: existingLoan.aprovedBy || null,
+      };
+
+      const newLoan = this.bookLoanRepository.create({
+        ...newLoanDto,
+        LoanRequestDate: new Date(),
+        Status: 'En progreso',
+      });
+
+      await this.bookLoanRepository.save(newLoan);
+      await this.noteService.createNote({
+        message: `Se ha extendido el préstamo del libro ${existingLoan.book.BookCode}. Nuevo vencimiento: ${newLoanDto.LoanExpirationDate}`,
+        type: 'Extensión de préstamo',
+      });
+
+      return {
+        message: 'Se a realizado la extensión de prestamo exitosamente',
+      };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al extender el préstamo';
       throw new InternalServerErrorException(errorMessage);
     }
   }

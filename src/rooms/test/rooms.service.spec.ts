@@ -1,10 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoomsService } from './rooms.service';
+
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Rooms } from './entities/room.entity';
-import { getRoomDto } from './dto/get-pagination.dto';
+
+
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { RoomsService } from '../rooms.service';
+import { Rooms } from '../entities/room.entity';
 
 
 describe('RoomsService', () => {
