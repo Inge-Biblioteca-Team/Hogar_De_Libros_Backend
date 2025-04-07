@@ -7,12 +7,12 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  Between,
+  Equal,
   FindManyOptions,
   FindOptionsWhere,
   In,
-  LessThanOrEqual,
   Like,
-  MoreThanOrEqual,
   Not,
   Repository,
 } from 'typeorm';
@@ -29,7 +29,7 @@ import { ChangeLoanStatus } from './DTO/ChangeLoanStatus.dto';
 import { BookLoan, BookType } from './book-loan.entity';
 import { Book } from 'src/books/book.entity';
 import { BooksChildren } from 'src/book-children/book-children.entity';
-
+import { removeOffset } from '@formkit/tempo';
 @Injectable()
 export class BookLoanService {
   constructor(
@@ -232,13 +232,14 @@ export class BookLoanService {
     };
 
     if (StartDate) {
-      where.LoanRequestDate = MoreThanOrEqual(
-        new Date(`${StartDate}T00:00:00.000Z`),
+      where.LoanRequestDate = Between(
+        removeOffset(new Date(`${StartDate}T00:00:00.000Z`), '-0600'),
+        removeOffset(new Date(`${StartDate}T23:59:59.999Z`), '-0600'),
       );
     }
 
     if (LoanExpirationDate) {
-      where.LoanExpirationDate = LessThanOrEqual(LoanExpirationDate);
+      where.LoanExpirationDate = Equal(LoanExpirationDate);
     }
 
     if (cedula) {
@@ -278,19 +279,27 @@ export class BookLoanService {
       Status: 'Pendiente',
     };
 
-    if (StartDate) {
-      where.LoanRequestDate = MoreThanOrEqual(
-        new Date(`${StartDate}T00:00:00.000Z`),
+    if (StartDate && !EndDate) {
+      where.LoanRequestDate = Between(
+        removeOffset(new Date(`${StartDate}T00:00:00.000Z`), '-0600'),
+        removeOffset(new Date(`${StartDate}T23:59:59.999Z`), '-0600'),
       );
     }
-    if (EndDate) {
-      where.LoanRequestDate = LessThanOrEqual(
-        new Date(`${EndDate}T23:59:59.999Z`),
+    if (EndDate && !StartDate) {
+      where.LoanRequestDate = Between(
+        removeOffset(new Date(`${EndDate}T00:00:00.000Z`), '-0600'),
+        removeOffset(new Date(`${EndDate}T23:59:59.999Z`), '-0600'),
+      );
+    }
+    if (EndDate && StartDate) {
+      where.LoanRequestDate = Between(
+        removeOffset(new Date(`${StartDate}T00:00:00.000Z`), '-0600'),
+        removeOffset(new Date(`${EndDate}T23:59:59.999Z`), '-0600'),
       );
     }
 
     if (LoanExpirationDate) {
-      where.LoanExpirationDate = LessThanOrEqual(LoanExpirationDate);
+      where.LoanExpirationDate = Equal(LoanExpirationDate);
     }
 
     if (cedula) {
@@ -315,14 +324,14 @@ export class BookLoanService {
         .createQueryBuilder('bookLoan')
         .select('bookLoan.Observations')
         .where('bookLoan.Status = :status', { status: 'Finalizado' })
-        .andWhere('bookLoan.Observations != :emptyString', { emptyString: '' }) 
+        .andWhere('bookLoan.Observations != :emptyString', { emptyString: '' })
         .andWhere('bookLoan.userCedula = :cedula', { cedula: loan.userCedula })
         .orderBy('bookLoan.LoanRequestDate', 'DESC')
         .take(5)
         .getRawMany();
 
       result.push({
-        ...loan, 
+        ...loan,
         OldObservations: Oldobservations.map(
           (obs) => obs.bookLoan_Observations,
         ),
@@ -349,14 +358,22 @@ export class BookLoanService {
       Status: Not(In(['En progreso', 'Pendiente'])),
     };
 
-    if (StartDate) {
-      where.LoanRequestDate = MoreThanOrEqual(
-        new Date(`${StartDate}T00:00:00.000Z`),
+    if (StartDate && !EndDate) {
+      where.LoanRequestDate = Between(
+        removeOffset(new Date(`${StartDate}T00:00:00.000Z`), '-0600'),
+        removeOffset(new Date(`${StartDate}T23:59:59.999Z`), '-0600'),
       );
     }
-    if (EndDate) {
-      where.LoanRequestDate = LessThanOrEqual(
-        new Date(`${EndDate}T23:59:59.999Z`),
+    if (EndDate && !StartDate) {
+      where.LoanRequestDate = Between(
+        removeOffset(new Date(`${EndDate}T00:00:00.000Z`), '-0600'),
+        removeOffset(new Date(`${EndDate}T23:59:59.999Z`), '-0600'),
+      );
+    }
+    if (EndDate && StartDate) {
+      where.LoanRequestDate = Between(
+        removeOffset(new Date(`${StartDate}T00:00:00.000Z`), '-0600'),
+        removeOffset(new Date(`${EndDate}T23:59:59.999Z`), '-0600'),
       );
     }
     if (name) {
