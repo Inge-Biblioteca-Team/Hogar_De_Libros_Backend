@@ -30,6 +30,7 @@ import { BookLoan, BookType } from './book-loan.entity';
 import { Book } from 'src/books/book.entity';
 import { BooksChildren } from 'src/book-children/book-children.entity';
 import { removeOffset } from '@formkit/tempo';
+import { ExtendLoanDTO } from './DTO/ExtendLoan.dto';
 
 @Injectable()
 export class BookLoanService {
@@ -671,7 +672,7 @@ export class BookLoanService {
 
   async extendLoan(
     bookLoanId: number,
-    extendedDTO: any,
+    extendedDTO: ExtendLoanDTO,
   ): Promise<{ message: string }> {
     try {
       const existingLoan = await this.bookLoanRepository.findOne({
