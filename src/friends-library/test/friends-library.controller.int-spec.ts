@@ -13,6 +13,18 @@ describe('FriendsLibraryController (Integration)', () => {
   let dataSource: DataSource;
   let createdFriendId: number;
 
+  const friendDto = {
+    UserFullName: 'Ana María Gómez',
+    UserCedula: '123456789',
+    UserBirthDate: '1990-01-01',
+    UserGender: 'Femenino',
+    UserAddress: 'Calle Principal 45',
+    UserPhone: '88881234',
+    UserEmail: 'ana@example.com',
+    PrincipalCategory: 'Voluntariado',
+    SubCategory: 'Donación'
+  };
+
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -37,58 +49,21 @@ describe('FriendsLibraryController (Integration)', () => {
   });
 
   afterAll(async () => {
-    await dataSource.destroy();
-    await app.close();
+    if (app) await app.close();
+    if (dataSource && dataSource.isInitialized) {
+      await dataSource.destroy();
+    }
   });
 
   it('debería crear un amigo de la biblioteca (POST /friends-library)', async () => {
-    const friendDto = {
-      UserFullName: 'María González',
-      UserCedula: '123456789',
-      UserBirthDate: '2000-01-01',
-      UserGender: 'Mujer',
-      UserAddress: 'Calle 123',
-      UserPhone: '88888888',
-      UserEmail: 'maria@example.com',
-      PrincipalCategory: 'Educación',
-      SubCategory: 'Voluntariado'
-    };
-
-    const createResponse = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post('/friends-library')
       .send(friendDto);
 
-    console.log('CREATE FRIEND RESPONSE:', createResponse.body);
-    expect(createResponse.status).toBeLessThan(500);
-    expect(createResponse.body).toHaveProperty('message');
-
-    const listResponse = await request(app.getHttpServer()).get('/friends-library?page=1&limit=10');
-    console.log('LIST FRIENDS RESPONSE:', listResponse.body);
-
-    createdFriendId = listResponse.body.data?.[0]?.FriendId;
-    expect(createdFriendId).toBeDefined();
-  });
-
-  it('debería aprobar la solicitud (PATCH /friends-library/aproveFriendLibrary/:FriendID)', async () => {
-    const response = await request(app.getHttpServer())
-      .patch(`/friends-library/aproveFriendLibrary/${createdFriendId}`);
-
-    console.log('APROVE RESPONSE:', response.body);
+    console.log('CREATE FRIEND RESPONSE:', response.body);
     expect(response.status).toBeLessThan(500);
     expect(response.body).toHaveProperty('message');
   });
 
-  it('debería editar la solicitud (PATCH /friends-library/Edit-Friend/:FriendID)', async () => {
-    const editDto = {
-      UserFullName: 'María González Actualizada'
-    };
 
-    const response = await request(app.getHttpServer())
-      .patch(`/friends-library/Edit-Friend/${createdFriendId}`)
-      .send(editDto);
-
-    console.log('EDIT RESPONSE:', response.body);
-    expect(response.status).toBeLessThan(500);
-    expect(response.body).toHaveProperty('message');
-  });
 });

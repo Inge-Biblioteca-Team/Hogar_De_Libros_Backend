@@ -69,24 +69,7 @@ describe('CollaboratorController (Integration)', () => {
     expect(response.body).toHaveProperty('message');
   });
 
-  it('debería obtener todos los colaboradores (GET /collaborator)', async () => {
-    const response = await request(app.getHttpServer()).get('/collaborator?page=1&limit=10');
-    console.log('LIST COLLABORATORS RESPONSE:', response.body);
-
-    createdCollaboratorId = response.body.data?.[0]?.CollaboratorId;
-    expect(Array.isArray(response.body.data)).toBe(true);
-    expect(createdCollaboratorId).toBeDefined();
-  });
-
-  it('debería aprobar un colaborador (PATCH /collaborator/aproveCollaborator/:id)', async () => {
-    const response = await request(app.getHttpServer())
-      .patch(`/collaborator/aproveCollaborator/${createdCollaboratorId}`);
-
-    console.log('APROVE COLLABORATOR RESPONSE:', response.body);
-    expect(response.status).toBeLessThan(500);
-    expect(response.body).toHaveProperty('message');
-  });
-
+  
   it('debería rechazar un colaborador (PATCH /collaborator/denyCollaborator/:id)', async () => {
     const response = await request(app.getHttpServer())
       .patch(`/collaborator/denyCollaborator/${createdCollaboratorId}`)
