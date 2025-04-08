@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty,  } from '@nestjs/swagger';
 
-import { IsDateString, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class ExtendLoanDTO {
   @ApiProperty({
@@ -9,6 +9,9 @@ export class ExtendLoanDTO {
     description: 'Nueva fecha de devolución',
   })
   @IsNotEmpty()
-  @IsDateString()
   LoanExpirationDate: string;
+
+  @ApiProperty()
+  @IsString()
+  Reason:string
 }
