@@ -64,7 +64,7 @@ export class BookLoanController {
     return this.bookLoanService.createAdminChildrenLoan(createBookLoanDto);
   }
 
-  @Patch('/Approve')
+  @Patch('Approve')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
   async setInProcess(
@@ -73,7 +73,7 @@ export class BookLoanController {
     return await this.bookLoanService.setInProcess(data);
   }
 
-  @Patch('/Refute')
+  @Patch('Refute')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('admin')
   async refuseLoan(
@@ -82,7 +82,7 @@ export class BookLoanController {
     return await this.bookLoanService.refuseLoan(data);
   }
 
-  @Patch('/finalize')
+  @Patch('finalize')
   @UseGuards(AuthGuard)
   async CancelLoan(
     @Body() data: ChangeLoanStatus,
@@ -90,7 +90,7 @@ export class BookLoanController {
     return await this.bookLoanService.finalizeLoan(data);
   }
 
-  @Patch('/cancel')
+  @Patch('cancel')
   @UseGuards(AuthGuard)
   async finalizeLoan(
     @Body() data: ChangeLoanStatus,

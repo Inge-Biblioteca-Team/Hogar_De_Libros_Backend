@@ -210,12 +210,13 @@ export class BooksService {
     const query = this.bookRepository.createQueryBuilder('book');
 
     query.andWhere(
-      `book.BookCode NOT IN (
-        SELECT loan.bookBookCode 
-        FROM book_loans loan 
-        WHERE loan.Status IN (:...statuses)
+      `NOT EXISTS (
+        SELECT 1
+        FROM book_loans loan
+        WHERE loan.bookBookCode = book.BookCode
+        AND loan.Status IN (:...statuses)
       )`,
-      { statuses: ['Pendiente', 'En progreso'] },
+      { statuses: ['Pendiente', 'En progreso'] }
     );
 
     if (Title) {

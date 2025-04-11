@@ -1,18 +1,19 @@
 /* eslint-disable prettier/prettier */
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  Between,
+  Equal,
   FindManyOptions,
   FindOptionsWhere,
   In,
-  LessThanOrEqual,
   Like,
-  MoreThanOrEqual,
   Not,
   Repository,
 } from 'typeorm';
@@ -29,6 +30,7 @@ import { ChangeLoanStatus } from './DTO/ChangeLoanStatus.dto';
 import { BookLoan, BookType } from './book-loan.entity';
 import { Book } from 'src/books/book.entity';
 import { BooksChildren } from 'src/book-children/book-children.entity';
+import { diffDays, removeOffset } from '@formkit/tempo';
 import { ExtendLoanDTO } from './DTO/ExtendLoan.dto';
 
 @Injectable()
@@ -233,13 +235,14 @@ export class BookLoanService {
     };
 
     if (StartDate) {
-      where.LoanRequestDate = MoreThanOrEqual(
-        new Date(`${StartDate}T00:00:00.000Z`),
+      where.LoanRequestDate = Between(
+        removeOffset(new Date(`${StartDate}T00:00:00.000Z`), '-0600'),
+        removeOffset(new Date(`${StartDate}T23:59:59.999Z`), '-0600'),
       );
     }
 
     if (LoanExpirationDate) {
-      where.LoanExpirationDate = LessThanOrEqual(LoanExpirationDate);
+      where.LoanExpirationDate = Equal(LoanExpirationDate);
     }
 
     if (cedula) {
@@ -279,19 +282,27 @@ export class BookLoanService {
       Status: 'Pendiente',
     };
 
-    if (StartDate) {
-      where.LoanRequestDate = MoreThanOrEqual(
-        new Date(`${StartDate}T00:00:00.000Z`),
+    if (StartDate && !EndDate) {
+      where.LoanRequestDate = Between(
+        removeOffset(new Date(`${StartDate}T00:00:00.000Z`), '-0600'),
+        removeOffset(new Date(`${StartDate}T23:59:59.999Z`), '-0600'),
       );
     }
-    if (EndDate) {
-      where.LoanRequestDate = LessThanOrEqual(
-        new Date(`${EndDate}T23:59:59.999Z`),
+    if (EndDate && !StartDate) {
+      where.LoanRequestDate = Between(
+        removeOffset(new Date(`${EndDate}T00:00:00.000Z`), '-0600'),
+        removeOffset(new Date(`${EndDate}T23:59:59.999Z`), '-0600'),
+      );
+    }
+    if (EndDate && StartDate) {
+      where.LoanRequestDate = Between(
+        removeOffset(new Date(`${StartDate}T00:00:00.000Z`), '-0600'),
+        removeOffset(new Date(`${EndDate}T23:59:59.999Z`), '-0600'),
       );
     }
 
     if (LoanExpirationDate) {
-      where.LoanExpirationDate = LessThanOrEqual(LoanExpirationDate);
+      where.LoanExpirationDate = Equal(LoanExpirationDate);
     }
 
     if (cedula) {
@@ -350,14 +361,22 @@ export class BookLoanService {
       Status: Not(In(['En progreso', 'Pendiente'])),
     };
 
-    if (StartDate) {
-      where.LoanRequestDate = MoreThanOrEqual(
-        new Date(`${StartDate}T00:00:00.000Z`),
+    if (StartDate && !EndDate) {
+      where.LoanRequestDate = Between(
+        removeOffset(new Date(`${StartDate}T00:00:00.000Z`), '-0600'),
+        removeOffset(new Date(`${StartDate}T23:59:59.999Z`), '-0600'),
       );
     }
-    if (EndDate) {
-      where.LoanRequestDate = LessThanOrEqual(
-        new Date(`${EndDate}T23:59:59.999Z`),
+    if (EndDate && !StartDate) {
+      where.LoanRequestDate = Between(
+        removeOffset(new Date(`${EndDate}T00:00:00.000Z`), '-0600'),
+        removeOffset(new Date(`${EndDate}T23:59:59.999Z`), '-0600'),
+      );
+    }
+    if (EndDate && StartDate) {
+      where.LoanRequestDate = Between(
+        removeOffset(new Date(`${StartDate}T00:00:00.000Z`), '-0600'),
+        removeOffset(new Date(`${EndDate}T23:59:59.999Z`), '-0600'),
       );
     }
     if (name) {
@@ -659,7 +678,7 @@ export class BookLoanService {
     try {
       const existingLoan = await this.bookLoanRepository.findOne({
         where: { BookLoanId: bookLoanId },
-        relations: ['book'],
+        relations: ['book', 'childrenBook'],
       });
 
       if (!existingLoan) {
@@ -674,66 +693,60 @@ export class BookLoanService {
         );
       }
 
-      const targetDate = new Date(existingLoan.LoanExpirationDate);
-      const extendedDate = new Date(extendedDTO.LoanExpirationDate);
-      const today = new Date();
-      const dayOfWeek = extendedDate.getDay();
-
-      today.setHours(0, 0, 0, 0);
-      targetDate.setHours(0, 0, 0, 0);
-      extendedDate.setHours(0, 0, 0, 0);
-
-      if (extendedDate < targetDate) {
+      if (
+        diffDays(new Date(existingLoan.LoanExpirationDate), new Date()) <= 4
+      ) {
         throw new BadRequestException(
-          `La nueva fecha de devolución no puede ser anterior a la fecha de devolucion actual.`,
+          `No se puede solicitar la extensión del préstamo: faltan menos de 4 días para la fecha límite.`,
         );
       }
 
-      if (extendedDate <= today) {
-        throw new BadRequestException(
-          `La nueva fecha de devolución no puede ser anterior o igual a la fecha actual.`,
+      let prevRequest: BookLoan;
+
+      if (existingLoan.book?.BookCode) {
+        prevRequest = await this.bookLoanRepository.findOne({
+          where: {
+            userCedula: existingLoan.userCedula,
+            Status: 'Pendiente',
+            book: { BookCode: existingLoan.book.BookCode },
+          },
+        });
+      } else if (existingLoan.childrenBook?.BookCode) {
+        prevRequest = await this.bookLoanRepository.findOne({
+          where: {
+            userCedula: existingLoan.userCedula,
+            Status: 'Pendiente',
+            childrenBook: { BookCode: existingLoan.childrenBook.BookCode },
+          },
+        });
+      }
+
+      if (prevRequest) {
+        throw new ConflictException(
+          `Ya se solicito una extencion de prestamo para el libro ${prevRequest.book?.Title || prevRequest.childrenBook?.Title}`,
         );
       }
 
-      if (dayOfWeek === 0 || dayOfWeek === 6) {
-        throw new BadRequestException(
-          `La nueva fecha de devolución no puede ser un fin de semana.`,
-        );
-      }
-      const diffInMs = targetDate.getTime() - today.getTime();
-      const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+      const loan = this.bookLoanRepository.create(existingLoan);
 
-      if (diffInDays <= 4) {
-        throw new BadRequestException(
-          `No se puede extender el préstamo: faltan menos de 4 días para la fecha límite.`,
-        );
-      }
+      loan.LoanRequestDate = new Date();
+      (loan.BookPickUpDate = existingLoan.LoanExpirationDate),
+        (loan.LoanExpirationDate = new Date(extendedDTO.LoanExpirationDate));
+      loan.aprovedBy = null;
+      loan.Status = 'Pendiente';
+      loan.BookLoanId = undefined;
+      loan.Observations = `Solicitud de extension, motivo: ${extendedDTO.Reason}`;
 
-      const newLoanDto: CreateBookLoanDto = {
-        BookPickUpDate: existingLoan.BookPickUpDate.toString(),
-        LoanExpirationDate: extendedDTO.LoanExpirationDate,
-        bookBookCode: existingLoan.book.BookCode,
-        userCedula: existingLoan.userCedula,
-        userPhone: existingLoan.userPhone,
-        userAddress: existingLoan.userAddress,
-        userName: existingLoan.userName,
-        aprovedBy: existingLoan.aprovedBy || null,
-      };
+      const newLoan = await this.bookLoanRepository.save(loan);
 
-      const newLoan = this.bookLoanRepository.create({
-        ...newLoanDto,
-        LoanRequestDate: new Date(),
-        Status: 'En progreso',
-      });
-
-      await this.bookLoanRepository.save(newLoan);
       await this.noteService.createNote({
-        message: `Se ha extendido el préstamo del libro ${existingLoan.book.BookCode}. Nuevo vencimiento: ${newLoanDto.LoanExpirationDate}`,
+        message: `Se ha solicitado la extension del préstamo del libro ${existingLoan.book?.BookCode || existingLoan.childrenBook?.Title}. Nuevo vencimiento solicitado: ${newLoan.LoanExpirationDate} `,
         type: 'Extensión de préstamo',
       });
 
       return {
-        message: 'Se a realizado la extensión de prestamo exitosamente',
+        message:
+          'Se a realizado la solicitud de extensión de prestamo exitosamente',
       };
     } catch (error) {
       const errorMessage =
