@@ -30,7 +30,7 @@ import { ChangeLoanStatus } from './DTO/ChangeLoanStatus.dto';
 import { BookLoan, BookType } from './book-loan.entity';
 import { Book } from 'src/books/book.entity';
 import { BooksChildren } from 'src/book-children/book-children.entity';
-import { diffDays, removeOffset } from '@formkit/tempo';
+import { dayEnd, dayStart, diffDays, removeOffset } from '@formkit/tempo';
 import { ExtendLoanDTO } from './DTO/ExtendLoan.dto';
 
 @Injectable()
@@ -236,8 +236,8 @@ export class BookLoanService {
 
     if (StartDate) {
       where.LoanRequestDate = Between(
-        removeOffset(new Date(`${StartDate}T00:00:00.000Z`), '-0600'),
-        removeOffset(new Date(`${StartDate}T23:59:59.999Z`), '-0600'),
+        removeOffset(new Date(`${dayStart(StartDate)}`), '-0600'),
+        removeOffset(new Date(`${dayEnd(StartDate)}`), '-0600'),
       );
     }
 
@@ -363,20 +363,20 @@ export class BookLoanService {
 
     if (StartDate && !EndDate) {
       where.LoanRequestDate = Between(
-        removeOffset(new Date(`${StartDate}T00:00:00.000Z`), '-0600'),
-        removeOffset(new Date(`${StartDate}T23:59:59.999Z`), '-0600'),
+        removeOffset(new Date(`${dayStart(StartDate)}`), '-0600'),
+        removeOffset(new Date(`${dayEnd(StartDate)}`), '-0600'),
       );
     }
     if (EndDate && !StartDate) {
       where.LoanRequestDate = Between(
-        removeOffset(new Date(`${EndDate}T00:00:00.000Z`), '-0600'),
-        removeOffset(new Date(`${EndDate}T23:59:59.999Z`), '-0600'),
+        removeOffset(new Date(`${dayStart(EndDate)}`), '-0600'),
+        removeOffset(new Date(`${dayEnd(EndDate)}`), '-0600'),
       );
     }
     if (EndDate && StartDate) {
       where.LoanRequestDate = Between(
-        removeOffset(new Date(`${StartDate}T00:00:00.000Z`), '-0600'),
-        removeOffset(new Date(`${EndDate}T23:59:59.999Z`), '-0600'),
+        removeOffset(new Date(`${dayStart(StartDate)}`), '-0600'),
+        removeOffset(new Date(`${dayEnd(EndDate)}`), '-0600'),
       );
     }
     if (name) {
@@ -388,6 +388,7 @@ export class BookLoanService {
     if (type) {
       where.type = type;
     }
+  
 
     const options: FindManyOptions<BookLoan> = {
       where,

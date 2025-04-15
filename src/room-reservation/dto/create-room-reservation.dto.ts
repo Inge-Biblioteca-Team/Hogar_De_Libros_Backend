@@ -20,8 +20,7 @@ export class CreateRoomReservationDto {
 
   @ApiProperty({ description: 'Fecha de emisión' })
   @IsNotEmpty({ message: 'El campo Fecha de emisión es obligatorio' })
-  @IsDate()
-  date: Date;
+  date: string;
 
   @ApiProperty({ description: 'Array con las horas de reserva (de 8 a 17)' })
   @ArrayMinSize(1, { message: 'Debe seleccionar al menos una hora' })
@@ -39,6 +38,16 @@ export class CreateRoomReservationDto {
   @IsOptional()
   @IsNumber()
   EventId?: number;
+
+  @ApiProperty({ description: 'ID del evento asociado' })
+  @IsOptional()
+  @IsString()
+  personNumber: string;
+
+  @ApiProperty({ description: 'ID del evento asociado' })
+  @IsOptional()
+  @IsString()
+  reason: string;
 
   @ApiProperty({ description: 'ID del curso asociado' })
   @IsOptional()

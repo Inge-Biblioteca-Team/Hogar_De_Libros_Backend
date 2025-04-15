@@ -30,7 +30,7 @@ export class RoomReservation {
 
   @Column({ type: 'date' })
   @ApiProperty({ description: 'Fecha Reservada' })
-  date: Date;
+  date: string;
 
   @Column({ type: 'simple-array' })
   selectedHours: number[];

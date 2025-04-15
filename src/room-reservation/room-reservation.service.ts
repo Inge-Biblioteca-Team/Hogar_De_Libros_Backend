@@ -101,6 +101,7 @@ export class RoomReservationService {
 
   async getActiveResertavions(Search: FilterGetDTO): Promise<Queque[]> {
     const { date } = Search;
+
     const query = this.reservationRepository
       .createQueryBuilder('room_reservations')
       .leftJoinAndSelect('room_reservations.rooms', 'rooms')
@@ -284,7 +285,7 @@ export class RoomReservationService {
     const count = await this.reservationRepository.count({
       where: {
         user: { cedula: userCedula },
-        reserveStatus: Not("Finalizado")
+        reserveStatus: Not('Finalizado'),
       },
     });
 
