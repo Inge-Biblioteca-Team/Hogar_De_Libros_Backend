@@ -40,6 +40,16 @@ export class CreateRoomReservationDto {
   @IsNumber()
   EventId?: number;
 
+  @ApiProperty({ description: 'ID del evento asociado' })
+  @IsOptional()
+  @IsString()
+  personNumber: string;
+
+  @ApiProperty({ description: 'ID del evento asociado' })
+  @IsOptional()
+  @IsString()
+  reason: string;
+
   @ApiProperty({ description: 'ID del curso asociado' })
   @IsOptional()
   @IsNumber()
