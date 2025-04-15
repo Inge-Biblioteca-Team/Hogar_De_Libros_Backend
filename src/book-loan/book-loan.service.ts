@@ -30,7 +30,7 @@ import { ChangeLoanStatus } from './DTO/ChangeLoanStatus.dto';
 import { BookLoan, BookType } from './book-loan.entity';
 import { Book } from 'src/books/book.entity';
 import { BooksChildren } from 'src/book-children/book-children.entity';
-import { diffDays, removeOffset } from '@formkit/tempo';
+import { dayEnd, dayStart, diffDays, removeOffset } from '@formkit/tempo';
 import { ExtendLoanDTO } from './DTO/ExtendLoan.dto';
 
 @Injectable()
@@ -357,15 +357,18 @@ export class BookLoanService {
       type,
     } = paginationDto;
 
+   
+
     const where: FindOptionsWhere<BookLoan> = {
       Status: Not(In(['En progreso', 'Pendiente'])),
     };
 
     if (StartDate && !EndDate) {
       where.LoanRequestDate = Between(
-        removeOffset(new Date(`${StartDate}T00:00:00.000Z`), '-0600'),
-        removeOffset(new Date(`${StartDate}T23:59:59.999Z`), '-0600'),
+        removeOffset(new Date(`${dayStart(StartDate)}`), '-0600'),
+        removeOffset(new Date(`${dayEnd(StartDate)}`), '-0600'),
       );
+      console.log( removeOffset(new Date(`${dayEnd(StartDate)}`), '-0600'),)
     }
     if (EndDate && !StartDate) {
       where.LoanRequestDate = Between(
