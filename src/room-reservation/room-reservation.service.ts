@@ -15,7 +15,6 @@ import { UpdateRoomReservationDto } from './dto/update-room-reservation.dto';
 import { UserReservationDTO } from './dto/UserReservations';
 import { NotesService } from 'src/notes/notes.service';
 import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
-import { format } from '@formkit/tempo';
 
 @Injectable()
 export class RoomReservationService {
@@ -102,7 +101,7 @@ export class RoomReservationService {
 
   async getActiveResertavions(Search: FilterGetDTO): Promise<Queque[]> {
     const { date } = Search;
-    
+
     const query = this.reservationRepository
       .createQueryBuilder('room_reservations')
       .leftJoinAndSelect('room_reservations.rooms', 'rooms')
@@ -112,7 +111,7 @@ export class RoomReservationService {
 
     if (date) {
       query.andWhere('room_reservations.date = :date', {
-        date: format(new Date(date), "YYYY-MM-DD"),
+        date: date,
       });
     }
 

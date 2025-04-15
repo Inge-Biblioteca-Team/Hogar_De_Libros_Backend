@@ -7,7 +7,6 @@ import {
   IsOptional,
   Min,
   IsString,
-  IsDate,
   IsNumber,
 } from 'class-validator';
 
@@ -26,10 +25,10 @@ export class FilterGetDTO {
   @Type(() => Number)
   limit?: number;
 
-  @IsDate()
+  @IsString()
   @IsOptional()
   @ApiPropertyOptional({ description: 'Fecha a Consultar' })
-  date: Date;
+  date: string;
 
   @IsString()
   @IsOptional()

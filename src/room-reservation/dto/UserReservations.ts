@@ -2,7 +2,7 @@
 export class UserReservationDTO {
     rommReservationId: number;
     name: string;
-    date: Date;
+    date: string;
     selectedHours: number[];
     observations: string;
     personNumber: string;
