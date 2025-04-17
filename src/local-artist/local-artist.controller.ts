@@ -61,4 +61,11 @@ export class LocalArtistController {
   async DisableArtist(@Param('id') ArtistID: number): Promise <{message: string}> {
     return await this.localArtistService.DownArtist(ArtistID);
   }
+
+  @Patch(':id/Up')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('admin')
+  async EnableArtist(@Param('id') ArtistID: number): Promise <{message: string}> {
+    return await this.localArtistService.UpArtist(ArtistID);
+  }
 }

@@ -109,12 +109,38 @@ export class LocalArtistService {
       }
       if (!Artist.Actived) {
         throw new BadRequestException({
-          message: 'No existe el artista',
+          message: 'El artista ya se encuentra de baja',
         });
       }
       Artist.Actived = false;
       await this.localArtistRepository.save(Artist);
       return { message: 'Artista dado de baja con éxito' };
+    } catch (error) {
+      const errorMessage =
+        (error as Error).message || 'Error al procesar la solicitud';
+      throw new InternalServerErrorException(errorMessage);
+    }
+  }
+
+
+  async UpArtist(ArtistID: number): Promise<{ message: string }> {
+    try {
+      const Artist = await this.localArtistRepository.findOne({
+        where: { ID: ArtistID },
+      });
+      if (!Artist) {
+        throw new NotFoundException({
+          message: 'No existe el artista',
+        });
+      }
+      if (Artist.Actived) {
+        throw new BadRequestException({
+          message: 'El artista ya se encuentra activo',
+        });
+      }
+      Artist.Actived = true;
+      await this.localArtistRepository.save(Artist);
+      return { message: 'Artista habilitado con éxito' };
     } catch (error) {
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
