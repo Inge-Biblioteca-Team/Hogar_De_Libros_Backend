@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import {
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -32,6 +33,9 @@ export class AuthService {
         throw new NotFoundException(
           'El usuario no existe por favor revise sus datos.',
         );
+      }
+      if(!user.status){
+        throw new ForbiddenException('El usuario se encuentra inactivo. Si desea más información, comuníquese con la biblioteca.');
       }
       const isMatch = await bcrypt.compare(pass, user.password);
       if (!isMatch) {
