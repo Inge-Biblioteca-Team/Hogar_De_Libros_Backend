@@ -115,6 +115,7 @@ export class UserService {
     cedula: string,
     updateUserDto: UpdateUserDto,
   ): Promise<{ message: string }> {
+    console.log(updateUserDto)
     try {
       const user = await this.UserRepository.findOneBy({ cedula });
       if (!user)
