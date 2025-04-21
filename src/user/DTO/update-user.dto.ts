@@ -1,11 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsDate,
-  IsEmail,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsDate, IsEmail, IsOptional, IsString } from 'class-validator';
+import { Role } from '../user.entity';
 
 export class UpdateUserDto {
   @ApiProperty()
@@ -56,5 +52,11 @@ export class UpdateUserDto {
   birthDate: Date;
 
   @ApiPropertyOptional()
+  @IsOptional()
   loanPolicy: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  role: Role;
 }

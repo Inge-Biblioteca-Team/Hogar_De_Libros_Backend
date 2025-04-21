@@ -22,23 +22,35 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async signIn(@Body() signInDto: SignInDto, @Res() res: Response) {
+  async signIn(
+    @Body() signInDto: SignInDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     const result = await this.authService.LogIn(
       signInDto.username,
       signInDto.password,
     );
 
     if (result.accessToken) {
-      res.cookie('access_token', result.accessToken, {
-        httpOnly: true,
-        secure: true,
-        maxAge: 86400000,
-        sameSite: 'none'
-      });
-      return res.json({
-        user: result.user,
-        message: result.message,
-      });
+      if (this.isIOS(req)) {
+        return res.json({
+          accessToken: result.accessToken,
+          user: result.user,
+          message: result.message,
+        });
+      } else {
+        res.cookie('access_token', result.accessToken, {
+          httpOnly: true,
+          secure: true,
+          maxAge: 86400000,
+          sameSite: 'none',
+        });
+        return res.json({
+          user: result.user,
+          message: result.message,
+        });
+      }
     } else {
       return res
         .status(HttpStatus.UNAUTHORIZED)
@@ -67,7 +79,8 @@ export class AuthController {
 
   @Post('Profile')
   async loginWithToken(@Req() req: Request, @Res() res: Response) {
-    const token = req.cookies['access_token'];
+    const token =
+      req.cookies['access_token'] || this.extractTokenFromHeader(req);
     if (!token) {
       return res
         .status(401)
@@ -75,21 +88,36 @@ export class AuthController {
     }
     try {
       const result = await this.authService.getProfileWhitToken(token);
-      res.cookie('access_token', result.accessToken, {
-        httpOnly: true,
-        secure: true,
-        maxAge: 86400000,
-        sameSite: 'none',
-      });
+      if (!this.isIOS(req)) {
+        res.cookie('access_token', result.accessToken, {
+          httpOnly: true,
+          secure: true,
+          maxAge: 86400000,
+          sameSite: 'none',
+        });
+      }
       return res.status(200).json({
         user: result.user,
         message: result.message,
       });
     } catch (error) {
-      res.clearCookie['access_token']
+      res.clearCookie['access_token'];
       const errorMessage =
         (error as Error).message || 'Error al procesar la solicitud';
       throw new InternalServerErrorException(errorMessage);
     }
+  }
+
+  private extractTokenFromHeader(req: Request): string | undefined {
+    const authHeader = req.headers['authorization'];
+    if (authHeader?.startsWith('Bearer ')) {
+      return authHeader.split(' ')[1];
+    }
+    return undefined;
+  }
+
+  private isIOS(req: Request): boolean {
+    const userAgent = req.headers['user-agent'] || '';
+    return /iPhone|iPad|iPod/i.test(userAgent);
   }
 }
