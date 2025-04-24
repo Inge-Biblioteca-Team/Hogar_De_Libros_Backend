@@ -15,6 +15,7 @@ import { ProgramDTO } from './DTO/GetPDTO';
 import { ProgramsNames } from './DTO/ProgramNames';
 import { Course } from 'src/course/course.entity';
 import { activities } from './DTO/Programs-Activities.dto';
+import { ActivitiesFilterDTO } from './DTO/ActivitiesFilter.dto';
 
 @Injectable()
 export class ProgramsService {
@@ -220,11 +221,11 @@ export class ProgramsService {
   }
 
   async getActivities(
-    filters: SearchPDTO,
+    filters: ActivitiesFilterDTO,
   ): Promise<{ data: activities[]; count: number }> {
-    const { page = 1, limit = 5, programsId, month } = filters;
-
+    const { month, programID } = filters;
     const currentDate = new Date();
+
     const threeMonthsLater = new Date();
     threeMonthsLater.setMonth(currentDate.getMonth() + 3);
 
@@ -235,19 +236,16 @@ export class ProgramsService {
       .andWhere('course.date <= :threeMonthsLater', { threeMonthsLater })
       .andWhere('course.Status = :status', { status: 1 })
       .leftJoinAndSelect('program.events', 'events')
-      .orderBy('program.programName', 'ASC');
+     
 
-      if (programsId) {
-        query.andWhere('program.programsId = :programsId', {
-          programsId: programsId,
-        });
-      }
+    if (programID) {
+      query.andWhere('program.programsId = :programsId', {
+        programsId: programID,
+      });
+    }
     if (month) {
       query.andWhere('MONTH(course.date) = :month', { month });
     }
-
-    query.skip((page - 1) * limit).take(limit);
-
     const [programData] = await query.getManyAndCount();
 
     const activities: activities[] = programData.flatMap((program) => [
