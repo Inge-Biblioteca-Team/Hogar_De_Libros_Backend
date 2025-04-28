@@ -153,8 +153,8 @@ export class ReportService {
     );
 
     if (asistencias.length == 0) {
-      const startDateObj = format(start, 'DD/MM/YY', 'es');
-      const endDateObj = format(end, 'DD/MM/YY', 'es');
+      const startDateObj = format(start, 'DD/MM/YYYY', 'es');
+      const endDateObj = format(end, 'DD/MM/YYYY', 'es');
 
       throw new NotFoundException({
         message: `No existen asistencias dentro del rango de fechas ${startDateObj} a ${endDateObj}`,
@@ -196,7 +196,6 @@ export class ReportService {
   async generateBLoans(params: ReportDto): Promise<Buffer> {
     const baseUrl = process.env.BASE_URL;
     const { startDate, endDate } = params;
-
     const start = new Date(`${startDate}T00:00:00`);
     const end = new Date(`${endDate}T23:59:59`);
 
@@ -209,8 +208,8 @@ export class ReportService {
     });
 
     if (prestamos.length == 0) {
-      const startDateObj = format(start, 'DD/MM/YY', 'es');
-      const endDateObj = format(end, 'DD/MM/YY', 'es');
+      const startDateObj = format(start, 'DD/MM/YYYY', 'es');
+      const endDateObj = format(end, 'DD/MM/YYYY', 'es');
 
       throw new NotFoundException({
         message: `No existen prestamos dentro del rango de fechas ${startDateObj} a ${endDateObj}`,
@@ -264,8 +263,8 @@ export class ReportService {
       .getMany();
 
     if (cursos.length == 0) {
-      const startDateObj = format(start, 'DD/MM/YY', 'es');
-      const endDateObj = format(end, 'DD/MM/YY', 'es');
+      const startDateObj = format(start, 'DD/MM/YYYY', 'es');
+      const endDateObj = format(end, 'DD/MM/YYYY', 'es');
 
       throw new NotFoundException({
         message: `No existen cursos dentro del rango de fechas ${startDateObj} a ${endDateObj}`,
@@ -331,8 +330,8 @@ export class ReportService {
     );
 
     if (eventos.length == 0) {
-      const startDateObj = format(start, 'DD/MM/YY', 'es');
-      const endDateObj = format(end, 'DD/MM/YY', 'es');
+      const startDateObj = format(start, 'DD/MM/YYYY', 'es');
+      const endDateObj = format(end, 'DD/MM/YYYY', 'es');
 
       throw new NotFoundException({
         message: `No existen eventos dentro del rango de fechas ${startDateObj} a ${endDateObj}`,
@@ -384,8 +383,8 @@ export class ReportService {
     });
 
     if (Users.length == 0) {
-      const startDateObj = format(start, 'DD/MM/YY', 'es');
-      const endDateObj = format(end, 'DD/MM/YY', 'es');
+      const startDateObj = format(start, 'DD/MM/YYYY', 'es');
+      const endDateObj = format(end, 'DD/MM/YYYY', 'es');
 
       throw new NotFoundException({
         message: `Ningún usuario se registró entre el ${startDateObj} y el ${endDateObj}`,
@@ -430,10 +429,9 @@ export class ReportService {
   //*Reporte de prestamos de computadoras( Especifico y con total al final del documento)
   async generateWSLoans(params: ReportDto): Promise<Buffer> {
     const { startDate, endDate } = params;
-
     const start = new Date(`${startDate}T00:00:00`);
     const end = new Date(`${endDate}T23:59:59`);
-
+    
     const prestamos = await this.loanRepository.find({
       where: {
         LoanStartDate: Between(start, end),
@@ -442,8 +440,8 @@ export class ReportService {
     });
 
     if (prestamos.length == 0) {
-      const startDateObj = format(start, 'DD/MM/YY', 'es');
-      const endDateObj = format(end, 'DD/MM/YY', 'es');
+      const startDateObj = format(start, 'DD/MM/YYYY', 'es');
+      const endDateObj = format(end, 'DD/MM/YYYY', 'es');
 
       throw new NotFoundException({
         message: `No existen prestamos dentro del rango de fechas ${startDateObj} a ${endDateObj}`,
