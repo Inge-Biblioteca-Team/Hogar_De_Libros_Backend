@@ -130,9 +130,22 @@ export class BookChildrenService {
       ShelfCategory,
       PublishedYear,
       Editorial,
+      lib
     } = PaginationFilterDto;
 
     const query = this.bookChildrenRepository.createQueryBuilder('book');
+
+    if(lib){
+      query.andWhere(
+        `NOT EXISTS (
+          SELECT 1
+          FROM book_loans loan
+          WHERE loan.childrenBookBookCode = book.BookCode
+          AND loan.Status IN (:...statuses)
+          )`,
+          { statuses: ['Pendiente', 'En progreso'] }
+        );
+      }
 
     if (Title) {
       query.andWhere('book.Title Like :Title', { Title: `%${Title}%` });

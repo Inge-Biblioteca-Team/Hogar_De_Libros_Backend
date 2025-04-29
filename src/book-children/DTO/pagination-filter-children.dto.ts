@@ -62,4 +62,9 @@ export class PaginationFilterChildrenDto {
   @IsOptional()
   @IsString()
   Editorial: string;
+
+  @ApiPropertyOptional({ description: 'Filtrar solo libres' })
+  @IsOptional()
+  @IsString()
+  lib: string;
 }

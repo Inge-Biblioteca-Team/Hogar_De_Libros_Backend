@@ -163,11 +163,12 @@ export class RoomsService {
     const rooms = await this.roomRepository.find({
       select: ['roomId', 'name', 'roomNumber'],
       where: { status: 'D' },
+      order: { 
+        roomNumber: 'ASC' 
+      },
+      take: 3
     });
-    const sortedRooms = rooms.sort(
-      (a, b) => parseInt(a.roomNumber) - parseInt(b.roomNumber),
-    );
 
-    return sortedRooms;
+    return rooms;
   }
 }
