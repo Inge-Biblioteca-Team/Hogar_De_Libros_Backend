@@ -145,7 +145,6 @@ export class BookChildrenService {
           )`,
           { statuses: ['Pendiente', 'En progreso'] }
         );
-        console.log(lib)
       }
 
     if (Title) {
