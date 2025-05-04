@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString, IsInt, Min } from 'class-validator';
 
@@ -21,9 +22,6 @@ export class OpacFiltroDto {
   @IsOptional()
   @IsInt()
   publishedYear?: number;
-
-  year:number;
-
   
   @ApiPropertyOptional({ description: 'Número de página', default: 1 })
   @IsOptional()
