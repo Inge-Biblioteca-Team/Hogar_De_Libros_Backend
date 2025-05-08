@@ -7,7 +7,7 @@ import { BookLoan } from 'src/book-loan/book-loan.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/user.entity';
 import { Collaborator } from 'src/collaborator/collaborator.entity';
-import { addDay, date, format, weekEnd, weekStart } from '@formkit/tempo';
+import { format, weekEnd, weekStart } from '@formkit/tempo';
 import { FriendsLibrary } from 'src/friends-library/friend-library.entity';
 import { Donation } from 'src/donation/donation.entity';
 import { RoomReservation } from 'src/room-reservation/entities/room-reservation.entity';
