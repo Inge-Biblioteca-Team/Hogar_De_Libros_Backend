@@ -7,11 +7,13 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Donation } from './donation.entity';
 import { User } from 'src/user/user.entity';
+import { MailsModule } from 'src/mails/mails.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Donation, User]),
     NotesModule,
+    MailsModule,
     MulterModule.register({
       storage: diskStorage({
         destination: './uploads',

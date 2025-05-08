@@ -13,6 +13,7 @@ import { CreateDonationDTO } from './DTO/create-donation-DTO';
 import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
 import { GetFilterDonationDTO } from './DTO/get-filter-donation-DTO';
 import { DenyDonationRequestDTO } from './DTO/deny-donation-DTO';
+import { MailsService } from 'src/mails/mails.service';
 
 @Injectable()
 export class DonationService {
@@ -20,7 +21,7 @@ export class DonationService {
     @InjectRepository(Donation)
     private donationRepository: Repository<Donation>,
     @InjectRepository(User) private UserRepository: Repository<User>,
-
+    private mailService: MailsService,
     private noteService: NotesService,
   ) {}
 
@@ -151,6 +152,7 @@ export class DonationService {
       }
       DonationFounded.Status = 'Aprobado';
       await this.donationRepository.save(DonationFounded);
+      await this.mailService.DonationAprove(DonationID)
       return { message: 'Solicitud de donacion aprobada correctamente' };
     }  catch (error) {
       const errorMessage =
@@ -176,6 +178,7 @@ export class DonationService {
       DonationFounded.Status = 'Rechazado';
       DonationFounded.Reason = DTO.reason;
       await this.donationRepository.save(DonationFounded);
+      await this.mailService.DonationRefuse(DonationID)
       return { message: 'Solicitud de donacion rechazada correctamente' };
     } catch (error) {
       const errorMessage =

@@ -32,6 +32,7 @@ import { Book } from 'src/books/book.entity';
 import { BooksChildren } from 'src/book-children/book-children.entity';
 import { dayEnd, dayStart, diffDays, removeOffset } from '@formkit/tempo';
 import { ExtendLoanDTO } from './DTO/ExtendLoan.dto';
+import { MailsService } from 'src/mails/mails.service';
 
 @Injectable()
 export class BookLoanService {
@@ -42,6 +43,7 @@ export class BookLoanService {
     private readonly bookRepository: Repository<Book>,
     private noteService: NotesService,
     private userService: UserService,
+    private emailService: MailsService,
     @InjectRepository(BooksChildren)
     private childrenRepo: Repository<BooksChildren>,
   ) {}
@@ -61,6 +63,8 @@ export class BookLoanService {
       bookLoan.aprovedBy = data.person;
 
       await this.bookLoanRepository.save(bookLoan);
+      await this.emailService.sendAproveLoan(data.LoanID)
+
       return { message: 'Aprobado con éxito' };
     } catch (error) {
       const errorMessage =
@@ -133,6 +137,7 @@ export class BookLoanService {
       bookLoan.Observations = data.Observations;
 
       await this.bookLoanRepository.save(bookLoan);
+      await this.emailService.sendRefuse(data.LoanID)
       return { message: 'Éxito al rechazar el préstamo' };
     } catch (error) {
       const errorMessage =
