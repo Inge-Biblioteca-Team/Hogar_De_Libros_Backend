@@ -14,6 +14,7 @@ import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
 import { GetAllFriendsFilterDTO } from './DTO/get-filter-friendLibrary.Dto';
 import { DenyFriendRequestDTO } from './DTO/deny-friend-library.Dto';
 import { UpdateFriendDTO } from './DTO/update-friend-library-DTO';
+import { MailsService } from 'src/mails/mails.service';
 
 @Injectable()
 export class FriendsLibraryService {
@@ -23,6 +24,7 @@ export class FriendsLibraryService {
     @InjectRepository(User) private UserRepository: Repository<User>,
 
     private noteService: NotesService,
+    private mailService: MailsService
   ) {}
 
   async CreateFriend(
@@ -158,6 +160,7 @@ export class FriendsLibraryService {
       FriendFounded.Status = 'Aprobado';
 
       await this.FriendRepositoy.save(FriendFounded);
+      await this.mailService.friendAprove(FriendID)
       return { message: 'Solicitud de amigo aprobada correctamente' };
     } catch (error) {
       const errorMessage =
@@ -183,7 +186,7 @@ export class FriendsLibraryService {
       FriendFounded.Status = 'Rechazado';
       FriendFounded.Reason = dto.reason;
       await this.FriendRepositoy.save(FriendFounded);
-
+      await this.mailService.friendRefuse(FriendID)
       return { message: 'Solicitud de amigo rechazada correctamente' };
     } catch (error) {
       const errorMessage =

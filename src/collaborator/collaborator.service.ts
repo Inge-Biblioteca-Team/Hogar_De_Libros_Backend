@@ -13,6 +13,7 @@ import { NotesService } from 'src/notes/notes.service';
 import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
 import { GetAllCollaboratorFilterDTO } from './DTO/get-filter-collaborator-DTO';
 import { DenyCollaboratorRequestDTO } from './DTO/deny-collaborator-DTO';
+import { MailsService } from 'src/mails/mails.service';
 
 @Injectable()
 export class CollaboratorService {
@@ -20,8 +21,8 @@ export class CollaboratorService {
     @InjectRepository(Collaborator)
     private collaboratorRepository: Repository<Collaborator>,
     @InjectRepository(User) private UserRepository: Repository<User>,
-
     private noteService: NotesService,
+    private mailService: MailsService
   ) {}
 
   async CreateCollaborator(
@@ -159,6 +160,7 @@ export class CollaboratorService {
       CollaboratorFounded.Status = 'Aprobado';
 
       await this.collaboratorRepository.save(CollaboratorFounded);
+      await this.mailService.colabAprove(CollaboratorId)
       return { message: 'Solicitud de colaborador aprobada correctamente' };
     } catch (error) {
       const errorMessage =
@@ -186,7 +188,7 @@ export class CollaboratorService {
       CollaboratorFounded.Reason = dto.reason;
 
       await this.collaboratorRepository.save(CollaboratorFounded);
-
+      await this.mailService.colabRefuse(CollaboratorId)
       return { message: 'Solicitud de colaborador rechazada correctamente' };
     } catch (error) {
       const errorMessage =
@@ -214,7 +216,7 @@ export class CollaboratorService {
       CollaboratorFounded.Reason = dto.reason;
 
       await this.collaboratorRepository.save(CollaboratorFounded);
-
+      await this.mailService.colabCancel(CollaboratorId)
       return { message: 'Solicitud de colaborador cancelada correctamente' };
     } catch (error) {
       const errorMessage =

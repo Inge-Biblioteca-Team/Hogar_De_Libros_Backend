@@ -1,10 +1,11 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { SentMessageInfo, Options } from 'nodemailer/lib/smtp-transport';
 
 @Injectable()
 export class MailService {
-  private transporter;
+  private transporter: nodemailer.Transporter<SentMessageInfo, Options>;
 
   constructor() {
     this.transporter = nodemailer.createTransport({
@@ -30,7 +31,6 @@ export class MailService {
       <p>Si tiene alguna pregunta o necesita más ayuda, no dude en ponerse en contacto a través de una llamada al +506 2685-4213.</p>
       <p>Gracias por utilizar nuestros servicios.</p>
       <p>Saludos cordiales,</p>
-      <p><strong>Temporal SR.Cheng </strong><br />
       <strong>Coordinación bibliotecaria</strong><br />
       <strong>Biblioteca publica municipal de Nicoya</strong><br />
       <strong>+506 2685-4213</strong><br />

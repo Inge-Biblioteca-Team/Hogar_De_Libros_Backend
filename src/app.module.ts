@@ -29,6 +29,7 @@ import { WorkStationsModule } from './work-stations/work-stations.module';
 import { StatsModule } from './stats/stats.module';
 import { ReportModule } from './Reports/Reports.Module';
 import { AttendanceModule } from './attendance/attendance.module';
+import { MailsModule } from './mails/mails.module';
 
 dotenv.config();
 
@@ -71,6 +72,7 @@ dotenv.config();
     StatsModule,
     ReportModule,
     AttendanceModule,
+    MailsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -8,6 +8,7 @@ import { UserModule } from 'src/user/user.module';
 import { BooksModule } from 'src/books/books.module';
 import { NotesModule } from 'src/notes/notes.module';
 import { BooksChildren } from 'src/book-children/book-children.entity';
+import { MailsModule } from 'src/mails/mails.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { BooksChildren } from 'src/book-children/book-children.entity';
     BooksModule,
     TypeOrmModule.forFeature([BookLoan, BooksChildren]),
     NotesModule,
+    MailsModule
   ],
   controllers: [BookLoanController],
   providers: [BookLoanService],

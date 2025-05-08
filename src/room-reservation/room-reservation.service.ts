@@ -15,13 +15,14 @@ import { UpdateRoomReservationDto } from './dto/update-room-reservation.dto';
 import { UserReservationDTO } from './dto/UserReservations';
 import { NotesService } from 'src/notes/notes.service';
 import { CreateNoteDto } from 'src/notes/dto/create-note.dto';
+import { MailsService } from 'src/mails/mails.service';
 
 @Injectable()
 export class RoomReservationService {
   constructor(
     @InjectRepository(RoomReservation)
     private readonly reservationRepository: Repository<RoomReservation>,
-
+    private mailService:MailsService,
     private noteService: NotesService,
   ) {}
 
@@ -219,6 +220,7 @@ export class RoomReservationService {
       reservation.finishObservation = 'Rechazado por el administrador';
 
       await this.reservationRepository.save(reservation);
+      await this.mailService.roomLoanRefuse(id)
       return {
         message: 'La solicitud se genero correctamente',
       };
@@ -269,6 +271,7 @@ export class RoomReservationService {
       reservation.reserveStatus = 'Aprobado';
 
       await this.reservationRepository.save(reservation);
+      await this.mailService.roomLoanAprove(id)
       return {
         message: 'La solicitud se genero correctamente',
       };
