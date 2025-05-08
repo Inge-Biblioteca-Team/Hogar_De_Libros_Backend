@@ -4,7 +4,6 @@ import { ReportDto } from './DTO';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as Handlebars from 'handlebars';
-import puppeteer from 'puppeteer';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
 import { Between, In, Repository } from 'typeorm';
@@ -111,6 +110,7 @@ export class ReportService {
 
   //*Busqueda y armado de datos para el reporte de Asistencia
   async generateATTReport(params: ReportDto): Promise<Buffer> {
+    const puppeteer = await import('puppeteer');
     const baseUrl = process.env.BASE_URL;
     const { startDate, endDate } = params;
 
@@ -194,6 +194,7 @@ export class ReportService {
 
   //*Reportes para prestamos de libros(Info de los prestamos y conteo total)
   async generateBLoans(params: ReportDto): Promise<Buffer> {
+    const puppeteer = await import('puppeteer');
     const baseUrl = process.env.BASE_URL;
     const { startDate, endDate } = params;
     const start = new Date(`${startDate}T00:00:00`);
@@ -248,6 +249,7 @@ export class ReportService {
 
   //*Reportes para cursos falta desglose de asistencia por edades
   async generateCOReport(params: ReportDto): Promise<Buffer> {
+    const puppeteer = await import('puppeteer');
     const { startDate, endDate } = params;
     const baseUrl = process.env.BASE_URL;
 
@@ -304,6 +306,7 @@ export class ReportService {
 
   //*Reportes sobre eventos falta desglose por edades
   async generateEVReport(params: ReportDto): Promise<Buffer> {
+    const puppeteer = await import('puppeteer');
     const { startDate, endDate } = params;
     const baseUrl = process.env.BASE_URL;
 
@@ -368,6 +371,7 @@ export class ReportService {
   }
 
   async generateUSReport(params: ReportDto): Promise<Buffer> {
+    const puppeteer = await import('puppeteer');
     const { startDate, endDate } = params;
 
     const start = new Date(`${startDate}T00:00:00`);
@@ -428,10 +432,11 @@ export class ReportService {
 
   //*Reporte de prestamos de computadoras( Especifico y con total al final del documento)
   async generateWSLoans(params: ReportDto): Promise<Buffer> {
+    const puppeteer = await import('puppeteer');
     const { startDate, endDate } = params;
     const start = new Date(`${startDate}T00:00:00`);
     const end = new Date(`${endDate}T23:59:59`);
-    
+
     const prestamos = await this.loanRepository.find({
       where: {
         LoanStartDate: Between(start, end),
