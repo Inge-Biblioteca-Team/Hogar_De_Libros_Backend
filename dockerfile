@@ -27,6 +27,7 @@ ARG BASE_URL
 ARG EMAIL_PASS
 ARG EMAIL_USER
 ARG CLIENT_URL
+ARG CLIENT_URL2
 
 # Etapa de producción
 FROM node:18-slim AS production
