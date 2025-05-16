@@ -20,5 +20,11 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+  "include": ["src/**/*", "migrations/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+
 }

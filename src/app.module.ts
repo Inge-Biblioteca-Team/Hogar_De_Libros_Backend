@@ -44,6 +44,8 @@ dotenv.config();
       database: process.env.DB_DATABASE || 'hogar_de_libros_db',
       autoLoadEntities: true,
       synchronize: false,
+      migrationsRun: true,
+      migrations:['./migrations/**/*{.ts,.js}'],
       retryAttempts: 5, // Reintenta 5 veces
       retryDelay: 5000, // Espera 5 segundos entre intentos
     }),
