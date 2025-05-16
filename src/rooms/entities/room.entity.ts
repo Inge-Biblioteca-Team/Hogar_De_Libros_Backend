@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { RoomReservation } from 'src/room-reservation/entities/room-reservation.entity';
+import { RoomReservation } from '../../room-reservation/entities/room-reservation.entity';
 
 
 

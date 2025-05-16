@@ -1,11 +1,11 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { FriendsLibrary } from 'src/friends-library/friend-library.entity';
-import { RoomReservation } from 'src/room-reservation/entities/room-reservation.entity';
+import { FriendsLibrary } from '../friends-library/friend-library.entity';
+import { RoomReservation } from '../room-reservation/entities/room-reservation.entity';
 
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-import { Donation } from 'src/donation/donation.entity';
-import { Collaborator } from 'src/collaborator/collaborator.entity';
+import { Donation } from '../donation/donation.entity';
+import { Collaborator } from '../collaborator/collaborator.entity';
 
 export enum Role {
   ExternalUser = 'external_user', //Puede solicitar libros bajo la política que se le establezca

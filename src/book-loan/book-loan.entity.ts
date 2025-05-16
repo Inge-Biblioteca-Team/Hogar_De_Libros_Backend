@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { BooksChildren } from 'src/book-children/book-children.entity';
-import { Book } from 'src/books/book.entity';
+import { BooksChildren } from '../book-children/book-children.entity';
+import { Book } from '../books/book.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 

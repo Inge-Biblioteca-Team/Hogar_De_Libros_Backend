@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
-import { Computer } from 'src/computers/computer.entity';
+import { ComputerLoan } from '../../computer-loan/computer-loan.entity';
+import { Computer } from '../../computers/computer.entity';
 
 @Entity({ name: 'workstations' })
 
