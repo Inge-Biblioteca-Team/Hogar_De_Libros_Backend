@@ -15,18 +15,8 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
-      'http://localhost',
-      'http://localhost:8080',
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'http://localhost:5176',
-      'https://hogar-de-libros-front-zer0.vercel.app',
-      'https://front-inge-akion.vercel.app',
-      'https://zcz17ld0-5173.use2.devtunnels.ms',
-      'https://hogardelibroszero-production.up.railway.app',
-      'https://hogar-de-libros-front-keirin.vercel.app',
-      'https://hogar-de-libros-front-naza-g.vercel.app',
-      'https://opac-hogar-libros.vercel.app',
+      process.env.CLIENT_URL,
+      process.env.CLIENT_URL2,
     ],
     credentials: true,
   });
@@ -56,17 +46,25 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads/',
   });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       transformOptions: {
-        enableImplicitConversion: true
+        enableImplicitConversion: true,
       },
     }),
   );
-
+  
+  
   const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`Swagger está disponible en http://localhost:3000/api`);
+
+  const used = process.memoryUsage();
+  console.log('Memory usage:');
+  for (const key in used) {
+    console.log(`${key} ${(used[key] / 1024 / 1024).toFixed(2)} MB`);
+  }
 }
 bootstrap();
