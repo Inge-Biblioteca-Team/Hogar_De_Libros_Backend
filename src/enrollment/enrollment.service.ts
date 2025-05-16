@@ -18,7 +18,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as Handlebars from 'handlebars';
 import { MailsService } from 'src/mails/mails.service';
-import puppeteer from 'puppeteer';
+import { chromium } from 'playwright';
 
 @Injectable()
 export class EnrollmentService {
@@ -207,12 +207,11 @@ export class EnrollmentService {
       baseUrl,
     });
 
-    const browser = await puppeteer.launch({
+    const browser = await chromium.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
-
     const page = await browser.newPage();
-    await page.setContent(htmlContent);
+    await page.setContent(htmlContent, { waitUntil: 'networkidle' });
     const pdfBuffer = await page.pdf({
       format: 'A4',
       printBackground: true,

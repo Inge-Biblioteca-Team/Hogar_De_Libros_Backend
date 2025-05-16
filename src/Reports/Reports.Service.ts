@@ -13,7 +13,7 @@ import { events } from 'src/events/events.entity';
 import { format } from '@formkit/tempo';
 import { Attendance } from 'src/attendance/attendance.type';
 import { Role, User } from 'src/user/user.entity';
-import puppeteer from 'puppeteer';
+import { chromium } from 'playwright';
 
 @Injectable()
 export class ReportService {
@@ -182,11 +182,11 @@ export class ReportService {
       baseUrl: baseUrl,
       stats: { grouped, total },
     });
-    const browser = await puppeteer.launch({
+    const browser = await chromium.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
     const page = await browser.newPage();
-    await page.setContent(htmlContent);
+    await page.setContent(htmlContent, { waitUntil: 'networkidle' });
 
     const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
     await browser.close();
@@ -232,11 +232,12 @@ export class ReportService {
       baseUrl: baseUrl,
       total: prestamos.length,
     });
-    const browser = await puppeteer.launch({
+    const browser = await chromium.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
+
     const page = await browser.newPage();
-    await page.setContent(htmlContent);
+    await page.setContent(htmlContent, { waitUntil: 'networkidle' });
 
     const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
     await browser.close();
@@ -285,11 +286,12 @@ export class ReportService {
       generateDate: new Date().toLocaleString(),
       baseUrl: baseUrl,
     });
-    const browser = await puppeteer.launch({
+
+    const browser = await chromium.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
     const page = await browser.newPage();
-    await page.setContent(htmlContent);
+    await page.setContent(htmlContent, { waitUntil: 'networkidle' });
 
     const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
     await browser.close();
@@ -347,11 +349,11 @@ export class ReportService {
       generateDate: new Date().toLocaleString(),
       baseUrl: baseUrl,
     });
-    const browser = await puppeteer.launch({
+    const browser = await chromium.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
     const page = await browser.newPage();
-    await page.setContent(htmlContent);
+    await page.setContent(htmlContent, { waitUntil: 'networkidle' });
 
     const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
     await browser.close();
@@ -399,11 +401,11 @@ export class ReportService {
       users: Users,
       baseUrl: baseUrl,
     });
-    const browser = await puppeteer.launch({
+    const browser = await chromium.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
     const page = await browser.newPage();
-    await page.setContent(htmlContent);
+    await page.setContent(htmlContent, { waitUntil: 'networkidle' });
 
     const pdfBuffer = await page.pdf({
       format: 'A4',
@@ -458,11 +460,11 @@ export class ReportService {
       total: prestamos.length,
       baseUrl: baseUrl,
     });
-    const browser = await puppeteer.launch({
+    const browser = await chromium.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
     const page = await browser.newPage();
-    await page.setContent(htmlContent);
+    await page.setContent(htmlContent, { waitUntil: 'networkidle' });
 
     const pdfBuffer = await page.pdf({
       format: 'A4',
