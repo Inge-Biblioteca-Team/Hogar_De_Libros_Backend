@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Enrollment } from '../enrollment/enrollment.entity';
-import { Programs } from '../programs/programs.entity';
-import { RoomReservation } from '../room-reservation/entities/room-reservation.entity';
+import { Enrollment } from 'src/enrollment/enrollment.entity';
+import { Programs } from 'src/programs/programs.entity';
+import { RoomReservation } from 'src/room-reservation/entities/room-reservation.entity';
 
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne } from 'typeorm';
 

@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { WorkStation } from '../work-stations/entities/work-station.entity';
+import { WorkStation } from 'src/work-stations/entities/work-station.entity';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 

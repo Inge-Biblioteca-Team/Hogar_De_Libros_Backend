@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { Programs } from '../programs/programs.entity';
-import { RoomReservation } from '../room-reservation/entities/room-reservation.entity';
+import { Programs } from 'src/programs/programs.entity';
+import { RoomReservation } from 'src/room-reservation/entities/room-reservation.entity';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'events' })
