@@ -8,7 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-   "start": "node --max-old-space-size=4096 -r ts-node/register dist/main.js",
+    "start": "node --max-old-space-size=4096 -r ts-node/register dist/main.js",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -65,11 +65,11 @@
     "mysql2": "^3.11.3",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.15",
-    "puppeteer": "^24.3.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.20",
+    "playwright": "^1.52.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
