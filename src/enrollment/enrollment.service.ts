@@ -18,6 +18,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as Handlebars from 'handlebars';
 import { MailsService } from 'src/mails/mails.service';
+import puppeteer from 'puppeteer';
 
 @Injectable()
 export class EnrollmentService {
@@ -182,14 +183,15 @@ export class EnrollmentService {
   }
 
   async saveEnrollmentList(courseID: number) {
-    const puppeteer = await import('puppeteer');
     const data = await this.courseRepository.findOne({
       where: { courseId: courseID, enrollments: { status: 'Activa' } },
       relations: ['enrollments'],
     });
+
     const templatePath = path.join(
-      process.cwd(),
-      'src/enrollment/EnrollmentsListTemplate.hbs',
+      __dirname,
+      'Templates',
+      'EnrollmentsListTemplate.hbs',
     );
 
     const templateHtml = fs.readFileSync(templatePath, 'utf-8');

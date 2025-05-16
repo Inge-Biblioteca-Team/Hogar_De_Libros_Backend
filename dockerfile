@@ -17,6 +17,9 @@ RUN npm ci
 # Copiar el código fuente
 COPY . .
 
+#Build del proyecto
+RUN npm run build
+
 # Variables de entorno para configuraciones
 ARG DB_HOST
 ARG DB_POR

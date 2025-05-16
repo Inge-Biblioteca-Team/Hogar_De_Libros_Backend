@@ -13,6 +13,7 @@ import { events } from 'src/events/events.entity';
 import { format } from '@formkit/tempo';
 import { Attendance } from 'src/attendance/attendance.type';
 import { Role, User } from 'src/user/user.entity';
+import puppeteer from 'puppeteer';
 
 @Injectable()
 export class ReportService {
@@ -110,7 +111,6 @@ export class ReportService {
 
   //*Busqueda y armado de datos para el reporte de Asistencia
   async generateATTReport(params: ReportDto): Promise<Buffer> {
-    const puppeteer = await import('puppeteer');
     const baseUrl = process.env.BASE_URL;
     const { startDate, endDate } = params;
 
@@ -166,8 +166,9 @@ export class ReportService {
     ReportService.registerGenderHelper();
 
     const templatePath = path.join(
-      process.cwd(),
-      'src/Reports/Templates/AttendanceTemplate.hbs',
+      __dirname,
+      'Templates',
+      'AttendanceTemplate.hbs',
     );
 
     const templateHtml = fs.readFileSync(templatePath, 'utf-8');
@@ -194,7 +195,6 @@ export class ReportService {
 
   //*Reportes para prestamos de libros(Info de los prestamos y conteo total)
   async generateBLoans(params: ReportDto): Promise<Buffer> {
-    const puppeteer = await import('puppeteer');
     const baseUrl = process.env.BASE_URL;
     const { startDate, endDate } = params;
     const start = new Date(`${startDate}T00:00:00`);
@@ -220,11 +220,7 @@ export class ReportService {
 
     ReportService.registerdateHelpers();
 
-    const templatePath = path.join(
-      process.cwd(),
-      'src/Reports/Templates/BLoanTemplate.hbs',
-    );
-
+    const templatePath = path.join(__dirname, 'Templates', 'BLoanTemplate.hbs');
     const templateHtml = fs.readFileSync(templatePath, 'utf-8');
     const template = Handlebars.compile(templateHtml);
 
@@ -249,7 +245,6 @@ export class ReportService {
 
   //*Reportes para cursos falta desglose de asistencia por edades
   async generateCOReport(params: ReportDto): Promise<Buffer> {
-    const puppeteer = await import('puppeteer');
     const { startDate, endDate } = params;
     const baseUrl = process.env.BASE_URL;
 
@@ -278,10 +273,7 @@ export class ReportService {
     ReportService.registerIncHelper();
     ReportService.registerTargetAgeHelper();
 
-    const templatePath = path.join(
-      process.cwd(),
-      'src/Reports/Templates/COTemplate.hbs',
-    );
+    const templatePath = path.join(__dirname, 'Templates', 'COTemplate.hbs');
 
     const templateHtml = fs.readFileSync(templatePath, 'utf-8');
     const template = Handlebars.compile(templateHtml);
@@ -306,7 +298,6 @@ export class ReportService {
 
   //*Reportes sobre eventos falta desglose por edades
   async generateEVReport(params: ReportDto): Promise<Buffer> {
-    const puppeteer = await import('puppeteer');
     const { startDate, endDate } = params;
     const baseUrl = process.env.BASE_URL;
 
@@ -344,10 +335,7 @@ export class ReportService {
 
     ReportService.registerdateHelpers();
 
-    const templatePath = path.join(
-      process.cwd(),
-      'src/Reports/Templates/EVTemplate.hbs',
-    );
+    const templatePath = path.join(__dirname, 'Templates', 'EVTemplate.hbs');
 
     const templateHtml = fs.readFileSync(templatePath, 'utf-8');
     const template = Handlebars.compile(templateHtml);
@@ -371,7 +359,6 @@ export class ReportService {
   }
 
   async generateUSReport(params: ReportDto): Promise<Buffer> {
-    const puppeteer = await import('puppeteer');
     const { startDate, endDate } = params;
 
     const start = new Date(`${startDate}T00:00:00`);
@@ -400,10 +387,7 @@ export class ReportService {
     ReportService.registerBirthHelpers();
     ReportService.registerIncHelper();
 
-    const templatePath = path.join(
-      process.cwd(),
-      'src/Reports/Templates/UserReport.hbs',
-    );
+    const templatePath = path.join(__dirname, 'Templates', 'UserReport.hbs');
 
     const templateHtml = fs.readFileSync(templatePath, 'utf-8');
     const template = Handlebars.compile(templateHtml);
@@ -432,7 +416,6 @@ export class ReportService {
 
   //*Reporte de prestamos de computadoras( Especifico y con total al final del documento)
   async generateWSLoans(params: ReportDto): Promise<Buffer> {
-    const puppeteer = await import('puppeteer');
     const { startDate, endDate } = params;
     const start = new Date(`${startDate}T00:00:00`);
     const end = new Date(`${endDate}T23:59:59`);
@@ -458,8 +441,9 @@ export class ReportService {
     ReportService.registerdateHelpers();
 
     const templatePath = path.join(
-      process.cwd(),
-      'src/Reports/Templates/WSLoanTemplate.hbs',
+      __dirname,
+      'Templates',
+      'WSLoanTemplate.hbs',
     );
 
     const templateHtml = fs.readFileSync(templatePath, 'utf-8');
