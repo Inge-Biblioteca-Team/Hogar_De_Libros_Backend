@@ -12,8 +12,8 @@ const AppDataSource = new DataSource({
   database: process.env.DB_DATABASE || 'hogar_de_libros_db',
   synchronize: false,
   logging: true,
-  entities: ['src/**/*.entity.{ts,js}'],
-  migrations: ['src/migrations/**/*{.ts,.js}'],
+  entities: ['dist/**/*.entity.js'],
+  migrations: ['dist/migrations/**/*.js'],
 });
 
 export default AppDataSource;

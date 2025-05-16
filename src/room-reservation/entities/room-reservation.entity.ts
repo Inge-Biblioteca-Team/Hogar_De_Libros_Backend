@@ -9,10 +9,10 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '../../user/user.entity';
-import { Rooms } from '../../rooms/entities/room.entity';
-import { Course } from '../../course/course.entity';
-import { events } from '../../events/events.entity';
+import { User } from 'src/user/user.entity';
+import { Rooms } from 'src/rooms/entities/room.entity';
+import { Course } from 'src/course/course.entity';
+import { events } from 'src/events/events.entity';
 
 
 @Entity('room_reservations')

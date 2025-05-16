@@ -43,9 +43,9 @@ dotenv.config();
       password: process.env.DB_PASSWORD || 'userpassword',
       database: process.env.DB_DATABASE || 'hogar_de_libros_db',
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
       migrationsRun: true,
-      migrations: ['dist/migrations/**/*{.ts,.js}'],
+      migrations:['./migrations/**/*{.ts,.js}'],
       retryAttempts: 5, // Reintenta 5 veces
       retryDelay: 5000, // Espera 5 segundos entre intentos
     }),
