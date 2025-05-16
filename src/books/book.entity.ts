@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { BookLoan } from 'src/book-loan/book-loan.entity';
+import { BookLoan } from '../book-loan/book-loan.entity';
 
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 

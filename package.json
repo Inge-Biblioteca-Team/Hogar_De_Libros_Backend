@@ -39,9 +39,11 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config jest-e2e.config.js",
-    "migrate": "ts-node node_modules/.bin/typeorm migration:run",
-    "migration:create": "npx typeorm migration:create -n",
-    "migration:revert": "ts-node node_modules/.bin/typeorm migration:revert"
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migration:generate": "npm run typeorm migration:generate ./src/migrations/%npm_config_name% -- -d data-source.ts",
+    "migration:run-dev": "npm run typeorm migration:run -- -d data-source.ts",
+    "migration:revert-dev": "npm run typeorm migration:revert -- -d data-source.ts",
+    "migration:create": "npm run typeorm migration:create ./src/migrations/%npm_config_name%"
   },
   "dependencies": {
     "@formkit/tempo": "^0.1.2",
@@ -95,7 +97,7 @@
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.3",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.3"
   },
