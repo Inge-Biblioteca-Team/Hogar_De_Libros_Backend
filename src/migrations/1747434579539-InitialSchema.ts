@@ -70,41 +70,7 @@ export class InitialSchema1747434579539 implements MigrationInterface {
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`DELETE FROM users WHERE cedula = '123456789'`);
-        await queryRunner.query(`ALTER TABLE \`book_loans\` DROP FOREIGN KEY \`FK_bab4018c0555c0f96aa0dd272ad\``);
-        await queryRunner.query(`ALTER TABLE \`book_loans\` DROP FOREIGN KEY \`FK_77a9cf8572472791e58d9e81e9a\``);
-        await queryRunner.query(`ALTER TABLE \`computers\` DROP FOREIGN KEY \`FK_0e1ee5db262d027d3127757959a\``);
-        await queryRunner.query(`ALTER TABLE \`computer_loan\` DROP FOREIGN KEY \`FK_3403463953fc7480cd52e3a62a9\``);
-        await queryRunner.query(`ALTER TABLE \`courses\` DROP FOREIGN KEY \`FK_1f0d13c40b760f70885dce69bf9\``);
-        await queryRunner.query(`ALTER TABLE \`room_reservations\` DROP FOREIGN KEY \`FK_28e2935a6c6d95d2de0c372c0cf\``);
-        await queryRunner.query(`ALTER TABLE \`room_reservations\` DROP FOREIGN KEY \`FK_0cd25e399af801895ecbf30aefe\``);
-        await queryRunner.query(`ALTER TABLE \`room_reservations\` DROP FOREIGN KEY \`FK_b3f0fdaf13a27bb26b4100d94bc\``);
-        await queryRunner.query(`ALTER TABLE \`room_reservations\` DROP FOREIGN KEY \`FK_d2433d16052ee0bf91c2bc75834\``);
-        await queryRunner.query(`ALTER TABLE \`events\` DROP FOREIGN KEY \`FK_ffe5fdc1faea962843007f3ba04\``);
-        await queryRunner.query(`ALTER TABLE \`collaborator\` DROP FOREIGN KEY \`FK_ca0a109210c1b1749b7d2891d34\``);
-        await queryRunner.query(`ALTER TABLE \`donation\` DROP FOREIGN KEY \`FK_13719b06ce9fccf7719da65c3f3\``);
-        await queryRunner.query(`ALTER TABLE \`friend_library\` DROP FOREIGN KEY \`FK_e55940a724db0f96fb9565993e8\``);
-        await queryRunner.query(`ALTER TABLE \`enrollment\` DROP FOREIGN KEY \`FK_d1a599a7740b4f4bd1120850f04\``);
-        await queryRunner.query(`DROP TABLE \`advice\``);
-        await queryRunner.query(`DROP TABLE \`notes\``);
-        await queryRunner.query(`DROP TABLE \`book_loans\``);
-        await queryRunner.query(`DROP TABLE \`books\``);
-        await queryRunner.query(`DROP TABLE \`books-children\``);
-        await queryRunner.query(`DROP TABLE \`computers\``);
-        await queryRunner.query(`DROP TABLE \`workstations\``);
-        await queryRunner.query(`DROP TABLE \`computer_loan\``);
-        await queryRunner.query(`DROP TABLE \`furniture\``);
-        await queryRunner.query(`DROP TABLE \`localartist\``);
-        await queryRunner.query(`DROP TABLE \`programs\``);
-        await queryRunner.query(`DROP TABLE \`courses\``);
-        await queryRunner.query(`DROP TABLE \`room_reservations\``);
-        await queryRunner.query(`DROP TABLE \`events\``);
-        await queryRunner.query(`DROP TABLE \`rooms\``);
-        await queryRunner.query(`DROP INDEX \`IDX_97672ac88f789774dd47f7c8be\` ON \`users\``);
-        await queryRunner.query(`DROP TABLE \`users\``);
-        await queryRunner.query(`DROP TABLE \`collaborator\``);
-        await queryRunner.query(`DROP TABLE \`donation\``);
-        await queryRunner.query(`DROP TABLE \`friend_library\``);
-        await queryRunner.query(`DROP TABLE \`enrollment\``);
+        
        
     }
 
