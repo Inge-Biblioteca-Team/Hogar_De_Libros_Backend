@@ -4,7 +4,6 @@ import { ReportDto } from './DTO';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as Handlebars from 'handlebars';
-import puppeteer from 'puppeteer';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ComputerLoan } from 'src/computer-loan/computer-loan.entity';
 import { Between, In, Repository } from 'typeorm';
@@ -14,6 +13,7 @@ import { events } from 'src/events/events.entity';
 import { format } from '@formkit/tempo';
 import { Attendance } from 'src/attendance/attendance.type';
 import { Role, User } from 'src/user/user.entity';
+import puppeteer from 'puppeteer';
 
 @Injectable()
 export class ReportService {
@@ -166,8 +166,9 @@ export class ReportService {
     ReportService.registerGenderHelper();
 
     const templatePath = path.join(
-      process.cwd(),
-      'src/Reports/Templates/AttendanceTemplate.hbs',
+      __dirname,
+      'Templates',
+      'AttendanceTemplate.hbs',
     );
 
     const templateHtml = fs.readFileSync(templatePath, 'utf-8');
@@ -219,11 +220,7 @@ export class ReportService {
 
     ReportService.registerdateHelpers();
 
-    const templatePath = path.join(
-      process.cwd(),
-      'src/Reports/Templates/BLoanTemplate.hbs',
-    );
-
+    const templatePath = path.join(__dirname, 'Templates', 'BLoanTemplate.hbs');
     const templateHtml = fs.readFileSync(templatePath, 'utf-8');
     const template = Handlebars.compile(templateHtml);
 
@@ -276,10 +273,7 @@ export class ReportService {
     ReportService.registerIncHelper();
     ReportService.registerTargetAgeHelper();
 
-    const templatePath = path.join(
-      process.cwd(),
-      'src/Reports/Templates/COTemplate.hbs',
-    );
+    const templatePath = path.join(__dirname, 'Templates', 'COTemplate.hbs');
 
     const templateHtml = fs.readFileSync(templatePath, 'utf-8');
     const template = Handlebars.compile(templateHtml);
@@ -341,10 +335,7 @@ export class ReportService {
 
     ReportService.registerdateHelpers();
 
-    const templatePath = path.join(
-      process.cwd(),
-      'src/Reports/Templates/EVTemplate.hbs',
-    );
+    const templatePath = path.join(__dirname, 'Templates', 'EVTemplate.hbs');
 
     const templateHtml = fs.readFileSync(templatePath, 'utf-8');
     const template = Handlebars.compile(templateHtml);
@@ -396,10 +387,7 @@ export class ReportService {
     ReportService.registerBirthHelpers();
     ReportService.registerIncHelper();
 
-    const templatePath = path.join(
-      process.cwd(),
-      'src/Reports/Templates/UserReport.hbs',
-    );
+    const templatePath = path.join(__dirname, 'Templates', 'UserReport.hbs');
 
     const templateHtml = fs.readFileSync(templatePath, 'utf-8');
     const template = Handlebars.compile(templateHtml);
@@ -431,7 +419,7 @@ export class ReportService {
     const { startDate, endDate } = params;
     const start = new Date(`${startDate}T00:00:00`);
     const end = new Date(`${endDate}T23:59:59`);
-    
+
     const prestamos = await this.loanRepository.find({
       where: {
         LoanStartDate: Between(start, end),
@@ -453,8 +441,9 @@ export class ReportService {
     ReportService.registerdateHelpers();
 
     const templatePath = path.join(
-      process.cwd(),
-      'src/Reports/Templates/WSLoanTemplate.hbs',
+      __dirname,
+      'Templates',
+      'WSLoanTemplate.hbs',
     );
 
     const templateHtml = fs.readFileSync(templatePath, 'utf-8');

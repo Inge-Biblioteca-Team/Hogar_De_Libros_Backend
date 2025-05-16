@@ -17,8 +17,8 @@ import { GetEnrollmentsDTO } from './DTO/GetDTO';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as Handlebars from 'handlebars';
-import puppeteer from 'puppeteer';
 import { MailsService } from 'src/mails/mails.service';
+import puppeteer from 'puppeteer';
 
 @Injectable()
 export class EnrollmentService {
@@ -29,7 +29,7 @@ export class EnrollmentService {
     private readonly courseRepository: Repository<Course>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private mailService:MailsService
+    private mailService: MailsService,
   ) {}
 
   //Post
@@ -71,7 +71,7 @@ export class EnrollmentService {
       });
 
       await this.enrollmentRepository.save(enrollment);
-      await this.mailService.enrollmentConfirm(enrollment.enrollmentId)
+      await this.mailService.enrollmentConfirm(enrollment.enrollmentId);
 
       return { message: 'Matrícula registrada con éxito' };
     } catch (error) {
@@ -132,7 +132,7 @@ export class EnrollmentService {
 
     try {
       await this.enrollmentRepository.save(enrollment);
-      await this.mailService.enrollmentCancel(enrollment.enrollmentId)
+      await this.mailService.enrollmentCancel(enrollment.enrollmentId);
       return { message: 'Matrícula cancelada con éxito' };
     } catch (error) {
       throw new InternalServerErrorException('Error al cancelar la matrícula');
@@ -187,22 +187,24 @@ export class EnrollmentService {
       where: { courseId: courseID, enrollments: { status: 'Activa' } },
       relations: ['enrollments'],
     });
+
     const templatePath = path.join(
-      process.cwd(),
-      'src/enrollment/EnrollmentsListTemplate.hbs',
+      __dirname,
+      'Templates',
+      'EnrollmentsListTemplate.hbs',
     );
 
     const templateHtml = fs.readFileSync(templatePath, 'utf-8');
     const template = Handlebars.compile(templateHtml);
     const baseUrl = process.env.BASE_URL;
 
-    Handlebars.registerHelper("addOne", function (value) {
+    Handlebars.registerHelper('addOne', function (value) {
       return value + 1;
     });
 
     const htmlContent = template({
       course: data,
-      baseUrl
+      baseUrl,
     });
 
     const browser = await puppeteer.launch({
