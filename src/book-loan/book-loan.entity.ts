@@ -4,7 +4,6 @@ import { BooksChildren } from 'src/book-children/book-children.entity';
 import { Book } from 'src/books/book.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-
 export enum BookType {
   INFANTIL = 'INFANTIL',
   GENERAL = 'GENERAL',
@@ -33,7 +32,7 @@ export class BookLoan {
   Status: string = 'Pendiente';
 
   @ApiProperty({ description: 'Observaciones ' })
-  @Column()
+  @Column({ type: 'text' })
   Observations: string = '';
 
   @Column()
@@ -61,7 +60,8 @@ export class BookLoan {
   @ManyToOne(() => Book, (book) => book.bookLoans, { eager: true })
   book: Book;
 
-  @ManyToOne(() => BooksChildren, (bookChild) => bookChild.bookLoans, { eager: true })
+  @ManyToOne(() => BooksChildren, (bookChild) => bookChild.bookLoans, {
+    eager: true,
+  })
   childrenBook: BooksChildren;
-
 }

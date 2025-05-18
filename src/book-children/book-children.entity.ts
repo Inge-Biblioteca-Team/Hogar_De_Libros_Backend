@@ -9,11 +9,11 @@ export class BooksChildren {
   @ApiProperty({ description: 'Código  del libro' })
   BookCode: number;
 
-  @Column()
+  @Column({type: 'text'})
   @ApiProperty({ description: 'Título del libro' })
   Title: string;
 
-  @Column()
+  @Column({type: 'text'})
   @ApiProperty({ description: 'Autor del libro' })
   Author: string;
 
@@ -33,7 +33,7 @@ export class BooksChildren {
   @ApiProperty({ description: 'Categoría del libro' })
   ShelfCategory: string;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({ description: 'URL de la portada del libro' })
   Cover: string="https://i.pinimg.com/474x/f8/42/e5/f842e5de7b3f890a427671edc02484a5.jpg";
 

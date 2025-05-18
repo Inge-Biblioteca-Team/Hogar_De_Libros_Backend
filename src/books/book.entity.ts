@@ -10,11 +10,11 @@ export class Book {
   @ApiProperty({ description: 'Código  del libro' })
   BookCode: number;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({ description: 'Título del libro' })
   Title: string;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({ description: 'Autor del libro' })
   Author: string;
 
@@ -34,7 +34,7 @@ export class Book {
   @ApiProperty({ description: 'Categoría del libro' })
   ShelfCategory: string;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({ description: 'URL de la portada del libro' })
   Cover: string =
     'https://img.freepik.com/free-vector/hand-drawn-flat-design-stack-books-illustration_23-2149330605.jpg?w=360';
@@ -55,7 +55,7 @@ export class Book {
   @ApiProperty({ description: 'Indica si el libro se puede está reservar' })
   ReserveBook: boolean;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({ description: 'Observaciones' })
   Observations: string;
 
