@@ -18,7 +18,7 @@ export class Book {
   @ApiProperty({ description: 'Autor del libro' })
   Author: string;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({ description: 'Editorial del libro' })
   Editorial: string;
 
@@ -26,7 +26,7 @@ export class Book {
   @ApiProperty({ description: 'Año de publicación' })
   PublishedYear: number;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({ description: 'ISBN del libro' })
   ISBN: string;
 
@@ -43,7 +43,7 @@ export class Book {
   @ApiProperty({ description: 'Calificación de la condición del libro' })
   BookConditionRating: number;
 
-  @Column()
+  @Column({ type: 'text' })
   @ApiProperty({ description: 'Código de firma' })
   signatureCode: string;
 
